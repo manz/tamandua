@@ -1,0 +1,15 @@
+Sur une distrib standard avec sudo:
+
+cd td_base
+make
+sudo make install
+cd ../td_core
+make
+sudo make install
+cd bin
+make
+sudo make install
+
+
+pour enjoyer un test:
+./td_core_test

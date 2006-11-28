@@ -1,0 +1,10 @@
+PREFIX=/usr/local
+CC = gcc
+CFLAGS = -fPIC -g3 -W -Wall -Wno-unused -pedantic -std=c99
+LDFLAGS = -fPIC
+
+TD_NAME = tamandua
+TD_VERSION = 0
+TD_SUBVERSION = 0
+TD_RELEASE = 0
+TD_FLAGS = -DTD_PREFIX=\"$(PREFIX)\"

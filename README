@@ -1,0 +1,70 @@
+Présentation des 2 libs qui forment le noyau:
+
+td_base
+~~~~~~~
+td_base est une lib avec 2-3 trucs fondamentaux et pas franchement spécifiques,
+du genre verification des mallocs histoire de pas farcir le code de tests de
+pointeurs de partout, et gestion de la sortie d'erreur/debug.
+
+tdb_init(FILE* stream);
+pour l'initialiser, avec stream la sortie d'erreur, stderr par exemple fera très
+bien l'affaire, mais on peut envisager de le rediriger si on fait une interface 
+graphique. (on peut piper proprement un FILE* vers une textzone qt ou faut-il 
+refaire cette interface avec un callback qui prends en argument le string 
+a logger? si on peut eviter ce genre de bordel ca ferait pas de mal je 
+crois....)
+
+tdb_exit();
+pour la fermer, toute les libs qui dépendent de td_base doivent avoir étés 
+fermées auparavent.
+
+td_core
+~~~~~~~
+Dépends de td_base, c'est la lib de calcul des problèmes, elle est multithreadé, 
+mais au niveau de l'API ca se sent pas, le seul indice c'est que les appels 
+importants sont asynchrones, ca devrait nettement simplifier les GUI par dessus.
+
+Les problèmes sont stockés dans des .so, cf problems/dispatch.c pour voir le 
+format standard, rien de magique c'est assez explicite, dumoins dans les grandes 
+lignes. Les .so sont chargés dynamiquements avec dlopen, on peut donc en 
+rajouter après l'install de td_core ou les mettre coté utilisateur alors que les 
+libs sont installés sur le systeme. Y'a un ptit travail pour la gestion des 
+dossiers à scanner à faire pour améliorer ça cependant. Le dlopen peut embéter 
+un poil pour l'interfacage avec C++, cf 
+http://www.isotton.com/howtos/C++-dlopen-mini-HOWTO/C++-dlopen-mini-HOWTO.html .
+
+L'archi est basé sur 3 elements :
+- le probleme, donc je vient déja de parler
+- une config (struct tdc_conf) qui contient une série de paramètres pour génerer 
+  un set de tâches à ordonnancer, pour un problême donné.
+- un job (struct tdc_job) qui contient un set de tâches à ordonnancer.
+
+A partir d'un numéro de problème, on génère une config, ensuite on modifie les 
+réglages de la config, ensuite à partir de celle-ci on génère un job.
+Le job est ensuite commité dans la todo_queue avec tdc_commit() la lib se 
+démerde pour faire le travail demandé, notons qu'on peut choisir différentes 
+stratégies de résolutions, ainsi pour le même problème de l'exercice 1, on aura 
+les stratégies "de base", "triées" et "programmation dynamique".
+Une fois le boulot terminé, le job est mit dans la done_queue, on peut obtenir 
+celui-ci afin d'afficher son contenu à l'ade de tdc_checkout qui est 
+non-bloquant et renvoie NULL si aucun job n'est prêt, ou tdc_force_checkout qui 
+est bloquant et renvoie forcément un job valide. Les jobs sont retournés dans 
+l'ordre ou ils sont commités.
+Un job peut-être recommité si nécessaire s'il s'agit d'une stratégie multi-passe 
+(par exemple si on fait une stratégie qui au lieu de faire tout le boulot d'un 
+coup s'arrète régulièrement et renvoie le résultat pour qu'on puisse afficher 
+l'evolution progressive de l'algo). Les properties dans la definition du 
+probleme permettent d'assigner un nom dans les interfaces à chaque valeur que 
+peut contenir une tache (poids, durée, etc...) et d'associer à ce nom une 
+signification visuelle (la durée change la longueur du rectangle qui représente 
+la tache, le poids sa couleur, etc...)
+Il y a aussi des propriétés globales pour un job donné en plus de celles de 
+chaque tâche, ces propriétés peuvent contenir par exemple le nombre de machines 
+sur lequel répartir les tâches, ou la durée totale d'exécution des tâches.
+Certainess propriétés sont destinées à être crées par l'interface et lues par la 
+stratégie (la durée d'une tâche par exemple), et d'autre l'inverse (la machine 
+à laquelle une tâche est assignée), certaines pouront êtres lues et écrites par 
+les 2. La lecture du problème déja écrit devrait aider à comprendre ce gros pavé 
+de texte, cf. problems/dispatch.c.
+
+Pour le reste, lisez le code, et regardez la fonction tdc_test(); ....
