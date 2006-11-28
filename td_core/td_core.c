@@ -158,7 +158,7 @@ struct tdc_job* tdc_buildjob
 		                        sizeof(*ret->tasks[i]));
 		for (j=0; j<conf->problem->properties_count; j++) {
 			/* randomly generate data only if asked */
-			if (conf->problem->properties[i].type & TDC_INPUT) {
+			if (conf->problem->properties[j].type & TDC_INPUT) {
 				ret->tasks[i][j] = (int)(rand()/(double)RAND_MAX
 				                   *(conf->max[j] - conf->min[j] +1))
 				                   +conf->min[j];

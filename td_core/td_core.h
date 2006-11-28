@@ -5,6 +5,7 @@
 #include <dlfcn.h> /* dl open */
 #include <dirent.h> /* file managment */
 #include <sys/time.h> /* random seed init */
+#include <td_base.h>
 
 #ifdef INC_PRIVATE_TD_CORE_H
 struct tdc_context* tdc;
