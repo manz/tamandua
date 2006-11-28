@@ -25,7 +25,9 @@ add_library(td_core SHARED ${td_core_src})
 
 target_link_libraries(td_core td_base)
 
-SET_TARGET_PROPERTIES(td_base td_core PROPERTIES COMPILE_FLAGS "-fno-common")
+if (APPLE)
+  SET_TARGET_PROPERTIES(td_base td_core PROPERTIES COMPILE_FLAGS "-fno-common")
+endif (APPLE)
 
 add_library(dispatch MODULE problems/dispatch.c)
 
