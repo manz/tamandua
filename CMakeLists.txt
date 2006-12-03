@@ -29,12 +29,14 @@ if (APPLE)
   SET_TARGET_PROPERTIES(td_base td_core PROPERTIES COMPILE_FLAGS "-fno-common")
 endif (APPLE)
 
+include_directories(td_base td_core)
 add_library(dispatch MODULE problems/dispatch.c)
 
 #QT4_GENERATE_MOC(td_gui/td_wrap.h td_wrap.moc)
 #qt4_automoc(td_gui/td_wrap.cc)
 
 QT4_WRAP_CPP(moc_src ${moc_hdr})
+
 
 add_executable(tamandua MACOSX_BUNDLE ${tamandua_gui_src} ${moc_src})
  
