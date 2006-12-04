@@ -10,6 +10,9 @@ extern "C" {
   #include <td_core.h>
 }
 
+#include "Job.h"
+#include "TaskList.h"
+
 using namespace std;
 
 class td_wrap : public QObject
@@ -28,6 +31,9 @@ class td_wrap : public QObject
 	
 	public slots:
 		void commit();
+
+	signals:
+		void jobResult(Job *job);
 
 };
 

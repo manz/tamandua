@@ -47,6 +47,9 @@ void td_wrap::commit() {
 			tdc_commit(job), job=NULL;
 			job=tdc_force_checkout();
 
+			Job *j=new Job(job);
+			emit jobResult(j);
+
 			// compute the time used by each machine
 			int *taskz=(int*)tdb_calloc(sizeof(int), job->tasks_count);
 			for (int i=0;i<job->tasks_count; i++) {

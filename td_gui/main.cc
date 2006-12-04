@@ -6,10 +6,16 @@
 #include <QVBoxLayout>
 #include "td_wrap.h"
 
+#include "mainwindow.h"
+
 int main
 (int argc, char** argv)
 {
   QApplication app(argc, argv);
+
+	MainWindow mw;
+	mw.show();
+	/*
   QWidget mainw;
 
   QVBoxLayout *lay=new QVBoxLayout();
@@ -35,5 +41,6 @@ int main
   wrap.addJob(17, 5, 200, 1);
   wrap.addJob(10, 5, 10, 1);
   QObject::connect(&push, SIGNAL(clicked()), &wrap, SLOT(commit()));
+	*/
   return app.exec();
 }

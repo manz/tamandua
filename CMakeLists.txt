@@ -4,6 +4,9 @@ FIND_PACKAGE(Qt4 REQUIRED)
 include(${QT_USE_FILE})
 
 set(tamandua_gui_src
+		td_gui/Job.cc
+		td_gui/TaskList.cc
+		td_gui/mainwindow.cc
     td_gui/main.cc
     td_gui/td_wrap.cc
    )
@@ -17,8 +20,9 @@ set(td_base_src
    )
 
 set(moc_hdr
-    td_gui/td_wrap.h
-   )
+		td_gui/td_wrap.h
+		td_gui/mainwindow.h
+		)
 
 add_library(td_base SHARED ${td_base_src})
 add_library(td_core SHARED ${td_core_src})
