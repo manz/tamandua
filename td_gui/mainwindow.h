@@ -8,6 +8,9 @@
 #include "Job.h"
 #include "TaskList.h"
 
+/** Classe MainWindow.
+ * Fenètre principale.
+ */
 class MainWindow : public QMainWindow {
 	Q_OBJECT
 	private:

@@ -6,6 +6,10 @@ extern "C" {
 	#include <td_base.h>
 };
 
+/** Classe TaskList.
+ * Permet de récuperer les résultats du calcul du core.
+ * Cette classe ne sert qu'a récuperer des infos après calcul.
+ */
 class TaskList {
 	private:
 		size_t **ftasks;

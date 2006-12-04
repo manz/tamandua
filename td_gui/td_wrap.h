@@ -15,6 +15,10 @@ extern "C" {
 
 using namespace std;
 
+/** Classe td_wrap.
+ * Abstraction des operations sur le core.
+ */
+
 class td_wrap : public QObject
 {
   Q_OBJECT
