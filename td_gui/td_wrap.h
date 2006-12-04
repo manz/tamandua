@@ -17,8 +17,8 @@ class td_wrap : public QObject
   Q_OBJECT
 
 	private:
-		tdc_context *context;
-		std::vector<pair<tdc_job*, tdc_conf*> > jobs;
+		tdc_context *fcontext;
+		std::vector<pair<tdc_job*, tdc_conf*> > fjobs;
 	
 	public:
 		td_wrap();
