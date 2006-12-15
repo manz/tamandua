@@ -35,6 +35,7 @@ endif (APPLE)
 
 include_directories(td_base td_core)
 add_library(dispatch MODULE problems/dispatch.c)
+add_library(smith MODULE problems/smith.c)
 
 #QT4_GENERATE_MOC(td_gui/td_wrap.h td_wrap.moc)
 #qt4_automoc(td_gui/td_wrap.cc)
