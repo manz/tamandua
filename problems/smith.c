@@ -10,7 +10,7 @@ const struct tdc_property tdc_globals[] = {
 };
 const struct tdc_property tdc_properties[] = {
 	{TDC_INPUT|TDC_LENGTH, 1, UINT_MAX, "Durée"  },
-	{TDC_INPUT|TDC_LENGTH, 1, UINT_MAX, "Poid"   },
+	{TDC_INPUT,            1, UINT_MAX, "Poid"   },
 	{TDC_COLUMN,           0, UINT_MAX, "Machine"}
 };
 
