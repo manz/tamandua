@@ -48,7 +48,8 @@ enum tdc_property_type {
 	/* display possibilities for tasks only */
 	TDC_OFFSET=2, /* will set the task offset from the previous */
 	TDC_LENGTH=4, /* will set the task length */
-	TDC_COLUMN=8  /* will set the task column */
+	TDC_COLUMN=8, /* will set the task column */
+  TDC_ID=16     /* will set an ID on the task */
 };
 
 struct tdc_property {
