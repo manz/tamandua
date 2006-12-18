@@ -74,8 +74,8 @@ struct tdc_problem {
 struct tdc_problem tdc_desc = { \
 	name, NULL, func, \
 	sizeof(strats)/sizeof(strats[0]), strats, \
-	sizeof(globals)/sizeof(strats[0]), globals, \
-	sizeof(props)/sizeof(strats[0]), props }
+	sizeof(globals)/sizeof(globals[0]), globals, \
+	sizeof(props)/sizeof(props[0]), props }
 
 struct tdc_conf {
 	struct tdc_problem* problem;
