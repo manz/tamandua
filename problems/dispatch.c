@@ -1,34 +1,20 @@
 #include <td_base.h>
 #include <td_core.h>
 
-const char tdc_name[] = "Dispatch";
-const char* tdc_strategies[] = {
-	"Méthode naïve",
-	"Tâches triées",
-	"Prog. dynamique"
-};
-const struct tdc_property tdc_globals[] = {
-	{TDC_INPUT, 1, 100, "Machine"}
-};
-const struct tdc_property tdc_properties[] = {
-	{TDC_INPUT|TDC_LENGTH, 1, UINT_MAX, "Durée"},
-	{TDC_COLUMN, 0, UINT_MAX, "Machine"}
-};
+#include "dispatch.h"
 
 int compare_length
 (const void* p1, const void* p2)
 {
-	return (int)(((size_t**)p1)[0]-((size_t**)p2)[0]);
+	struct tdc_task* const * a = p1;
+	struct tdc_task* const * b = p2;
+	return (*a)->steps[0].length - (*b)->steps[0].length;
 }
 
 void sort_tasks
 (struct tdc_job* job)
 {
-	size_t i;
-	/* count tasks */
-	for (i=0; job->tasks[i]!=NULL; i++) {}
-
-	qsort(job->tasks, i, sizeof(*job->tasks), compare_length);
+	qsort(job->tasks, job->n_tasks, sizeof(*job->tasks), compare_length);
 }
 
 int dispatch
@@ -36,21 +22,22 @@ int dispatch
 {
 	size_t i,j,min=0;
 	size_t* fill;
-	fill= tdb_calloc(job->globals[0], sizeof(*fill));
+	struct tdc_task** tasks = job->tasks;
+	fill= tdb_calloc(job->n_machines, sizeof(*fill));
 	/* iterate on all tasks */
-	for(i=0; job->tasks[i]!= NULL; i++) {
-		fill[min] += job->tasks[i][0];
-		job->tasks[i][1] = min;
+	for(i=0; i<job->n_tasks; i++) {
+		fill[min] += tasks[i]->steps[0].length;
+		tasks[i]->steps[0].machine = min;
 		/* find the new less filled machine */
-		for (j=0; j<job->globals[0]; j++) {
+		for (j=0; j<job->n_machines; j++) {
 			if(fill[min] > fill[j]) {
 				min = j;
 			}
 		}
 	}
-	for (i=0; job->tasks[i]!= NULL; i++) {
+	for (i=0; i<job->n_tasks; i++) {
 		tdb_debug("Tâche de longueur %u sur la machine %u",
-		         job->tasks[i][0], job->tasks[i][1]);
+		         job->tasks[i]->steps[0].length, job->tasks[i]->steps[0].machine);
 	}
 	free(fill);
 	return EXIT_SUCCESS;
@@ -70,5 +57,3 @@ int problem
 			return EXIT_FAILURE;
 	}
 }
-
-TDC_DECLARE(problem, tdc_name, tdc_strategies, tdc_globals, tdc_properties);

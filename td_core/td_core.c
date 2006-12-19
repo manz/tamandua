@@ -3,26 +3,19 @@
 #define INC_PRIVATE_TD_CORE_H
 #include "td_core.h"
 
-struct tdc_context* tdc_init
-(const char* problems_dir, size_t workers, size_t init_rand)
+static void tdc_init_problems
+(struct tdc_context* const self, const char* problems_dir)
 {
-	struct tdc_context* ret;
 	DIR* probdir;
 	struct dirent* file;
 	void* problib;
 	char* filename;
-	size_t i,probdirlen,probslots=4;
+	size_t probdirlen;
+	size_t probslots=4;
 	struct tdc_problem* problem;
 	int closeret;
-	struct timeval timeval;
-	if (init_rand) {
-		gettimeofday(&timeval, NULL);
-		srand((unsigned int)timeval.tv_usec);
-	}
-	ret = tdb_malloc(sizeof(*ret));
-	ret->problems_count = 0;
-	ret->problems = tdb_calloc(probslots, sizeof(*(ret->problems)));
-
+	self->problems_count = 0;
+	self->problems = tdb_calloc(probslots, sizeof(*(self->problems)));
 	/* Scan directory for problem shared object */
 	probdir = opendir(problems_dir);
 	tdb_die_if(probdir == NULL, strerror(errno));
@@ -35,7 +28,6 @@ struct tdc_context* tdc_init
 		filename[probdirlen-1] = '/';
 		filename[probdirlen] = '\0';
 	}
-
 	while (errno=0, (file=readdir(probdir)) != NULL) {
 		if (strcmp(".so", file->d_name+strlen(file->d_name)-3) != 0) {
 			/* skip files not ending in .so */
@@ -55,41 +47,54 @@ struct tdc_context* tdc_init
 		}
 		/* the tdc_desc record is ok, let's add it */
 		/* first check if tdc.problems needs to be enlarged */
-		if (ret->problems_count == probslots) {
+		if (self->problems_count == probslots) {
 			probslots += probslots/2; /* 1.5 reallocation ratio */
-			ret->problems = tdb_realloc(ret->problems, sizeof(*ret->problems)*probslots);
+			self->problems = tdb_realloc(self->problems, sizeof(*self->problems)*probslots);
 		}
-		ret->problems[ret->problems_count] = tdb_malloc(sizeof(*problem));
-		memcpy(ret->problems[ret->problems_count], problem, sizeof(*problem));
-		ret->problems[ret->problems_count]->library = problib;
-		ret->problems_count += 1;
+		self->problems[self->problems_count] = tdb_malloc(sizeof(*problem));
+		memcpy(self->problems[self->problems_count], problem, sizeof(*problem));
+		self->problems[self->problems_count]->library = problib;
+		self->problems_count += 1;
 	}
-	tdb_die_if(ret->problems_count == 0,"No valid problems found");
+	tdb_die_if(self->problems_count == 0,"No valid problems found");
 	free(filename);
 	tdb_die_if(errno!=0, strerror(errno));
 	closeret = closedir(probdir);
 	tdb_die_if(closeret!=0, strerror(errno));
+}
 
-	/* finished with problems, now the queues */
-	pthread_mutex_init(&ret->todo_queue_lock, NULL);
-	pthread_mutex_init(&ret->done_queue_lock, NULL);
-	pthread_cond_init(&ret->todo_queue_sig, NULL);
-	pthread_cond_init(&ret->done_queue_sig, NULL);
-	ret->todo_queue_head = ret->todo_queue_tail = NULL;
-	ret->done_queue_head = ret->done_queue_tail = NULL;
-
-	ret->exit = 0;
-
+static void tdc_init_threads
+(struct tdc_context* const self, size_t workers)
+{
+	pthread_mutex_init(&self->todo_queue_lock, NULL);
+	pthread_mutex_init(&self->done_queue_lock, NULL);
+	pthread_cond_init(&self->todo_queue_sig, NULL);
+	pthread_cond_init(&self->done_queue_sig, NULL);
+	self->todo_queue_head = self->todo_queue_tail = NULL;
+	self->done_queue_head = self->done_queue_tail = NULL;
+	self->exit = 0;
 	if (workers<1) {
 		workers = tdb_getcpucount();
 	}
-	ret->threads_count = workers;
-	ret->threads = tdb_calloc(ret->threads_count, sizeof(*ret->threads));
-	for (i=0; i<ret->threads_count; i++) {
-		pthread_create(&ret->threads[i], NULL, tdc_worker_thread, ret);
-
+	self->threads_count = workers;
+	self->threads = tdb_calloc(self->threads_count, sizeof(*self->threads));
+	for (size_t i=0; i<self->threads_count; i++) {
+		pthread_create(&self->threads[i], NULL, tdc_worker_thread, self);
 	}
+}
 
+struct tdc_context* tdc_init
+(const char* problems_dir, size_t workers, size_t init_rand)
+{
+	struct tdc_context* ret;
+	if (init_rand) {
+		struct timeval timeval;
+		gettimeofday(&timeval, NULL);
+		srand((unsigned int)timeval.tv_usec);
+	}
+	ret = tdb_malloc(sizeof(*ret));
+	tdc_init_problems(ret, problems_dir);
+	tdc_init_threads(ret, workers);
 	return ret;
 }
 
@@ -105,89 +110,126 @@ struct tdc_context* tdc_getcontext
 	return tdc;
 }
 
-struct tdc_conf* tdc_buildconf
-(struct tdc_problem* problem)
+static void tdc_init_population_generator
+(struct tdc_population_generator* const self, const struct tdc_generator* const parent)
 {
-	struct tdc_conf* ret;
-	size_t i;
+	self->parent = parent;
+	self->n_tasks = 1;
+	self->weight.min = 1;
+	self->weight.max = UINT_MAX;
+	self->lengths = tdb_calloc(parent->problem->tasks.steps,
+	                           sizeof(*(self->lengths)));
+	for (size_t i=0; i<parent->problem->tasks.steps; i++) {
+		self->lengths[i].min = 1;
+		self->lengths[i].max = UINT_MAX;
+	}
+}
+
+struct tdc_generator* tdc_create_generator
+(const struct tdc_problem* problem, size_t n_populations)
+{
+	struct tdc_generator* ret;
 	ret = tdb_malloc(sizeof(*ret));
 	ret->problem = problem;
-	ret->tasks_count = 1;
-
-	ret->globals = tdb_calloc(problem->globals_count, sizeof(*ret->globals));
-	for (i=0; i<problem->globals_count; i++) {
-		ret->globals[i] = problem->globals[i].min;
+	if (problem->n_machines == 0) {
+		ret->n_machines = 1;
+	} else {
+		ret->n_machines = problem->n_machines;
 	}
-
-	ret->min = tdb_calloc(problem->properties_count, sizeof(*ret->min));
-	ret->max = tdb_calloc(problem->properties_count, sizeof(*ret->max));
-	for (i=0; i<problem->properties_count; i++) {
-		ret->min[i] = problem->properties[i].min;
-		ret->max[i] = problem->properties[i].max;
+	ret->n_populations = n_populations;
+	ret->populations = tdb_calloc(n_populations, sizeof(*(ret->populations)));
+	for (size_t i=0; i<n_populations; i++) {
+		tdc_init_population_generator(&(ret->populations[i]), ret);
 	}
-
 	return ret;
 }
 
-void tdc_delconf
-(struct tdc_conf* conf)
+void tdc_delete_generator
+(struct tdc_generator* const self)
 {
-	free(conf->globals);
-	free(conf->min);
-	free(conf->max);
-	free(conf);
+	for (size_t i=0; i<self->n_populations; i++) {
+		free(self->populations[i].lengths);
+	}
+	free(self->populations);
+	free(self);
 }
 
-struct tdc_job* tdc_buildjob
-(struct tdc_conf* conf)
+void tdc_generator_add_population
+(struct tdc_generator* const self)
 {
-	struct tdc_job* ret;
-	size_t i, j;
-	
-	ret = tdb_malloc(sizeof(*ret));
-	ret->problem = conf->problem;
-	ret->tasks_count = conf->tasks_count;
+	self->populations = tdb_realloc(self->populations,
+	                                (1+self->n_populations)
+	                                *sizeof(*(self->populations)));
+	tdc_init_population_generator(&(self->populations[self->n_populations]), self);
+	self->n_populations += 1;
+}
 
-	ret->globals = tdb_calloc(conf->problem->globals_count, sizeof(*ret->globals));
-	memcpy(ret->globals, conf->globals,
-	       sizeof(*ret->globals)*conf->problem->globals_count);
+void tdv_generator_delete_population
+(struct tdc_generator* const self)
+{
+	self->n_populations -= 1;
+	free(self->populations[self->n_populations].lengths);
+	self->populations = tdb_realloc(self->populations,
+	                                self->n_populations
+	                                *sizeof(*(self->populations)));
+}
 
-	ret->tasks = tdb_calloc(conf->tasks_count+1, sizeof(*ret->tasks));
-	for (i=0; i<conf->tasks_count; i++) {
-		ret->tasks[i] = tdb_calloc(conf->problem->properties_count,
-		                        sizeof(*ret->tasks[i]));
-		for (j=0; j<conf->problem->properties_count; j++) {
-			/* randomly generate data only if asked */
-			if (conf->problem->properties[j].type & TDC_INPUT) {
-				ret->tasks[i][j] = (int)(rand()/(double)RAND_MAX
-				                   *(conf->max[j] - conf->min[j] +1))
-				                   +conf->min[j];
-			} else {
-				ret->tasks[i][j] = conf->min[j];
-			}
+static void tdc_init_population
+(const struct tdc_population_generator* const self, struct tdc_task** tasks, size_t offset)
+{
+	for (size_t i=offset; i<offset+self->n_tasks; i++) {
+		tasks[i] = tdb_vla_malloc(tasks[i], self->parent->problem->tasks.steps, tasks[i]->steps);
+		tasks[i]->id = i;
+		tasks[i]->weight = tdb_interval_rand(&(self->weight));
+		tasks[i]->n_steps = self->parent->problem->tasks.steps;
+		for (size_t j=0; j<tasks[i]->n_steps; j++) {
+			tasks[i]->steps[j].length = tdb_interval_rand(&(self->lengths[j]));
+			tasks[i]->steps[j].machine = 0;
+			tasks[i]->steps[j].start_time = 0;
 		}
 	}
+}
+
+struct tdc_job* tdc_create_job
+(const struct tdc_generator* const self)
+{
+	struct tdc_job* ret;
+	size_t n_tasks=0;
+	for (size_t i=0; i<self->n_populations; i++) {
+		n_tasks += self->populations[i].n_tasks;
+	}
+	ret = tdb_vla_malloc(ret, n_tasks, ret->tasks);
+	ret->problem = self->problem;
+	ret->n_machines = self->n_machines;
+	ret->n_tasks = n_tasks;
+	size_t offset = 0;
+	for (size_t i=0; i<self->n_populations; i++) {
+		tdc_init_population(&(self->populations[i]), ret->tasks, offset);
+		offset += self->populations[i].n_tasks;
+	}
 	return ret;
 }
 
-struct tdc_job* tdc_copyjob
-(struct tdc_job* job)
+struct tdc_job* tdc_copy_job
+(const struct tdc_job* const self)
 {
 	struct tdc_job* ret;
-	size_t i, j;
-	ret = tdb_malloc(sizeof(*ret));
-	ret->problem = job->problem;
-	ret->tasks_count = job->tasks_count;
-	ret->globals = tdb_calloc(job->problem->globals_count, sizeof(*ret->globals));
-	memcpy(ret->globals, job->globals,
-	       sizeof(*ret->globals)*job->problem->globals_count);
-
-	ret->tasks = tdb_calloc(job->tasks_count+1, sizeof(*ret->tasks));
-	for (i=0; i<job->tasks_count; i++) {
-		ret->tasks[i] = tdb_calloc(job->problem->properties_count,
-		                        sizeof(*ret->tasks[i]));
-		memcpy(ret->tasks[i], job->tasks[i],
-		       sizeof(*ret->tasks[i])*job->problem->properties_count);
+	ret = tdb_vla_malloc(ret, self->n_tasks, ret->tasks);
+	ret->problem = self->problem;
+	ret->strategy = self->strategy;
+	ret->n_machines = self->n_machines;
+	ret->n_tasks = self->n_tasks;
+	for (size_t i=0; i<self->n_tasks; i++) {
+		ret->tasks[i] = tdb_vla_malloc(ret->tasks[i], self->tasks[0]->n_steps,
+		                               ret->tasks[i]->steps);
+		ret->tasks[i]->id = self->tasks[i]->id;
+		ret->tasks[i]->weight = self->tasks[i]->weight;
+		ret->tasks[i]->n_steps = self->tasks[i]->n_steps;
+		for (size_t j=0; j<self->tasks[0]->n_steps; j++) {
+			ret->tasks[i]->steps[j].length = self->tasks[i]->steps[j].length;
+			ret->tasks[i]->steps[j].machine = self->tasks[i]->steps[j].machine;
+			ret->tasks[i]->steps[j].start_time = self->tasks[i]->steps[j].start_time;
+		}
 	}
 	return ret;
 }
@@ -268,6 +310,26 @@ void* tdc_worker_thread
 	}
 }
 
+/* Adjust start_time to help interface work and reflect real timeline */
+static void tdc_adjust_schedule
+(const struct tdc_job* self)
+{
+	size_t * const restrict freetime = tdb_calloc(self->n_machines,
+	                                              sizeof(*freetime));
+	struct tdc_task** tasks = self->tasks;
+	for (size_t i=0; i<self->n_tasks;i++) {
+		tasks[i]->steps[0].start_time = freetime[tasks[i]->steps[0].machine];
+		freetime[tasks[i]->steps[0].machine] += tasks[i]->steps[0].length;
+		for (size_t j=1; j<self->tasks[i]->n_steps; j++) {
+			tasks[i]->steps[j].start_time =
+				tdb_uimax(freetime[tasks[i]->steps[j-1].machine],
+			             freetime[tasks[i]->steps[j].machine]);
+			freetime[tasks[i]->steps[j].machine] = tasks[i]->steps[j].start_time
+			                                       + tasks[i]->steps[j].length;
+		}
+	}
+	free(freetime);
+}
 
 struct tdc_job* tdc_checkout
 (void)
@@ -289,6 +351,9 @@ struct tdc_job* tdc_checkout
 			}
 		}
 	pthread_mutex_unlock(&tdc->done_queue_lock);
+	if (ret!=NULL) {
+		tdc_adjust_schedule(ret);
+	}
 	return ret;
 }
 
@@ -313,19 +378,19 @@ struct tdc_job* tdc_force_checkout
 			tdc->done_queue_tail = NULL;
 		}
 	pthread_mutex_unlock(&tdc->done_queue_lock);
+	tdc_adjust_schedule(ret);
 	return ret;
 }
 
-void tdc_deljob
-(struct tdc_job* job)
+
+
+void tdc_delete_job
+(struct tdc_job* const self)
 {
-	size_t i;
-	for (i=0; i<job->tasks_count; i++) {
-		free(job->tasks[i]);
+	for (size_t i=0; i<self->n_tasks; i++) {
+		free(self->tasks[i]);
 	}
-	free(job->tasks);
-	free(job->globals);
-	free(job);
+	free(self);
 }
 
 void tdc_exit
@@ -357,12 +422,12 @@ void tdc_exit
 	/* free queues */
 	for(; tdc->todo_queue_head!=NULL; tdc->todo_queue_head=next) {
 		next=tdc->todo_queue_head->next;
-		tdc_deljob(tdc->todo_queue_head->job);
+		tdc_delete_job(tdc->todo_queue_head->job);
 		free(tdc->todo_queue_head);
 	}
 	for(; tdc->done_queue_head!=NULL; tdc->done_queue_head=next) {
 		next=tdc->done_queue_head->next;
-		tdc_deljob(tdc->done_queue_head->job);
+		tdc_delete_job(tdc->done_queue_head->job);
 		free(tdc->done_queue_head);
 	}
 
@@ -374,17 +439,27 @@ void tdc_exit
 void tdc_test
 (void)
 {
-	struct tdc_conf* conf;
+	struct tdc_generator* gen;
 	struct tdc_job* job;
-	conf = tdc_buildconf(tdc->problems[0]);
-	conf->tasks_count = 4;
-	conf->max[0] = 3;
-	conf->globals[0] = 4;
-	job = tdc_buildjob(conf);
+	/* on cree un generator avec 2 populations pour le probleme dispatch */
+	gen = tdc_create_generator(tdc->problems[0], 2);
+	/* les taches seront reparties sur 2 machines */
+	gen->n_machines = 2;
+	/* on cree une premiere population avec 2 tache tres grande */
+	gen->populations[0].n_tasks=2;
+	tdb_interval_set_min(&gen->populations[0].lengths[0], 10000);
+	tdb_interval_set_max(&gen->populations[0].lengths[0], 20000);
+	/* et une seconde population avec pleiin de petites taches */
+	gen->populations[1].n_tasks=1000;
+	tdb_interval_set_min(&gen->populations[1].lengths[0], 1);
+	tdb_interval_set_max(&gen->populations[1].lengths[0], 100);
+	/* on cree le set de donnes */
+	job = tdc_create_job(gen);
+	/* on assigne la strategie a employer */
 	job->strategy = 1;
 	tdc_commit(job), job=NULL;
 	job = tdc_force_checkout();
 	/* use results */
-	tdc_deljob(job);
-	tdc_delconf(conf);
+	tdc_delete_job(job);
+	tdc_delete_generator(gen);
 }

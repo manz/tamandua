@@ -5,7 +5,6 @@
 #include <dlfcn.h> /* dl open */
 #include <dirent.h> /* file managment */
 #include <sys/time.h> /* random seed init */
-#include <td_base.h>
 
 #ifdef INC_PRIVATE_TD_CORE_H
 struct tdc_context* tdc;
@@ -39,59 +38,58 @@ struct tdc_job_queue {
 	struct tdc_job_queue* next;
 };
 
-enum tdc_property_type {
-	/* available to both globals and tasks */
-	TDC_INPUT=1, /* will be generated from the interface */
-	/* available only to globals */
-	TDC_TEXT=2, /* will be displayed in a text resume */
-	TDC_MARK=4, /* will produce a plane */
-	/* display possibilities for tasks only */
-	TDC_OFFSET=2, /* will set the task offset from the previous */
-	TDC_LENGTH=4, /* will set the task length */
-	TDC_COLUMN=8, /* will set the task column */
-  TDC_ID=16     /* will set an ID on the task */
-};
-
-struct tdc_property {
-	enum tdc_property_type type;
-	size_t min;
-	size_t max;
-	char* name;
-};
-
 struct tdc_problem {
 	const char* name;
+	const char* description;
+	const size_t n_strategies;
+	const char** strategies;
+	const size_t n_machines;
+	struct {
+		const size_t weighted;
+		const size_t steps;
+	} tasks;
 	void* library;
 	int (*const process)(size_t strategy, struct tdc_job* job);
-	const size_t strategies_count;
-	const char** strategies;
-	const size_t globals_count;
-	const struct tdc_property* globals;
-	const size_t properties_count;
-	const struct tdc_property* properties;
 };
 
-#define TDC_DECLARE(func, name, strats, globals, props) \
+#define TDC_PROBLEM(name, desc, strats, func, machines, weighted, steps) \
 struct tdc_problem tdc_desc = { \
-	name, NULL, func, \
+	name, desc, \
 	sizeof(strats)/sizeof(strats[0]), strats, \
-	sizeof(globals)/sizeof(globals[0]), globals, \
-	sizeof(props)/sizeof(props[0]), props }
-
-struct tdc_conf {
-	struct tdc_problem* problem;
-	size_t tasks_count;
-	size_t* globals;
-	size_t* min;
-	size_t* max;
-};
+	machines, {weighted, steps}, \
+	NULL, func} \
 
 struct tdc_job {
-	struct tdc_problem* problem;
+	const struct tdc_problem* problem;
+	size_t n_machines;
 	size_t strategy;
-	size_t tasks_count;
-	size_t* globals;
-	size_t** tasks;
+	size_t n_tasks;
+	struct tdc_task* tasks[];
+};
+
+struct tdc_task {
+	size_t id;
+	size_t weight;
+	size_t n_steps;
+	struct {
+		size_t length;
+		size_t machine;
+		size_t start_time;
+	} steps[];
+};
+
+struct tdc_population_generator {
+	const struct tdc_generator *parent;
+	size_t n_tasks;
+	struct tdb_interval weight;
+	struct tdb_interval* lengths;
+};
+
+struct tdc_generator {
+	const struct tdc_problem* problem;
+	size_t n_machines;
+	size_t n_populations;
+	struct tdc_population_generator* populations;
 };
 
 /**
@@ -113,23 +111,29 @@ struct tdc_context* tdc_getcontext
 (void);
 
 /**
- * Cree un configurateur pour un probleme donne.
+ * Cree un generateur de donnees pour un probleme.
  * Cette ressource est a la charge du client.
  */
-struct tdc_conf* tdc_buildconf
-(struct tdc_problem* problem);
+struct tdc_generator* tdc_create_generator
+(const struct tdc_problem* problem, size_t n_populations);
 
 /**
- * Supprime un configurateur.
+ * Supprime un generateur.
  */
-void tdc_delconf
-(struct tdc_conf* conf);
+void tdc_delete_generator
+(struct tdc_generator* const self);
+
+void tdc_generator_add_population
+(struct tdc_generator* const self);
+
+void tdv_generator_delete_population
+(struct tdc_generator* const self);
 
 /**
  * Cree un set de donne d'apres un configurateur.
  */
-struct tdc_job* tdc_buildjob
-(struct tdc_conf* conf);
+struct tdc_job* tdc_create_job
+(const struct tdc_generator* const generator);
 
 /**
  * Ajoute un element en fin de jobqueue.
@@ -141,8 +145,8 @@ void tdc_pushqueue
 /**
  * Duplique un job. le faire UNIQUEMENT avant un commit ou après un checkout.
  */
-struct tdc_job* tdc_copyjob
-(struct tdc_job* job);
+struct tdc_job* tdc_copy_job
+(const struct tdc_job* const self);
 
 
 
@@ -182,8 +186,8 @@ struct tdc_job* tdc_force_checkout
 /**
  * Supprime un job, UNIQUEMENT apres checkout ou avant commit !
  */
-void tdc_deljob
-(struct tdc_job* job);
+void tdc_delete_job
+(struct tdc_job* const self);
 
 /**
  * Desactive le contexte en cours et libere les ressources des que cela est 
