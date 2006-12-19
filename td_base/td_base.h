@@ -63,7 +63,7 @@ tdb_malloc(sizeof(*(ptr))+count*sizeof(*(lastarg)))
 #define tdb_vla_realloc(ptr, count, lastarg) \
 tdb_realloc(ptr, sizeof(*(ptr))+count*sizeof(*(lastarg)))
 
-inline size_t tdb_uimax
+static inline size_t tdb_uimax
 (size_t a, size_t b)
 {
 	return a>b?a:b;
