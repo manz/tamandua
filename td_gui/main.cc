@@ -1,46 +1,44 @@
+// includes Qt
 #include <QApplication>
 #include <QMainWindow>
 #include <QPushButton>
 #include <QTextEdit>
 #include <QLineEdit>
 #include <QVBoxLayout>
-#include "td_wrap.h"
 
-#include "mainwindow.h"
+// tamandua core
+extern "C" {
+#include <td_base.h>
+#include <td_core.h>
+};
 
-int main
-(int argc, char** argv)
-{
-  QApplication app(argc, argv);
+// wrapper
+#include "wrap/Context.h"
 
-	MainWindow mw;
-	mw.show();
-	/*
-  QWidget mainw;
+int main(int argc, char** argv) {
+	// initialisation de la base
+	tdb_init(stdout);
+	// création d'un contexte
+	struct tdc_context *c = tdc_init("problems/", 0, 1);
+	// setcontext
+	tdc_setcontext(c);
+	Context cntxt(c);
 
-  QVBoxLayout *lay=new QVBoxLayout();
-  
-  QLineEdit machinec("", &mainw);
-  QLineEdit tasksc("", &mainw);
-  QLineEdit tmin("", &mainw);
-  QLineEdit tmax("", &mainw);
-  QTextEdit result(&mainw);
+	// constructeur par copie
+	Problem tmp(cntxt.problem(0));
 
-  QPushButton push("run", &mainw);
+	for (int i=0; i<cntxt.problemCount(); i++) {
+		printf("probleme: %s\n", cntxt.problem(i).name());
+		tmp=cntxt.problem(i);
+		printf("description: %s\n", tmp.description());
+		for (int j=0;j<tmp.strategiesCount();j++) {
+			printf("strategie[%d] : %s\n", j, tmp.strategy(j).name());
+		}
+	}
 
-  lay->addWidget(&machinec);
-  lay->addWidget(&tasksc);
-  lay->addWidget(&tmin);
-  lay->addWidget(&tmax);
-  lay->addWidget(&push);
-  lay->addWidget(&result);
-  
-  mainw.setLayout(lay);
-  mainw.show();
-  td_wrap wrap;
-  wrap.addJob(17, 5, 200, 1);
-  wrap.addJob(10, 5, 10, 1);
-  QObject::connect(&push, SIGNAL(clicked()), &wrap, SLOT(commit()));
-	*/
-  return app.exec();
+	// terminaison du core
+	tdc_exit();
+	tdb_exit();
+
 }
+
