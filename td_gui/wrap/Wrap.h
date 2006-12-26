@@ -1,6 +1,8 @@
 #ifndef WRAP_H
 #define WRAP_H
 
+#include <QString>
+
 extern "C" {
 #include <td_base.h>
 #include <td_core.h>
@@ -13,7 +15,8 @@ class Wrap {
     Context *fContext;
 		struct tdc_context *fRContext;
 	public:
-		Wrap();
+//		Wrap();
+		Wrap(QString &path);
 		~Wrap();
 		Context* context();
 };

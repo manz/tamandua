@@ -12,13 +12,16 @@ extern "C" {
 #include <td_core.h>
 };
 
+#include <qDebug>
+
 // wrapper
 #include "wrap/Context.h"
 #include "ProblemDialog.h"
 int main(int argc, char** argv) {
 	// initialisation de la base
 	QApplication app(argc, argv);
-	Wrap *fWrap=new Wrap;
+	QString pluginpath = app.applicationDirPath().append("/../PlugIns");
+	Wrap *fWrap=new Wrap(pluginpath);
 
 	ProblemDialog pb(fWrap);
 	pb.show();

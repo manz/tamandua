@@ -1,8 +1,12 @@
 #include "Wrap.h"
 
-Wrap::Wrap() {
+Wrap::Wrap(QString &path) {
 	tdb_init(stdout);	
-	fRContext = tdc_init("problems/", 0, 1);
+
+	QByteArray ba( path.toLatin1() );
+	const char *cpath = ba.data();
+
+	fRContext = tdc_init(cpath, 0, 1);
 	fContext = new Context(fRContext);
 }
 
