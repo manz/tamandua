@@ -14,9 +14,17 @@ extern "C" {
 
 // wrapper
 #include "wrap/Context.h"
-
+#include "ProblemDialog.h"
 int main(int argc, char** argv) {
 	// initialisation de la base
+	QApplication app(argc, argv);
+	Wrap *fWrap=new Wrap;
+
+	ProblemDialog pb(fWrap);
+	pb.show();
+	return app.exec();
+
+#if 0
 	tdb_init(stdout);
 	// création d'un contexte
 	struct tdc_context *c = tdc_init("problems/", 0, 1);
@@ -39,6 +47,6 @@ int main(int argc, char** argv) {
 	// terminaison du core
 	tdc_exit();
 	tdb_exit();
-
+#endif
 }
 

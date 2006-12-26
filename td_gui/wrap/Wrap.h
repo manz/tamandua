@@ -1,14 +1,21 @@
 #ifndef WRAP_H
 #define WRAP_H
 
-#include "context.h"
+extern "C" {
+#include <td_base.h>
+#include <td_core.h>
+};
+
+#include "Context.h"
 
 class Wrap {
-  // Associations
-  // Attributes
   private:
-    Context fContext;
-  // Operations
+    Context *fContext;
+		struct tdc_context *fRContext;
+	public:
+		Wrap();
+		~Wrap();
+		Context* context();
 };
 
 #endif
