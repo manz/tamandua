@@ -8,8 +8,8 @@ Strategy::Strategy(struct tdc_problem *pb, int s) {
 Strategy::~Strategy() {
 }
 
-const char* Strategy::name() {
-	return fProblem->strategies[fStrategy];
+QString Strategy::name() {
+	return QString::fromUtf8(fProblem->strategies[fStrategy]);
 }
 
 struct tdc_problem *Strategy::problem() {

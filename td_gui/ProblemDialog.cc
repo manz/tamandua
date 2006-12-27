@@ -21,8 +21,8 @@ ProblemDialog::ProblemDialog(Wrap *wrap) :
 
 		for (int i=0;i<pbcount;i++) {
 			Problem p=c->problem(i);
-			desc = new QLabel(QString::fromUtf8(p.description()));
-			name = new QRadioButton(QString::fromUtf8(p.name()));
+			desc = new QLabel(p.description());
+			name = new QRadioButton(p.name());
 			layout->addWidget(name);
 			layout->addWidget(desc);
 			fRadio.push_back(name);

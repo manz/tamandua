@@ -21,11 +21,10 @@ bool Problem::isWeighted() {
 	return (fProblem->tasks.weighted != 0);
 }
 
-const char* Problem::name() {
-	return fProblem->name;
+QString Problem::name() {
+	return QString::fromUtf8(fProblem->name);
 }
 
-const char* Problem::description() {
-	return fProblem->description;
+QString Problem::description() {
+	return QString::fromUtf8(fProblem->description);
 }
-

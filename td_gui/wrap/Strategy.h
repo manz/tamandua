@@ -1,6 +1,8 @@
 #ifndef STRATEGY_H
 #define STRATEGY_H
 
+#include <QString>
+
 extern "C" {
 #include <td_base.h>
 #include <td_core.h>
@@ -19,7 +21,7 @@ class Strategy {
 		Strategy(struct tdc_problem *pb, int s);
 		~Strategy();
 
-    const char* name();
+		QString name();
 };
 
 #endif /* STRATEGY_H */

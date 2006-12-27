@@ -20,7 +20,9 @@ extern "C" {
 int main(int argc, char** argv) {
 	// initialisation de la base
 	QApplication app(argc, argv);
+#ifdef __APPLE__
 	QString pluginpath = app.applicationDirPath().append("/../PlugIns");
+#endif
 	Wrap *fWrap=new Wrap(pluginpath);
 
 	ProblemDialog pb(fWrap);

@@ -2,6 +2,8 @@
 #define PROBLEM_H
 
 #include <vector>
+#include <QString>
+
 extern "C" {
 #include <td_base.h>
 #include <td_core.h>
@@ -22,8 +24,8 @@ class Problem {
 		int strategiesCount();
     bool isWeighted ();
 
-		const char* name();
-		const char* description();
+		QString name();
+		QString description();
 };
 
 #endif /* PROBLEM_H */
