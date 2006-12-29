@@ -37,6 +37,7 @@ main(int argc, char **argv)
   gui->buttonbox = init_buttonbox();
   gui->combo_prob = init_combo_prob();
   gui->combo_strat = init_combo_strat();
+  gui->spin_machine = init_spin_machine();
   gui->notebook = init_notebook();
   gui->drawing_area = init_drawing_area(gui);
   init_packing(gui);
@@ -343,6 +344,39 @@ init_drawing_area(Gui *gui)
   return gui->drawing_area;
 }
 
+GtkWidget *
+init_spin_machine(void)
+{
+  Gui *gui;
+  struct tdc_problem *problem;
+  GtkWidget *spin;
+
+  gui = gamandua->gui;
+  problem = gamandua->problem;
+  if (!gui || !problem) return NULL;
+
+  if (!gui->spin_machine)
+    {
+      spin = gtk_spin_button_new_with_range(1, 100, 1);
+      gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin), 1);
+    }
+  else
+    {
+      spin = gui->spin_machine;
+    }
+  if (!tdc_problem_n_machines_settable(problem))
+    {
+      gtk_spin_button_set_value(GTK_SPIN_BUTTON(spin), tdc_problem_get_n_machines(problem));
+      gtk_widget_set_sensitive(spin, 0);
+    }
+  else
+    {
+      gtk_widget_set_sensitive(spin, 1);
+    }
+
+  return spin;
+}
+
 static void
 init_packing(Gui *gui)
 {
@@ -360,8 +394,6 @@ init_packing(Gui *gui)
   gtk_box_pack_start(GTK_BOX(hbox), init_label("Stratégies :"), FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(hbox), gui->combo_strat, FALSE, FALSE, 0);
 
-  gui->spin_machine = gtk_spin_button_new_with_range(1, 100, 1);
-  gtk_spin_button_set_value(GTK_SPIN_BUTTON(gui->spin_machine), 1);
   gtk_box_pack_end(GTK_BOX(hbox), gui->spin_machine, FALSE, FALSE, 0);
   gtk_box_pack_end(GTK_BOX(hbox), init_label("   Machines :"), FALSE, FALSE, 0);
 

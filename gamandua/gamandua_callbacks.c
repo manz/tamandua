@@ -121,6 +121,7 @@ cb_combo_changed(GtkComboBox *combo, void *data)
   int n_pages;
   gamandua->problem = tdc_get_problem(gtk_combo_box_get_active(combo));
   gamandua->gui->combo_strat = init_combo_strat();
+  gamandua->gui->spin_machine = init_spin_machine();
 
   if (gamandua->gui->notebook)
     {

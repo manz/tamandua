@@ -63,6 +63,7 @@ Gamandua *gamandua;
 
 GtkWidget *init_combo_prob(void);
 GtkWidget *init_combo_strat(void);
+GtkWidget *init_spin_machine(void);
 
 void remove_page(GtkWidget *notebook);
 void append_page(GtkWidget *notebook);
