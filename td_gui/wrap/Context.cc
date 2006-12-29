@@ -9,7 +9,7 @@ Context::Context(struct tdc_context *c) {
 }
 
 int Context::problemCount() {
-	return fContext->problems_count;
+	return fContext->n_problems;
 }
 
 Problem Context::problem(int i) {

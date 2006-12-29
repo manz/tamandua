@@ -6,6 +6,11 @@
 #include <dirent.h> /* file managment */
 #include <sys/time.h> /* random seed init */
 
+static const size_t TDC_WEIGHT_MAX = 1<<((CHAR_BIT*sizeof(size_t))/2);
+static const size_t TDC_LENGTH_MAX = 1<<((CHAR_BIT*sizeof(size_t))/2);
+static const size_t TDC_TASKS_MAX = 1<<((CHAR_BIT*sizeof(size_t))/2);
+
+
 #ifdef INC_PRIVATE_TD_CORE_H
 struct tdc_context* tdc;
 #else
@@ -13,7 +18,7 @@ extern struct tdc_context* tdc;
 #endif /*INC_PRIVATE_TD_CORE_H*/
 
 struct tdc_context {
-	size_t problems_count;
+	size_t n_problems;
 	struct tdc_problem** problems;
 
 	pthread_mutex_t todo_queue_lock;
@@ -26,7 +31,7 @@ struct tdc_context {
 	struct tdc_job_queue* done_queue_head;
 	struct tdc_job_queue* done_queue_tail;
 	
-	size_t threads_count;
+	size_t n_threads;
 	pthread_t* threads;
 
 	size_t exit;
@@ -62,6 +67,7 @@ struct tdc_problem tdc_desc = { \
 struct tdc_job {
 	const struct tdc_problem* problem;
 	size_t n_machines;
+	size_t timespan;
 	size_t strategy;
 	size_t n_tasks;
 	struct tdc_task* tasks[];
@@ -109,6 +115,24 @@ void tdc_setcontext
  */
 struct tdc_context* tdc_getcontext
 (void);
+
+size_t tdc_get_n_problems
+(void);
+
+struct tdc_problem* tdc_get_problem
+(size_t index);
+
+int tdc_problem_n_machines_settable
+(const struct tdc_problem* self);
+
+int tdc_problem_weight_enabled
+(const struct tdc_problem* self);
+
+size_t tdc_problem_get_n_steps
+(const struct tdc_problem* self);
+
+size_t tdc_problem_get_n_machines
+(const struct tdc_problem* self);
 
 /**
  * Cree un generateur de donnees pour un probleme.
@@ -201,5 +225,45 @@ void tdc_exit
  */
 void tdc_test
 (void);
+
+/**
+ * generator-ng
+ */
+struct tdc_generatorng {
+	const struct tdc_problem* problem;
+	size_t n_machines;
+	size_t n_steps;
+	size_t n_tasks;
+	size_t resolution;
+	float** lengths;
+	float* weights;
+};
+
+struct tdc_generatorng* tdc_create_generatorng
+(const struct tdc_problem* problem, size_t resolution);
+
+size_t tdc_generatorng_set_n_machines
+(struct tdc_generatorng* self, size_t n_machines);
+
+size_t tdc_generatorng_set_n_tasks
+(struct tdc_generatorng* self, size_t n_tasks);
+
+size_t tdc_generatorng_get_n_tasks
+(const struct tdc_generatorng* self);
+
+float tdc_generatorng_set_length
+(struct tdc_generatorng* self, size_t step, float offset, float value);
+
+float tdc_generatorng_set_weight
+(struct tdc_generatorng* self, float offset, float value);
+
+float tdc_generatorng_get_length
+(const struct tdc_generatorng* self, size_t step, float offset);
+
+float tdc_generatorng_get_weight
+(const struct tdc_generatorng* self, float offset);
+
+struct tdc_job* tdc_create_jobng
+(const struct tdc_generatorng* self);
 
 #endif /*INC_TD_CORE_H*/

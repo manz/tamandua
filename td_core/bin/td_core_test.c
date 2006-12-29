@@ -8,7 +8,7 @@ int main
 	/* Initalise tamandua bases
 	 * and send log to stderr
 	 */
-	tdb_init(stderr);
+	tdb_init(stderr, &argc, argv);
 	/* Initialise tamandua core
 	 * with automatic thread selection,
 	 * and enable rand init

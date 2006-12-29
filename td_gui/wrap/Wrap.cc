@@ -1,7 +1,7 @@
 #include "Wrap.h"
 
 Wrap::Wrap(QString &path) {
-	tdb_init(stdout);	
+	tdb_init(stdout, 0, NULL);	
 
 	QByteArray ba( path.toLatin1() );
 	const char *cpath = ba.data();

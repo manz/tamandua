@@ -12,8 +12,6 @@ extern "C" {
 #include <td_core.h>
 };
 
-#include <qDebug>
-
 // wrapper
 #include "wrap/Context.h"
 #include "ProblemDialog.h"
@@ -22,6 +20,8 @@ int main(int argc, char** argv) {
 	QApplication app(argc, argv);
 #ifdef __APPLE__
 	QString pluginpath = app.applicationDirPath().append("/../PlugIns");
+#else
+	QString pluginpath = (".");
 #endif
 	Wrap *fWrap=new Wrap(pluginpath);
 

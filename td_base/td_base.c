@@ -2,7 +2,7 @@
 #include "td_base.h"
 
 void tdb_init
-(FILE* logger)
+(FILE* logger, int* argc, char** argv)
 {
 	/* we can't use tdb_malloc with logging yet */
 	td = malloc(sizeof(*td));
@@ -15,6 +15,8 @@ void tdb_init
 	if (td->logger == NULL) {
 		td->logger = stderr;
 	}
+	td->argc = argc;
+	td->argv = argv;
 }
 
 void tdb_exit
@@ -26,7 +28,6 @@ void tdb_exit
 	pthread_exit(NULL);
 }
 
-#ifndef __APPLE__
 size_t tdb_getcpucount
 (void)
 {
@@ -45,27 +46,6 @@ size_t tdb_getcpucount
 	}
 	return (size_t)ret;
 }
-#else
-size_t tdb_getcpucount
-(void)
-{
-	size_t workers;
-	size_t length = sizeof(workers);
-	int ret;
-	errno=0;
-	
-	ret = sysctlbyname("hw.ncpu", &workers, &length, NULL, 0);
-
-	if (ret == -1) {
-		tdb_debug("Failed to guess processor count: %s", strerror(errno));
-		workers = 1;
-	}
-	else {
-		tdb_debug("Autoselected workers count (xnu): %i", workers);
-	}
-	return workers;
-}
-#endif
 
 size_t tdb_interval_set_min
 (struct tdb_interval* interval, size_t val)
@@ -85,10 +65,28 @@ size_t tdb_interval_set_max
 	return interval->max;
 }
 
+float tdb_rand
+(void)
+{
+	return rand()/(RAND_MAX+1.0l);
+}
+
 size_t tdb_interval_rand
 (const struct tdb_interval* interval)
 {
 	return interval->min+(size_t)((interval->max-interval->min)*(rand()/(RAND_MAX+1.0l)));
+}
+
+int* tdb_get_argc
+(void)
+{
+	return td->argc;
+}
+
+char** tdb_get_argv
+(void)
+{
+	return td->argv;
 }
 
 void tdb_fprintf(FILE *stream, const char* format, ...)

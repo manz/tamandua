@@ -14,7 +14,7 @@ static void tdc_init_problems
 	size_t probslots=4;
 	struct tdc_problem* problem;
 	int closeret;
-	self->problems_count = 0;
+	self->n_problems = 0;
 	self->problems = tdb_calloc(probslots, sizeof(*(self->problems)));
 	/* Scan directory for problem shared object */
 	probdir = opendir(problems_dir);
@@ -47,16 +47,16 @@ static void tdc_init_problems
 		}
 		/* the tdc_desc record is ok, let's add it */
 		/* first check if tdc.problems needs to be enlarged */
-		if (self->problems_count == probslots) {
+		if (self->n_problems == probslots) {
 			probslots += probslots/2; /* 1.5 reallocation ratio */
 			self->problems = tdb_realloc(self->problems, sizeof(*self->problems)*probslots);
 		}
-		self->problems[self->problems_count] = tdb_malloc(sizeof(*problem));
-		memcpy(self->problems[self->problems_count], problem, sizeof(*problem));
-		self->problems[self->problems_count]->library = problib;
-		self->problems_count += 1;
+		self->problems[self->n_problems] = tdb_malloc(sizeof(*problem));
+		memcpy(self->problems[self->n_problems], problem, sizeof(*problem));
+		self->problems[self->n_problems]->library = problib;
+		self->n_problems += 1;
 	}
-	tdb_die_if(self->problems_count == 0,"No valid problems found");
+	tdb_die_if(self->n_problems == 0, "No valid problems found");
 	free(filename);
 	tdb_die_if(errno!=0, strerror(errno));
 	closeret = closedir(probdir);
@@ -76,9 +76,9 @@ static void tdc_init_threads
 	if (workers<1) {
 		workers = tdb_getcpucount();
 	}
-	self->threads_count = workers;
-	self->threads = tdb_calloc(self->threads_count, sizeof(*self->threads));
-	for (size_t i=0; i<self->threads_count; i++) {
+	self->n_threads = workers;
+	self->threads = tdb_calloc(self->n_threads, sizeof(*self->threads));
+	for (size_t i=0; i<self->n_threads; i++) {
 		pthread_create(&self->threads[i], NULL, tdc_worker_thread, self);
 	}
 }
@@ -110,18 +110,60 @@ struct tdc_context* tdc_getcontext
 	return tdc;
 }
 
+size_t tdc_get_n_problems
+(void)
+{
+	return tdc->n_problems;
+}
+
+struct tdc_problem* tdc_get_problem
+(size_t index)
+{
+	index = tdb_clampu(0, index, tdc->n_problems);
+	return tdc->problems[index];
+}
+
+int tdc_problem_n_machines_settable
+(const struct tdc_problem* self)
+{
+	return (self->n_machines==0);
+}
+
+int tdc_problem_weight_enabled
+(const struct tdc_problem* self)
+{
+	return self->tasks.weighted;
+}
+
+size_t tdc_problem_get_n_steps
+(const struct tdc_problem* self)
+{
+	return self->tasks.steps;
+}
+
+size_t tdc_problem_get_n_machines
+(const struct tdc_problem* self)
+{
+	if (self->n_machines != 0) {
+		return self->n_machines;
+	}
+	/* default value if configurable */
+	return 1;
+}
+
 static void tdc_init_population_generator
-(struct tdc_population_generator* const self, const struct tdc_generator* const parent)
+(struct tdc_population_generator* const self,
+ const struct tdc_generator* const parent)
 {
 	self->parent = parent;
 	self->n_tasks = 1;
 	self->weight.min = 1;
-	self->weight.max = UINT_MAX;
+	self->weight.max = TDC_WEIGHT_MAX;
 	self->lengths = tdb_calloc(parent->problem->tasks.steps,
 	                           sizeof(*(self->lengths)));
 	for (size_t i=0; i<parent->problem->tasks.steps; i++) {
 		self->lengths[i].min = 1;
-		self->lengths[i].max = UINT_MAX;
+		self->lengths[i].max = TDC_LENGTH_MAX;
 	}
 }
 
@@ -175,10 +217,12 @@ void tdv_generator_delete_population
 }
 
 static void tdc_init_population
-(const struct tdc_population_generator* const self, struct tdc_task** tasks, size_t offset)
+(const struct tdc_population_generator* const self, struct tdc_task** tasks,
+ size_t offset)
 {
 	for (size_t i=offset; i<offset+self->n_tasks; i++) {
-		tasks[i] = tdb_vla_malloc(tasks[i], self->parent->problem->tasks.steps, tasks[i]->steps);
+		tasks[i] = tdb_vla_malloc(tasks[i], self->parent->problem->tasks.steps,
+		                          tasks[i]->steps);
 		tasks[i]->id = i;
 		tasks[i]->weight = tdb_interval_rand(&(self->weight));
 		tasks[i]->n_steps = self->parent->problem->tasks.steps;
@@ -312,7 +356,7 @@ void* tdc_worker_thread
 
 /* Adjust start_time to help interface work and reflect real timeline */
 static void tdc_adjust_schedule
-(const struct tdc_job* self)
+(struct tdc_job* self)
 {
 	size_t * const restrict freetime = tdb_calloc(self->n_machines,
 	                                              sizeof(*freetime));
@@ -328,6 +372,11 @@ static void tdc_adjust_schedule
 			                                       + tasks[i]->steps[j].length;
 		}
 	}
+	size_t timespan=0;
+	for (size_t i=0; i<self->n_machines; i++) {
+		timespan = tdb_uimax(timespan, freetime[i]);
+	}
+	self->timespan = timespan;
 	free(freetime);
 }
 
@@ -406,14 +455,14 @@ void tdc_exit
 		pthread_cond_broadcast(&tdc->todo_queue_sig);
 	pthread_mutex_unlock(&tdc->todo_queue_lock);
 	
-	for (i=0; i<tdc->threads_count; i++) {
+	for (i=0; i<tdc->n_threads; i++) {
 		pthreadret = pthread_join(tdc->threads[i], NULL);
 		tdb_die_if(pthreadret != 0, strerror(pthreadret));
 	}
 	free(tdc->threads);
 
 	/* free problems */
-	for (i=0; i<tdc->problems_count; i++) {
+	for (i=0; i<tdc->n_problems; i++) {
 		dlclose(tdc->problems[i]->library);
 		free(tdc->problems[i]);
 	}
@@ -442,7 +491,7 @@ void tdc_test
 	struct tdc_generator* gen;
 	struct tdc_job* job;
 	/* on cree un generator avec 2 populations pour le probleme dispatch */
-	gen = tdc_create_generator(tdc->problems[0], 2);
+	gen = tdc_create_generator(tdc_get_problem(1), 2);
 	/* les taches seront reparties sur 2 machines */
 	gen->n_machines = 2;
 	/* on cree une premiere population avec 2 tache tres grande */
@@ -456,10 +505,119 @@ void tdc_test
 	/* on cree le set de donnes */
 	job = tdc_create_job(gen);
 	/* on assigne la strategie a employer */
-	job->strategy = 1;
+	job->strategy = 0;
 	tdc_commit(job), job=NULL;
 	job = tdc_force_checkout();
 	/* use results */
 	tdc_delete_job(job);
 	tdc_delete_generator(gen);
+}
+
+/* generator-ng part */
+struct tdc_generatorng* tdc_create_generatorng
+(const struct tdc_problem* problem, size_t resolution)
+{
+	struct tdc_generatorng* ret;
+	ret = tdb_malloc(sizeof(*ret));
+	ret->problem = problem;
+	ret->n_machines = tdc_problem_get_n_machines(problem);
+	ret->n_steps = tdc_problem_get_n_steps(problem);
+	ret->n_tasks = 10;
+	ret->resolution = resolution;
+	ret->lengths = tdb_calloc(problem->tasks.steps, sizeof(*(ret->lengths)));
+	for (size_t i=0; i<problem->tasks.steps; i++) {
+		ret->lengths[i] = tdb_calloc(resolution, sizeof(*(ret->lengths[i])));
+	}
+	ret->weights = tdb_calloc(resolution, sizeof(*(ret->weights)));
+	return ret;
+}
+
+size_t tdc_generatorng_set_n_machines
+(struct tdc_generatorng* self, size_t n_machines)
+{
+	if (tdc_problem_n_machines_settable(self->problem)) {
+		self->n_machines = n_machines;
+	}
+	return self->n_machines;
+}
+
+size_t tdc_generatorng_set_n_tasks
+(struct tdc_generatorng* self, size_t n_tasks)
+{
+	self->n_tasks = tdb_clampu(1, n_tasks, TDC_TASKS_MAX);
+	return self->n_tasks;
+}
+
+size_t tdc_generatorng_get_n_tasks
+(const struct tdc_generatorng* self)
+{
+	return self->n_tasks;
+}
+
+static size_t tdc_generatorng_offset_to_bucket
+(const struct tdc_generatorng* self, float offset)
+{
+	return tdb_clampf(0.0f, offset, 1.0f)*(self->resolution+1);
+}
+
+float tdc_generatorng_set_length
+(struct tdc_generatorng* self, size_t step, float offset, float value)
+{
+	size_t bucket = tdc_generatorng_offset_to_bucket(self, offset);
+	step = tdb_clampu(0, step, self->n_steps-1);
+	self->lengths[step][bucket] = tdb_clampf(0.0f, value, 1.0f);
+	return self->lengths[step][bucket];
+}
+
+float tdc_generatorng_set_weight
+(struct tdc_generatorng* self, float offset, float value)
+{
+	if (tdc_problem_weight_enabled(self->problem)) {
+		size_t bucket = tdc_generatorng_offset_to_bucket(self, offset);
+		self->weights[bucket] = tdb_clampf(0.0f, value, 1.0f);
+		return self->weights[bucket];
+	}
+	return 0.0f;
+}
+
+float tdc_generatorng_get_length
+(const struct tdc_generatorng* self, size_t step, float offset)
+{
+	size_t bucket = tdc_generatorng_offset_to_bucket(self, offset);
+	step = tdb_clampu(0, step, self->n_steps-1);
+	return self->lengths[step][bucket];
+}
+
+float tdc_generatorng_get_weight
+(const struct tdc_generatorng* self, float offset)
+{
+	size_t bucket = tdc_generatorng_offset_to_bucket(self, offset);
+	return self->weights[bucket];
+}
+
+struct tdc_job* tdc_create_jobng
+(const struct tdc_generatorng* self)
+{
+	struct tdc_job* ret;
+	ret = tdb_vla_malloc(ret, self->n_tasks, ret->tasks);
+	ret->problem = self->problem;
+	ret->n_machines = self->n_machines;
+	ret->n_tasks = self->n_tasks;
+	for (size_t i=0; i<self->n_tasks; i++) {
+		ret->tasks[i] = tdb_vla_malloc(ret->tasks[i], self->n_steps,
+		                               ret->tasks[i]->steps);
+		ret->tasks[i]->id = i;
+		ret->tasks[i]->n_steps = self->n_steps;
+		float offset = tdb_rand();
+		ret->tasks[i]->weight = tdc_generatorng_get_weight(self, offset)
+		                        *TDC_WEIGHT_MAX;
+		for (size_t j=0; j<self->n_steps; j++) {
+			ret->tasks[i]->steps[j].length = tdc_generatorng_get_length(self, j,
+			                                                            offset)
+			                                 *TDC_LENGTH_MAX;
+			ret->tasks[i]->steps[j].machine = 0;
+			ret->tasks[i]->steps[j].start_time = 0;
+		}
+	}
+	return ret;
 }

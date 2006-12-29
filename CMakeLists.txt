@@ -36,9 +36,8 @@ if (APPLE)
 endif (APPLE)
 
 include_directories(td_base td_core)
-add_library(dispatch MODULE problems/dispatch.c)
-#!!! Smith ne compile plus ...
-#add_library(smith MODULE problems/smith.c)
+add_library(dispatch MODULE problems/dispatch/dispatch.c)
+add_library(smith MODULE problems/smith/smith.c)
 
 QT4_WRAP_CPP(moc_src ${moc_hdr})
 
