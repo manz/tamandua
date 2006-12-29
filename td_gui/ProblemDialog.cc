@@ -15,7 +15,12 @@ ProblemDialog::ProblemDialog(Wrap *wrap) :
 		QVBoxLayout *wlayout = new QVBoxLayout();
 		// layout du groupBox
 		QVBoxLayout *layout = new QVBoxLayout();
-	
+		
+		QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+		connect(buttonBox, SIGNAL(accepted()), this, SLOT(validate()));
+		connect(this, SIGNAL(problemSelected()), this, SLOT(accept()));
+		connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+		
 		QLabel *desc;
 		QRadioButton *name;
 
@@ -27,15 +32,15 @@ ProblemDialog::ProblemDialog(Wrap *wrap) :
 			layout->addWidget(desc);
 			fRadio.push_back(name);
 		}
+
 		if (fRadio.size() > 0)	
 			fRadio.at(0)->setChecked(true);
 
 		QGroupBox *problem = new QGroupBox("Problemes", this);
-		QPushButton *butt = new QPushButton("Bouton");
-		connect(butt, SIGNAL(clicked()), this, SLOT(validate()));
+		
 		problem->setLayout(layout);
 		wlayout->addWidget(problem);
-		wlayout->addWidget(butt);
+		wlayout->addWidget(buttonBox);
 		this->setLayout(wlayout);
 	}
 }
@@ -44,16 +49,19 @@ ProblemDialog::~ProblemDialog()
 {
 }
 
+int ProblemDialog::problem() {
+	return fSProblem;
+}
+
+void ProblemDialog::setProblem(int i) {
+	fSProblem=i;
+}
+
 void ProblemDialog::validate() {
-	int result=-1;
 	for (int i=0;i<fRadio.size();i++) {
 		if (fRadio.at(i)->isChecked())
-			result=i;
+			setProblem(i); //result=i;
 	}
-
-	if (result==-1)
-		result=0;
-	printf("ProbleSelected = %d\n", result);
-	emit problemSelected(result);
+	emit problemSelected();
 }
 

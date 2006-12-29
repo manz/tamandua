@@ -23,10 +23,13 @@ int main(int argc, char** argv) {
 #else
 	QString pluginpath = (".");
 #endif
+
 	Wrap *fWrap=new Wrap(pluginpath);
 
 	ProblemDialog pb(fWrap);
-	pb.show();
+	int res = pb.exec();
+	printf("problemSelected %d\n", pb.problem());
+	printf("result %d\n", res);
 	return app.exec();
 
 #if 0

@@ -10,6 +10,7 @@
 #include <QGroupBox>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QDialogButtonBox>
 #include "wrap/Wrap.h"
 
 using namespace std;
@@ -19,16 +20,20 @@ class ProblemDialog : public QDialog {
 	private:
 		Wrap *fWrap;
 		vector<QRadioButton*> fRadio;
+		int fSProblem;
 
 	public:
 		ProblemDialog(Wrap *wrap);
 		~ProblemDialog();
 
+		int problem();
+		void setProblem(int i);
+
 	public slots:
 		void validate();
 
 	signals:
-		void problemSelected(int pb);
+		void problemSelected();
 
 };
 
