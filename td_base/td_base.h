@@ -13,6 +13,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
+#ifdef __APPLE__
+#include <sys/sysctl.h>
+#endif /* __APPLE__ */
 
 #include <pthread.h> /* posix threads */
 

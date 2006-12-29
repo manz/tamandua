@@ -23,6 +23,13 @@ class ProblemDialog : public QDialog {
 	public:
 		ProblemDialog(Wrap *wrap);
 		~ProblemDialog();
+
+	public slots:
+		void validate();
+
+	signals:
+		void problemSelected(int pb);
+
 };
 
 #endif /* PROBLEMDIALOG_H */

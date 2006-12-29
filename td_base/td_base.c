@@ -28,6 +28,7 @@ void tdb_exit
 	pthread_exit(NULL);
 }
 
+#ifndef __APPLE__
 size_t tdb_getcpucount
 (void)
 {
@@ -46,6 +47,26 @@ size_t tdb_getcpucount
 	}
 	return (size_t)ret;
 }
+#else
+size_t tdb_getcpucount
+(void)
+{
+	size_t workers;
+	size_t length = sizeof(workers);
+	int ret;
+	errno=0;
+
+	ret = sysctlbyname("hw.ncpu", &workers, &length, NULL, 0);	
+	if (ret == -1) {
+		tdb_debug("Failed to guess processor count: %s", strerror(errno));
+		workers = 1;
+	}
+	else {
+		tdb_debug("Autoselected workers count (xnu): %i", workers);
+	}
+	return workers;
+}
+#endif
 
 size_t tdb_interval_set_min
 (struct tdb_interval* interval, size_t val)

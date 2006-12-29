@@ -32,7 +32,7 @@ ProblemDialog::ProblemDialog(Wrap *wrap) :
 
 		QGroupBox *problem = new QGroupBox("Problemes", this);
 		QPushButton *butt = new QPushButton("Bouton");
-
+		connect(butt, SIGNAL(clicked()), this, SLOT(validate()));
 		problem->setLayout(layout);
 		wlayout->addWidget(problem);
 		wlayout->addWidget(butt);
@@ -42,5 +42,18 @@ ProblemDialog::ProblemDialog(Wrap *wrap) :
 
 ProblemDialog::~ProblemDialog()
 {
+}
+
+void ProblemDialog::validate() {
+	int result=-1;
+	for (int i=0;i<fRadio.size();i++) {
+		if (fRadio.at(i)->isChecked())
+			result=i;
+	}
+
+	if (result==-1)
+		result=0;
+	printf("ProbleSelected = %d\n", result);
+	emit problemSelected(result);
 }
 
