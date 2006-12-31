@@ -92,12 +92,16 @@ init_window(void)
 GtkWidget *
 init_buttonbox(void)
 {
+  Gui *gui;
   GtkWidget *box;
   GtkWidget *hbox;
   GtkWidget *icon;
   GtkWidget *btn_exec;
   GtkWidget *btn_calc;
   GtkWidget *btn_quit;
+
+  gui = gamandua->gui;
+  if (!gui) return NULL;
 
   box = gtk_hbutton_box_new();
   btn_exec = gtk_button_new();
@@ -109,8 +113,10 @@ init_buttonbox(void)
   icon = gtk_image_new_from_stock(GTK_STOCK_CONVERT, GTK_ICON_SIZE_BUTTON);
   gtk_widget_show(icon);
   gtk_box_pack_start(GTK_BOX(hbox), icon, TRUE, TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(hbox), init_label("Reutiliser les mêmes tâches"), TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(hbox), init_label("Relancer"), TRUE, TRUE, 0);
   btn_quit = gtk_button_new_from_stock(GTK_STOCK_QUIT);
+  gtk_widget_set_sensitive(btn_exec, 0);
+  gui->btn_exec = btn_exec;
   gtk_widget_show(btn_exec);
   gtk_widget_show(btn_calc);
   gtk_widget_show(btn_quit);
@@ -140,7 +146,10 @@ init_combo_prob(void)
       problem = tdc_get_problem(i);
       gtk_combo_box_append_text(combo, problem->name);
     }
-  gtk_signal_connect(GTK_OBJECT(combo), "changed", GTK_SIGNAL_FUNC(cb_combo_changed), gamandua);
+  gtk_signal_connect(GTK_OBJECT(combo), "changed", 
+                     GTK_SIGNAL_FUNC(cb_combo_changed), gamandua);
+  gtk_signal_connect(GTK_OBJECT(combo), "changed", 
+                     GTK_SIGNAL_FUNC(cb_unsensitive_btn_exec), NULL);
   gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
   gtk_widget_show(GTK_WIDGET(combo));
 
@@ -267,6 +276,8 @@ append_page(GtkWidget *notebook)
   page->slider_task = gtk_hscale_new_with_range(1, 100, 1);
   gtk_range_set_value(GTK_RANGE(page->slider_task), 7);
   gtk_container_add(GTK_CONTAINER(frame), page->slider_task);
+  gtk_signal_connect(GTK_OBJECT(page->slider_task), "value_changed", 
+                     GTK_SIGNAL_FUNC(cb_unsensitive_btn_exec), NULL);
 
   if (problem->tasks.weighted)
     {
@@ -288,6 +299,10 @@ append_page(GtkWidget *notebook)
       gtk_box_pack_start(GTK_BOX(hbox), page->weight_min, FALSE, FALSE, 0);
       gtk_box_pack_start(GTK_BOX(hbox), init_label(" et "), FALSE, FALSE, 0);
       gtk_box_pack_start(GTK_BOX(hbox), page->weight_max, FALSE, FALSE, 0);
+      gtk_signal_connect(GTK_OBJECT(page->weight_min), "value_changed", 
+                         GTK_SIGNAL_FUNC(cb_unsensitive_btn_exec), NULL);
+      gtk_signal_connect(GTK_OBJECT(page->weight_max), "value_changed", 
+                         GTK_SIGNAL_FUNC(cb_unsensitive_btn_exec), NULL);
     }
 
   /* Length */
@@ -314,6 +329,10 @@ append_page(GtkWidget *notebook)
       gtk_box_pack_start(GTK_BOX(hbox), page->steps_min[i], FALSE, FALSE, 0);
       gtk_box_pack_start(GTK_BOX(hbox), init_label(" et "), FALSE, FALSE, 0);
       gtk_box_pack_start(GTK_BOX(hbox), page->steps_max[i], FALSE, FALSE, 0);
+      gtk_signal_connect(GTK_OBJECT(page->steps_min[i]), "value_changed", 
+                         GTK_SIGNAL_FUNC(cb_unsensitive_btn_exec), NULL);
+      gtk_signal_connect(GTK_OBJECT(page->steps_max[i]), "value_changed", 
+                         GTK_SIGNAL_FUNC(cb_unsensitive_btn_exec), NULL);
     }
 
   gtk_widget_show_all(page->root);
@@ -403,6 +422,8 @@ init_packing(Gui *gui)
   gtk_box_pack_end(GTK_BOX(hbox), init_label("Populations :"), FALSE, FALSE, 0);
   gtk_signal_connect(GTK_OBJECT(gui->spin_pop), "value_changed", 
                      GTK_SIGNAL_FUNC(cb_spin_pop_changed), gui->notebook);
+  gtk_signal_connect(GTK_OBJECT(gui->spin_pop), "value_changed", 
+                     GTK_SIGNAL_FUNC(cb_unsensitive_btn_exec), NULL);
 
   hbox = init_hbox();
   gtk_box_pack_start(GTK_BOX(vbox), hbox, TRUE, TRUE, 10);

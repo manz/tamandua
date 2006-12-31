@@ -71,6 +71,7 @@ cb_btn_calc_clicked(GtkButton *button, void *data)
 
   tdc_commit(job);
   g_timeout_add(500, cb_checkout_job, NULL);
+  gtk_widget_set_sensitive(gui->btn_exec, 1);
 }
 
 void
@@ -355,3 +356,13 @@ cb_drawing_area_mouse_down(GtkWidget *widget, GdkEventButton *ev, void *data)
     }
 }
 
+void
+cb_unsensitive_btn_exec(void *w, void *data)
+{
+  Gui *gui;
+
+  gui = gamandua->gui;
+  if (!gui) return;
+
+  gtk_widget_set_sensitive(gui->btn_exec, 0);
+}

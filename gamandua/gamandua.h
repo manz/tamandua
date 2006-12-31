@@ -38,6 +38,7 @@ struct _Gui
   GtkWidget *drawing_area;
   GtkWidget *notebook;
   GtkWidget *buttonbox;
+  GtkWidget *btn_exec;
   GtkWidget *frame_info;
 
   GSList *pages;
