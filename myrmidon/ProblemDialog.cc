@@ -7,6 +7,8 @@ ProblemDialog::ProblemDialog(Wrap *wrap) :
 	Context *c = fWrap->context();
 	int pbcount = c->problemCount();
 
+	setWindowTitle(QString::fromUtf8("Séléction du probleme."));
+	
 	if (pbcount == 0) {
 		qDebug("Error !!! pas de problemes chargés (intéret limité)");
 	}
@@ -23,11 +25,11 @@ ProblemDialog::ProblemDialog(Wrap *wrap) :
 		
 		QLabel *desc;
 		QRadioButton *name;
-
+		Problem *p;
 		for (int i=0;i<pbcount;i++) {
-			Problem p=c->problem(i);
-			desc = new QLabel(p.description());
-			name = new QRadioButton(p.name());
+			p=c->problem(i);
+			desc = new QLabel(p->description());
+			name = new QRadioButton(p->name());
 			layout->addWidget(name);
 			layout->addWidget(desc);
 			fRadio.push_back(name);

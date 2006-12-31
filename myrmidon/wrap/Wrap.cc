@@ -2,7 +2,7 @@
 
 Wrap::Wrap(QString &path) {
 	tdb_init(stdout, 0, NULL);	
-
+	// conversion de la QString en const char*
 	QByteArray ba( path.toLatin1() );
 	const char *cpath = ba.data();
 

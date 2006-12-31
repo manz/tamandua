@@ -4,12 +4,13 @@ FIND_PACKAGE(Qt4 REQUIRED)
 include(${QT_USE_FILE})
 #Myrmidon
 set(myrmidon_src
-		td_gui/wrap/Context.cc
-		td_gui/wrap/Problem.cc
-		td_gui/wrap/Strategy.cc
-		td_gui/wrap/Wrap.cc
-		td_gui/ProblemDialog.cc
-		td_gui/main.cc
+		myrmidon/wrap/Context.cc
+		myrmidon/wrap/Problem.cc
+		myrmidon/wrap/Strategy.cc
+		myrmidon/wrap/Wrap.cc
+		myrmidon/ProblemDialog.cc
+		myrmidon/StrategyDialog.cc
+		myrmidon/main.cc
    )
 
 set(td_core_src
@@ -21,7 +22,8 @@ set(td_base_src
    )
 
 set(moc_hdr
-		td_gui/ProblemDialog.h
+		myrmidon/ProblemDialog.h
+		myrmidon/StrategyDialog.h
 		)
 
 SET (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
@@ -47,4 +49,16 @@ if (APPLE)
 	set_target_properties(myrmidon PROPERTIES LINK_FLAGS "-bind_at_load")
 endif (APPLE)
 
+if (NOT APPLE)
+	INSTALL(TARGETS myrmidon td_core td_base dispatch smith td_core/td_core.h td_base/td_base.h
+			RUNTIME DESTINATION /usr/local/bin
+			LIBRARY DESTINATION /usr/local/lib
+			LIBRARY DESTINATION /usr/local/lib
+			LIBRARY DESTINATION /usr/local/share/tamandua/problems
+			FILE DESTINATION /usr/local/include
+			FILE DESTINATION /usr/local/include
+			)
+endif (NOT APPLE)
+
 target_link_libraries(myrmidon ${QT_LIBRARIES} td_base td_core)
+

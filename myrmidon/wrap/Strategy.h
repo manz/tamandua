@@ -14,13 +14,25 @@ class Strategy {
     int fStrategy;
 
 	protected:
+		/** Retourne un pointeur sur la structure wrappée.
+			* A n'utiliser que depuis le wrapper.
+			* @see Wrap
+			*/
 		struct tdc_problem* problem();
+
+		/** Retourne le numero de la strategie.
+			* A n'utiliser que depuis le wrapper.
+			* @see Wrap
+			*/
 		int strategy();
 
   public:
 		Strategy(struct tdc_problem *pb, int s);
 		~Strategy();
 
+		/** Retourne le nom de la strategie.
+			* @returns une QString.
+			*/
 		QString name();
 };
 

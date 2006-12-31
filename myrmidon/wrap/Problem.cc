@@ -2,14 +2,17 @@
 
 Problem::Problem(struct tdc_problem *pb) : fProblem(pb) {
 	for (int i=0;i<strategiesCount();i++) {
-		fStrategies.push_back(Strategy(pb, i));
+		fStrategies.push_back(new Strategy(pb, i));
 	}
 }
 
 Problem::~Problem() {
+	for (int i=0;i<fStrategies.size();i++) {
+		delete fStrategies.at(i);
+	}
 }
 
-Strategy Problem::strategy(int i) {
+Strategy* Problem::strategy(int i) {
 	return fStrategies.at(i);
 }
 

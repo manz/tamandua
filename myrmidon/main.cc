@@ -15,6 +15,8 @@ extern "C" {
 // wrapper
 #include "wrap/Context.h"
 #include "ProblemDialog.h"
+#include "StrategyDialog.h"
+
 int main(int argc, char** argv) {
 	// initialisation de la base
 	QApplication app(argc, argv);
@@ -30,6 +32,9 @@ int main(int argc, char** argv) {
 	int res = pb.exec();
 	printf("problemSelected %d\n", pb.problem());
 	printf("result %d\n", res);
+
+	StrategyDialog strat(fWrap->context()->problem(pb.problem()));
+	strat.exec();
 	return app.exec();
 
 #if 0
