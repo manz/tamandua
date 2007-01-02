@@ -54,6 +54,7 @@ struct _Gamandua
   size_t max_length;
   Gui *gui;
   struct {
+    size_t step;
     struct tdc_task *task;
     int color;
   } selection;

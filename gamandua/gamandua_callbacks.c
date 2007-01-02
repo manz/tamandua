@@ -9,9 +9,11 @@ int colors[5] = {
   0xfce94f
 };
 
-#define ID_COLORS_COUNT 3
-int id_colors[3] = {
+#define N_ID_COLORS 5
+int id_colors[5] = {
+  0xfcaf3e,
   0xe9b96e,
+  0x8ae234,
   0x729fcf,
   0xad7fa8
 };
@@ -233,7 +235,8 @@ cb_drawing_area_exposed(GtkDrawingArea *area, void *data)
       task = job->tasks[i];
       for (j=0; j<n_steps; j++)
         {
-          machines[task->steps[j].machine] += task->steps[j].length;
+          if (machines[task->steps[j].machine] < task->steps[j].start_time + task->steps[j].length)
+            machines[task->steps[j].machine] = task->steps[j].start_time + task->steps[j].length;
           if (machines[max_length] < machines[task->steps[j].machine])
             max_length = task->steps[j].machine;
         }
@@ -250,8 +253,11 @@ cb_drawing_area_exposed(GtkDrawingArea *area, void *data)
       task = job->tasks[i];
       for (j=0; j<n_steps; j++)
         {
-          color = colors[draw[task->steps[j].machine]%2 
-           + (task->steps[j].machine == max_length ? 2:0)];
+          if (task->n_steps > 1)
+            color = id_colors[task->id % N_ID_COLORS];
+          else
+            color = colors[draw[task->steps[j].machine]%2 
+             + (task->steps[j].machine == max_length ? 2:0)];
 
           draw_task(task->steps[j].start_time, task->steps[j].machine*50+10, 
                     task->steps[j].length, 40, 
@@ -292,67 +298,75 @@ cb_drawing_area_mouse_down(GtkWidget *widget, GdkEventButton *ev, void *data)
   for (i=0; i<job->n_tasks; i++)
     {
       task = job->tasks[i];
-      if (task->steps[0].machine == (size_t)y/50)
+      for (j=0; j<task->n_steps; j++)
         {
-          if (task->steps[0].start_time <= x
-              && task->steps[0].length + task->steps[0].start_time > x)
+          if (task->steps[j].machine == (size_t)y/50)
             {
-              GtkWidget *vbox;
-              GtkWidget *label;
-              char *str;
-              struct tdc_task *old_task;
-
-              /* On affiche les properties de la taches */
-              gtk_widget_destroy(gtk_bin_get_child(GTK_BIN(gui->frame_info)));
-              vbox = gtk_vbox_new(FALSE, 0);
-              gtk_container_add(GTK_CONTAINER(gui->frame_info), vbox);
-              asprintf(&str, "ID : %d", task->id);
-              label = gtk_label_new(str);
-              gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 5);
-              free(str);
-
-              if (problem->tasks.weighted)
+              if (task->steps[j].start_time <= x
+                  && task->steps[j].length + task->steps[j].start_time > x)
                 {
-                  asprintf(&str, "Poid : %d", task->weight);
+                  GtkWidget *vbox;
+                  GtkWidget *label;
+                  char *str;
+                  struct tdc_task *old_task;
+
+                  /* On affiche les properties de la taches */
+                  gtk_widget_destroy(gtk_bin_get_child(GTK_BIN(gui->frame_info)));
+                  vbox = gtk_vbox_new(FALSE, 0);
+                  gtk_container_add(GTK_CONTAINER(gui->frame_info), vbox);
+                  asprintf(&str, "ID : %d", task->id);
                   label = gtk_label_new(str);
                   gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 5);
                   free(str);
+
+                  if (problem->tasks.weighted)
+                    {
+                      asprintf(&str, "Poid : %d", task->weight);
+                      label = gtk_label_new(str);
+                      gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 5);
+                      free(str);
+                    }
+
+                  asprintf(&str, "Durée : %d", task->steps[0].length);
+                  label = gtk_label_new(str);
+                  gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 5);
+                  free(str);
+
+                  asprintf(&str, "Machine : %d", task->steps[0].machine);
+                  label = gtk_label_new(str);
+                  gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 5);
+                  free(str);
+
+                  asprintf(&str, "Débute à : %d", task->steps[0].start_time);
+                  label = gtk_label_new(str);
+                  gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 5);
+                  free(str);
+                  gtk_widget_show_all(vbox);
+
+                  if (gamandua->selection.task)
+                    {
+                      size_t step = gamandua->selection.step;
+                      old_task = gamandua->selection.task;
+                      draw_task(old_task->steps[step].start_time, 
+                                old_task->steps[step].machine*50+10, 
+                                old_task->steps[step].length, 40, 
+                                gamandua->selection.color);
+                    }
+
+                  gamandua->selection.step = j;
+                  gamandua->selection.task = task;
+                  if (task->n_steps > 1)
+                    gamandua->selection.color = id_colors[task->id % N_ID_COLORS];
+                  else
+                    gamandua->selection.color = colors[k%2 
+                     + (task->steps[j].machine == gamandua->max_length ? 2:0)];
+
+                  /* On highlight la nouvelle tache selectionne */
+                  draw_selection();
                 }
-
-              asprintf(&str, "Durée : %d", task->steps[0].length);
-              label = gtk_label_new(str);
-              gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 5);
-              free(str);
-
-              asprintf(&str, "Machine : %d", task->steps[0].machine);
-              label = gtk_label_new(str);
-              gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 5);
-              free(str);
-
-              asprintf(&str, "Débute à : %d", task->steps[0].start_time);
-              label = gtk_label_new(str);
-              gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 5);
-              free(str);
-              gtk_widget_show_all(vbox);
-
-              /* On highlight la nouvelle tache selectionne */
-              if (gamandua->selection.task)
-                {
-                  old_task = gamandua->selection.task;
-                  draw_task(old_task->steps[0].start_time, 
-                            old_task->steps[0].machine*50+10, 
-                            old_task->steps[0].length, 40, 
-                            gamandua->selection.color);
-                }
-
-              gamandua->selection.task = task;
-              gamandua->selection.color = colors[k%2 
-               + (task->steps[0].machine == gamandua->max_length ? 2:0)];
-
-              draw_selection();
-            }
-          k++;
-        } 
+              k++;
+            } 
+        }
     }
 }
 

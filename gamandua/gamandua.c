@@ -535,11 +535,13 @@ void
 draw_selection(void)
 {
   struct tdc_task *task;
+  size_t step;
 
   task = gamandua->selection.task;
   if (!task) return;
   
-  draw_task(task->steps[0].start_time, task->steps[0].machine*50+10, 
-            task->steps[0].length, 40, 
+  step = gamandua->selection.step;
+  draw_task(task->steps[step].start_time, task->steps[step].machine*50+10, 
+            task->steps[step].length, 40, 
             0xfce94f);
 }
