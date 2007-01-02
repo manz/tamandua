@@ -327,17 +327,17 @@ cb_drawing_area_mouse_down(GtkWidget *widget, GdkEventButton *ev, void *data)
                       free(str);
                     }
 
-                  asprintf(&str, "Durée : %d", task->steps[0].length);
+                  asprintf(&str, "Durée : %d", task->steps[j].length);
                   label = gtk_label_new(str);
                   gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 5);
                   free(str);
 
-                  asprintf(&str, "Machine : %d", task->steps[0].machine);
+                  asprintf(&str, "Machine : %d", task->steps[j].machine);
                   label = gtk_label_new(str);
                   gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 5);
                   free(str);
 
-                  asprintf(&str, "Débute à : %d", task->steps[0].start_time);
+                  asprintf(&str, "Débute à : %d", task->steps[j].start_time);
                   label = gtk_label_new(str);
                   gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 5);
                   free(str);
