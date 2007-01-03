@@ -29,6 +29,7 @@ main(int argc, char **argv)
     }
 
   /* Gtk Init */
+  gdk_init(&argc, &argv);
   gtk_init(&argc, &argv);
   
   gui = tdb_calloc(1, sizeof(Gui));

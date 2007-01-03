@@ -9,13 +9,10 @@ int colors[5] = {
   0xfce94f
 };
 
-#define N_ID_COLORS 5
+#define COLOR_STEP 15
 int id_colors[5] = {
-  0xfcaf3e,
-  0xe9b96e,
-  0x8ae234,
-  0x729fcf,
-  0xad7fa8
+  0xbdd169,
+  0xf09534
 };
 static int cb_checkout_job(void *data);
 
@@ -203,6 +200,9 @@ cb_drawing_area_exposed(GtkDrawingArea *area, void *data)
 
   /* Nettois le drawing area */
   gdk_window_clear(gui->drawing_area->window);
+
+  if (problem != job->problem) return;
+
   drawable = GDK_DRAWABLE(gui->drawing_area->window);
   gc = gdk_gc_new(drawable);
 
@@ -226,9 +226,9 @@ cb_drawing_area_exposed(GtkDrawingArea *area, void *data)
 
   struct tdc_task *task;
   size_t max_length = 0;
-  size_t *machines;
+  double *machines;
   size_t n_steps = tdc_problem_get_n_steps(problem);
-  machines = calloc(job->n_machines, sizeof(size_t));
+  machines = calloc(job->n_machines, sizeof(double));
 
   for (i=0; i<job->n_tasks; i++)
     {
@@ -254,7 +254,7 @@ cb_drawing_area_exposed(GtkDrawingArea *area, void *data)
       for (j=0; j<n_steps; j++)
         {
           if (task->n_steps > 1)
-            color = id_colors[task->id % N_ID_COLORS];
+            color = id_colors[draw[task->steps[j].machine]%2]+COLOR_STEP*task->id;
           else
             color = colors[draw[task->steps[j].machine]%2 
              + (task->steps[j].machine == max_length ? 2:0)];
@@ -356,7 +356,7 @@ cb_drawing_area_mouse_down(GtkWidget *widget, GdkEventButton *ev, void *data)
                   gamandua->selection.step = j;
                   gamandua->selection.task = task;
                   if (task->n_steps > 1)
-                    gamandua->selection.color = id_colors[task->id % N_ID_COLORS];
+                    gamandua->selection.color = id_colors[k%2]+COLOR_STEP*task->id;
                   else
                     gamandua->selection.color = colors[k%2 
                      + (task->steps[j].machine == gamandua->max_length ? 2:0)];
