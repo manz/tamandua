@@ -4,14 +4,15 @@ set(myrmidon_src
 		wrap/Problem.cc
 		wrap/Strategy.cc
 		wrap/Wrap.cc
+		wrap/Generator.cc
 		ProblemDialog.cc
-		StrategyDialog.cc
+		MainMenuBar.cc
 		main.cc
    )
  
 set(moc_hdr
 		ProblemDialog.h
-		StrategyDialog.h
+		MainMenuBar.h
 		)
 
 QT4_WRAP_CPP(moc_src ${moc_hdr})

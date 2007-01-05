@@ -43,7 +43,11 @@ class Problem {
 			* est pondérée par des poids. faux sinon.
 			* @returns un booleen.
 			*/
-    bool isWeighted ();
+    bool isWeighted();
+
+		/** Retourne le nombre de steps du probleme.
+		 */
+		int stepsCount();
 
 		/** Retourne le nom du probleme.
 			* @returns une QString.

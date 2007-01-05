@@ -24,6 +24,10 @@ bool Problem::isWeighted() {
 	return (fProblem->tasks.weighted != 0);
 }
 
+int Problem::stepsCount() {
+	return fProblem->tasks.steps;
+}
+
 QString Problem::name() {
 	return QString::fromUtf8(fProblem->name);
 }
