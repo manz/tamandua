@@ -9,6 +9,7 @@ ProblemDialog::ProblemDialog(Wrap *wrap, QWidget *parent) :
 
 	fLengthBox=NULL;
 
+	fGenerator=NULL;
 	setWindowTitle(QString::fromUtf8("Séléction du probleme."));
 	
 	if (pbcount == 0) {
@@ -36,11 +37,12 @@ ProblemDialog::ProblemDialog(Wrap *wrap, QWidget *parent) :
 		Problem *pb;
 		Strategy *strat;
 
+		// remplissage du combo des problemes.
 		for (int i=0; i<pbcount; i++) {
 			pb=c->problem(i);
 			fPbCombo->insertItem(i, pb->name());
 		}
-
+		//création des groupbox
 		createDescription();
 		createWeight();
 		createMachine();
@@ -62,8 +64,7 @@ ProblemDialog::ProblemDialog(Wrap *wrap, QWidget *parent) :
 		fDialogLayout->addWidget(buttonBox, 7, 0, 1, 2);
 
 		connect(fPbCombo, SIGNAL(activated(int)), this, SLOT(updateSt(int)));
-		connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-
+		connect(buttonBox, SIGNAL(accepted()), this, SLOT(accepted()));
 		connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
 		this->setLayout(fDialogLayout);
@@ -75,15 +76,15 @@ void ProblemDialog::createMachine() {
 	fMachineBox = new QGroupBox("Taches et Machines", this);
 	QGridLayout *layout = new QGridLayout();
 
-	QSpinBox *spin = new QSpinBox(this); //QSlider(Qt::Horizontal, this);
-	QSpinBox *spin2 = new QSpinBox(this);
+	fMachineSpin = new QSpinBox(this); //QSlider(Qt::Horizontal, this);
+	fTaskSpin = new QSpinBox(this);
 
 	QLabel *label = new QLabel("Nombre de Machines", this);
 	QLabel *label2 = new QLabel("Nombre de taches", this);
 	layout->addWidget(label, 0, 0);
-	layout->addWidget(spin, 0, 1);
+	layout->addWidget(fMachineSpin, 0, 1);
 	layout->addWidget(label2, 1, 0);
-	layout->addWidget(spin2, 1, 1);
+	layout->addWidget(fTaskSpin, 1, 1);
 
 	fMachineBox->setLayout(layout);
 	layout->setSizeConstraint(QLayout::SetMinimumSize);
@@ -219,19 +220,28 @@ void ProblemDialog::updateSt(int p) {
 	}
 	createLength();
 }
-/*
+
 void ProblemDialog::accepted() {
-	this->setResult(QDialog::Accepted);
-	close();
+	fGenerator = new Generator();
+	/*
+	 * blah blah
+	 */
+	fGenerator->setProblemNumber(fPbCombo->currentIndex());
+	fGenerator->setStrategyNumber(fStCombo->currentIndex());
+
+	fGenerator->setMachineCount(fMachineSpin->value());
+	fGenerator->setTaskCount(fTaskSpin->value());
+
+	for (int i=0;i<fStepsLenMin.size();i++) {
+		fGenerator->addLengthMax(fStepsLenMax.at(i)->value());
+		fGenerator->addLengthMin(fStepsLenMin.at(i)->value());
+	}
+
+	fGenerator->setWeightMax(fSpinWeightMax->value());
+	fGenerator->setWeightMin(fSpinWeightMin->value());
+
+	fWrap->simulate(fGenerator);
+
+	accept();
 }
 
-void ProblemDialog::rejected() {
-	this->setResult(QDialog::Rejected);
-	close();
-}
-
-void ProblemDialog::validate() {
-	printf("Problem: %d\n", fPbCombo->currentIndex());
-	printf("Strategie: %d\n", fStCombo->currentIndex());
-}
-*/

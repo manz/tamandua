@@ -13,6 +13,7 @@ set(myrmidon_src
 set(moc_hdr
 		ProblemDialog.h
 		MainMenuBar.h
+		wrap/Wrap.h
 		)
 
 QT4_WRAP_CPP(moc_src ${moc_hdr})

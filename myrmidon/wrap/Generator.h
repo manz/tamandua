@@ -1,26 +1,49 @@
 #ifndef GENERATOR_H
 #define GENERATOR_H
 
-#include "Strategy.h"
+#include <vector>
+#include "Problem.h"
+
+using namespace std;
 
 class Generator {
 	private:
-		Strategy *fStrategy;
+		int fProblemNumber;
+		int fStrategyNumber;
 		int fWMax;
 		int fWMin;
-		int fLMax;
-		int fLMin;
-		int fMachines;
+		vector<int> fLMax;
+		vector<int> fLMin;
+		int fMachineCount;
+		int fTaskCount;
 
 	public:
-		Generator(Strategy *s, int wmin, int wmax, int lmin, int lmax, int machines);
+		Generator();
+		void setStrategyNumber(int value);
+		int strategyNumber();
+
+		void setProblemNumber(int value);
+
+		void setWeightMax(int value);
+		void setWeightMin(int value);
+
+		void addLengthMax(int value);
+		void addLengthMin(int value);
 
 		int weightMax();
 		int weightMin();
-		int lengthMax();
-		int lengthMin();
-		int machines();
-		Strategy *strategy();
+		
+		int lengthMax(int step);
+		int lengthMin(int step);
+
+		void setMachineCount(int value);
+		int machineCount();
+
+		void setTaskCount(int value);
+		int taskCount();
+	
+		int problemNumber();
+		int populationCount();
 };
 
 #endif /* GENERATOR_H */

@@ -57,6 +57,9 @@ class Problem {
 		/** Retourne la description du probleme.
 			*/
 		QString description();
+
+	protected:
+		struct tdc_problem *realProblem();
 };
 
 #endif /* PROBLEM_H */

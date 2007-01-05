@@ -1,6 +1,7 @@
 #ifndef WRAP_H
 #define WRAP_H
 
+#include <QObject>
 #include <QString>
 
 extern "C" {
@@ -9,8 +10,10 @@ extern "C" {
 };
 
 #include "Context.h"
+#include "Generator.h"
 
-class Wrap {
+class Wrap : public QObject {
+	Q_OBJECT
   private:
     Context *fContext;
 		struct tdc_context *fRContext;
@@ -19,6 +22,8 @@ class Wrap {
 		Wrap(QString &path);
 		~Wrap();
 		Context* context();
+
+		void simulate(Generator *g);
 };
 
 #endif

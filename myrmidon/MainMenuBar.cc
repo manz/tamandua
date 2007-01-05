@@ -28,6 +28,7 @@ void MainMenuBar::nouvelleSimulation() {
 	int res = pb.exec();
 	if (res) {
 		printf("%d %d\n", pb.problemSelected(), pb.strategySelected());
+		printf("%d\n", pb.generator());
 	}
 	else {
 	}

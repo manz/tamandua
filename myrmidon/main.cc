@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
 #ifdef __APPLE__
 	QString pluginpath = app.applicationDirPath().append("/../PlugIns");
 #else
-	QString pluginpath = ("..");
+	QString pluginpath = ("/usr/local/share/tamandua/problems");
 #endif
 
 	Wrap *fWrap=new Wrap(pluginpath);

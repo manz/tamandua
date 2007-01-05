@@ -52,6 +52,9 @@ class ProblemDialog : public QDialog {
 		vector<QLabel*> fStepsLblMax;
 		vector<QLabel*> fStepsLblMin;
 
+		QSpinBox *fMachineSpin;
+		QSpinBox *fTaskSpin;
+
 		void createDescription();
 		void createLength();
 		void createWeight();
@@ -68,6 +71,7 @@ class ProblemDialog : public QDialog {
 	
 	public slots:
 		void updateSt(int s);
+		void accepted();
 };
 
 #endif /* PROBLEMDIALOG_H */

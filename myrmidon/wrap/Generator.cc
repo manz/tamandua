@@ -1,35 +1,72 @@
 #include "Generator.h"
 
-Generator::Generator(Strategy *s, int wmin, int wmax, int lmin, int lmax, int machines) {
-	fStrategy = s;
-	fWMin = wmin;
-	fWMax = wmax;
-	fLMin = lmin;
-	fLMax = lmax;
-	fMachines = machines;
-};
+Generator::Generator() {
+}
+
+void Generator::setWeightMax(int value) {
+	fWMax = value;
+}
 
 int Generator::weightMax() {
 	return fWMax;
+}
+
+void Generator::setWeightMin(int value) {
+	fWMin = value;
 }
 
 int Generator::weightMin() {
 	return fWMin;
 }
 
-int Generator::lengthMax() {
-	return fLMax;
+void Generator::addLengthMax(int value) {
+	fLMax.push_back(value);
 }
 
-int Generator::lengthMin() {
-	return fLMin;
+int Generator::lengthMax(int step) {
+	return fLMax.at(step);
 }
 
-int Generator::machines() {
-	return fMachines;
+void Generator::addLengthMin(int value) {
+	fLMin.push_back(value);
 }
 
-Strategy *Generator::strategy() {
-	return fStrategy;
+int Generator::lengthMin(int step) {
+	return fLMin.at(step);
 }
 
+void Generator::setMachineCount(int value) {
+	fMachineCount = value;
+}
+
+int Generator::machineCount() {
+	return fMachineCount;
+}
+
+void Generator::setTaskCount(int value) {
+	fTaskCount = value;
+}
+
+int Generator::taskCount() {
+	return fTaskCount;
+}
+
+void Generator::setProblemNumber(int value) {
+	fProblemNumber = value;
+}
+
+int Generator::problemNumber() {
+	return fProblemNumber;
+}
+
+void Generator::setStrategyNumber(int value) {
+	fStrategyNumber = value;
+}
+
+int Generator::strategyNumber() {
+	return fStrategyNumber;
+}
+
+int Generator::populationCount() {
+	return 1;
+}
