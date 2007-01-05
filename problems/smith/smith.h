@@ -1,6 +1,6 @@
 const char name[] = "Smith";
 const char description[] =
-"Algorithme de répartition de tâches\n"
+"Algorithme de répartition de tâches"
 "en fonction de leurs quotiens durée/poids.";
 const char* strategies[] = {
 	"Rêgle de Smith"

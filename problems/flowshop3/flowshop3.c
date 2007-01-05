@@ -24,13 +24,19 @@ int flowshop3
   for(i=0 ; i<job->n_tasks ; i++)
     {
       tdb_debug("Tâche %u :\n"
-                "     * machine %u, longueur %u ;\n"
-                "     * machine %u, longueur %u ;\n"
-                "     * machine %u, longueur %u.",
+                "     * machine  %u, longueur %u ;\n"
+                "     * machine  %u, longueur %u ;\n"
+                "     * machine  %u, longueur %u ;\n"
+                "     ----------------------------\n"
+                "     > machine M'1, longueur %u ;\n"
+                "     > machine M'2, longueur %u.",
                 job->tasks[i]->id,
                 job->tasks[i]->steps[0].machine, job->tasks[i]->steps[0].length,
                 job->tasks[i]->steps[1].machine, job->tasks[i]->steps[1].length,
-                job->tasks[i]->steps[2].machine, job->tasks[i]->steps[2].length
+                job->tasks[i]->steps[2].machine, job->tasks[i]->steps[2].length,
+
+                job->tasks[i]->steps[0].length + job->tasks[i]->steps[1].length,
+                job->tasks[i]->steps[1].length + job->tasks[i]->steps[2].length
                );
     }
   return EXIT_SUCCESS;

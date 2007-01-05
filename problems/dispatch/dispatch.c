@@ -3,6 +3,70 @@
 
 #include "dispatch.h"
 
+struct fill_heap {
+	size_t fill;
+	size_t machine;
+};
+
+struct fill_heap* create_heap
+(size_t size)
+{
+	struct fill_heap* ret;
+	ret = tdb_calloc(size, sizeof(*ret));
+	for (size_t i=0; i<size; i++) {
+		ret[i].machine = i;
+	}
+	return ret;
+}
+
+void swap_items
+(struct fill_heap* self, size_t a, size_t b)
+{
+	struct fill_heap tmp;
+	tmp = self[a];
+	self[a] = self[b];
+	self[b] = tmp;
+}
+
+size_t increment_first
+(size_t length, struct fill_heap* self, size_t size)
+{
+	size_t i, j, ret;
+	swap_items(self, 0, size-1);
+	/* bubble down the root */
+	for (i=0; (i*2+1)<(size-1);i=j) {
+		j=i*2+1;
+		if ((j+1)>=(size-1) || self[j].fill < self[j+1].fill) {
+			if (self[j].fill < self[i].fill) {
+				swap_items(self, i, j);
+			}
+		} else if ((j+1)<(size-1) && self[j+1].fill < self[i].fill) {
+			swap_items(self, i, j+1);
+			j++;
+		}
+	}
+	self[size-1].fill += length;
+	ret = self[size-1].machine;
+	for (i=0; i<size; i++) {
+		tdb_debug("bb- machine %i has %i",self[i].machine, self[i].fill);
+	}
+	/* bubble up old root */
+	for (i=size-1; i>0 && self[(i-1)/2].fill > self[i].fill; i=(i-1)/2) {
+		swap_items(self, i, (i-1)/2);
+	}
+	tdb_debug("assigned machine is: %i",ret);
+	for (i=0; i<size; i++) {
+		tdb_debug("machine %i has %i",self[i].machine, self[i].fill);
+	}
+	return ret;
+}
+
+void delete_heap
+(struct fill_heap* self)
+{
+	free(self);
+}
+
 int compare_length
 (const void* p1, const void* p2)
 {
@@ -21,25 +85,17 @@ int dispatch
 (struct tdc_job* job)
 {
 	size_t i,j,min=0;
-	size_t* fill;
 	struct tdc_task** tasks = job->tasks;
-	fill= tdb_calloc(job->n_machines, sizeof(*fill));
+	struct fill_heap* fill_heap = create_heap(job->n_machines);
 	/* iterate on all tasks */
 	for(i=0; i<job->n_tasks; i++) {
-		fill[min] += tasks[i]->steps[0].length;
-		tasks[i]->steps[0].machine = min;
-		/* find the new less filled machine */
-		for (j=0; j<job->n_machines; j++) {
-			if(fill[min] > fill[j]) {
-				min = j;
-			}
-		}
+		tasks[i]->steps[0].machine = increment_first(tasks[i]->steps[0].length, fill_heap, job->n_machines);;
 	}
 	for (i=0; i<job->n_tasks; i++) {
 		tdb_debug("Tâche de longueur %u sur la machine %u",
 		         job->tasks[i]->steps[0].length, job->tasks[i]->steps[0].machine);
 	}
-	free(fill);
+	delete_heap(fill_heap);
 	return EXIT_SUCCESS;
 }
 

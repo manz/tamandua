@@ -10,5 +10,11 @@ void cb_btn_exec_clicked(GtkButton *button, void *data);
 void cb_drawing_area_exposed(GtkDrawingArea *area, void *data);
 void cb_drawing_area_mouse_down(GtkWidget *widget, GdkEventButton *ev, void *data);
 void cb_unsensitive_btn_exec(void *w, void *data);
+void cb_drawing_area_exposed(GtkDrawingArea *area, void *data);
+void cb_drawing_notebook_change_current(GtkNotebook *notebook, GtkNotebookPage *page, 
+                                        size_t p, void *data);
+void cb_drawing_page_close(GtkButton *button, void *data);
+void cb_btn_clear_clicked(GtkButton *button, void *data);
+void cb_btn_help_clicked(GtkButton *button, void *data);
 
 #endif /* GAMANDUA_CALLBACKS_H */

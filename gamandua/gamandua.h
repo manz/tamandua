@@ -26,6 +26,14 @@ struct _Page {
   GtkWidget **steps_max;
 };
 
+typedef struct _Canvas Canvas;
+struct _Canvas
+{
+  GtkWidget *drawing_area;
+  GtkWidget *scrolled;
+  struct tdc_job *job;
+};
+
 typedef struct _Gui Gui;
 struct _Gui
 {
@@ -36,11 +44,15 @@ struct _Gui
   GtkWidget *spin_pop;
   GtkWidget *scrolled;
   GtkWidget *drawing_area;
+  GtkWidget *drawing_notebook;
   GtkWidget *notebook;
   GtkWidget *buttonbox;
+  GtkWidget *buttonbox2;
   GtkWidget *btn_exec;
+  GtkWidget *btn_help;
   GtkWidget *frame_info;
 
+  GSList *drawings;
   GSList *pages;
 };
 
@@ -52,6 +64,7 @@ struct _Gamandua
   struct tdc_job       *base_job;
   struct tdc_job       *job;
   size_t max_length;
+  size_t n_results;
   Gui *gui;
   struct {
     size_t step;
@@ -73,5 +86,9 @@ void apply_pop_settings(struct tdc_generator *generator);
 void draw_task(int x, int y, int width, int height, int color);
 void draw_task_txt_size(int size, int x, int y, int color);
 void draw_selection(void);
+void append_help(GtkNotebook *notebook);
+void append_drawing(GtkNotebook *notebook);
+Canvas *get_current_canvas(void);
+GtkWidget *init_frame_info(void);
 
 #endif /* GAMANDUA_H */
