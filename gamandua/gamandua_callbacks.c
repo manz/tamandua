@@ -363,8 +363,8 @@ cb_drawing_area_mouse_down(GtkWidget *widget, GdkEventButton *ev, void *data)
         {
           if (task->steps[j].machine == (size_t)(y-40)/50)
             {
-              if (task->steps[j].start_time <= x
-                  && task->steps[j].length + task->steps[j].start_time > x)
+              if ((double)(task->steps[j].start_time + 5) <= x
+                  && (double)(task->steps[j].length + task->steps[j].start_time + 5) > x)
                 {
                   GtkWidget *vbox;
                   GtkWidget *label;

@@ -1,4 +1,4 @@
-const char name[]        =   "Johnson"   ;
+const char name[]        =   "Flowshop2"   ;
 const char description[] =   "Algorithme de répartion de tâches "
                              "en fonction de leurs temps d'excution." ;
 const char *strategies[] = { "Johnson"  };
