@@ -1,6 +1,6 @@
 #include "Problem.h"
 
-Problem::Problem(struct tdc_problem *pb) : fProblem(pb) {
+Problem::Problem(const struct tdc_problem *pb) : fProblem(pb) {
 	for (int i=0;i<strategiesCount();i++) {
 		fStrategies.push_back(new Strategy(pb, i));
 	}

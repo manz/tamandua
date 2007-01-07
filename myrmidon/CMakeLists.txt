@@ -5,6 +5,7 @@ set(myrmidon_src
 		wrap/Strategy.cc
 		wrap/Wrap.cc
 		wrap/Generator.cc
+		wrap/Job.cc
 		ProblemDialog.cc
 		MainMenuBar.cc
 		main.cc

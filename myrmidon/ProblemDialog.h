@@ -55,10 +55,10 @@ class ProblemDialog : public QDialog {
 		QSpinBox *fMachineSpin;
 		QSpinBox *fTaskSpin;
 
-		void createDescription();
-		void createLength();
-		void createWeight();
-		void createMachine();
+		void _CreateDescription();
+		void _CreateLength();
+		void _CreateWeight();
+		void _CreateMachine();
 
 	public:
 		ProblemDialog(Wrap *wrap, QWidget *parent);

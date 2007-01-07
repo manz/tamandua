@@ -43,9 +43,9 @@ ProblemDialog::ProblemDialog(Wrap *wrap, QWidget *parent) :
 			fPbCombo->insertItem(i, pb->name());
 		}
 		//création des groupbox
-		createDescription();
-		createWeight();
-		createMachine();
+		_CreateDescription();
+		_CreateWeight();
+		_CreateMachine();
 
 		updateSt(0);
 
@@ -72,7 +72,7 @@ ProblemDialog::ProblemDialog(Wrap *wrap, QWidget *parent) :
 	}
 }
 
-void ProblemDialog::createMachine() {
+void ProblemDialog::_CreateMachine() {
 	fMachineBox = new QGroupBox("Taches et Machines", this);
 	QGridLayout *layout = new QGridLayout();
 
@@ -91,7 +91,7 @@ void ProblemDialog::createMachine() {
 
 }
 
-void ProblemDialog::createDescription() {
+void ProblemDialog::_CreateDescription() {
 	fDescBox = new QGroupBox("Description", this);
 	QVBoxLayout *layout = new QVBoxLayout();
 	layout->addWidget(fPbDesc);
@@ -99,7 +99,7 @@ void ProblemDialog::createDescription() {
 	layout->setSizeConstraint(QLayout::SetMinimumSize);
 }
 
-void ProblemDialog::createLength() {
+void ProblemDialog::_CreateLength() {
 	if (!fLengthBox)
 		fLengthBox = new QGroupBox("Longueur", this);
 
@@ -155,7 +155,7 @@ void ProblemDialog::createLength() {
 	layout->setSizeConstraint(QLayout::SetFixedSize);
 }
 
-void ProblemDialog::createWeight() {
+void ProblemDialog::_CreateWeight() {
 	fWeightBox = new QGroupBox("Poids", this);
 	QGridLayout *layout=new QGridLayout();
 
@@ -218,7 +218,7 @@ void ProblemDialog::updateSt(int p) {
 	else {
 		fWeightBox->setEnabled(false);
 	}
-	createLength();
+	_CreateLength();
 }
 
 void ProblemDialog::accepted() {

@@ -24,7 +24,7 @@ MainMenuBar::~MainMenuBar() {
 }
 
 void MainMenuBar::nouvelleSimulation() {
-	ProblemDialog pb(fWrap, this);
+	ProblemDialog pb(fWrap, 0);
 	int res = pb.exec();
 	if (res) {
 		printf("%d %d\n", pb.problemSelected(), pb.strategySelected());

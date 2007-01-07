@@ -6,6 +6,8 @@
 #include <QLineEdit>
 #include <QVBoxLayout>
 #include <QMenuBar>
+#include <QGraphicsScene>
+#include <QGraphicsView>
 // tamandua core
 extern "C" {
 #include <td_base.h>
@@ -25,6 +27,19 @@ int main(int argc, char** argv) {
 #else
 	QString pluginpath = ("/usr/local/share/tamandua/problems");
 #endif
+	QGraphicsScene scene;
+	scene.addText("Hello, world!");
+
+	QGraphicsView view(&scene);
+	view.show();
+
+
+	 scene.setBackgroundBrush(Qt::blue);
+
+	  // a gradient background
+	  QRadialGradient gradient(0, 0, 50);
+		 gradient.setSpread(QGradient::RepeatSpread);
+		  scene.setBackgroundBrush(gradient);
 
 	Wrap *fWrap=new Wrap(pluginpath);
 	MainMenuBar menu(fWrap);

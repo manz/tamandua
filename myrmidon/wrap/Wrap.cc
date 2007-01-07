@@ -30,6 +30,8 @@ void Wrap::simulate(Generator *g) {
 	struct tdc_generator *tdgen = tdc_create_generator(pb, g->populationCount());
 	struct tdc_population_generator *pop;
 	
+	printf("nom du probleme %s\n", pb->name);
+
 	tdgen->n_machines = g->machineCount();
 
 	for (int i=0;i<g->populationCount();i++) {
@@ -37,6 +39,7 @@ void Wrap::simulate(Generator *g) {
 		pop->n_tasks=g->taskCount();
 
 		if (tdc_problem_weight_enabled(pb)) {
+			printf("Min : %d\nMax : %d\n", g->weightMin(), g->weightMax());
 			pop->weight.min = g->weightMin();
 			pop->weight.max = g->weightMax();
 		}

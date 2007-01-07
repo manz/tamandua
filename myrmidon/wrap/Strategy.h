@@ -10,7 +10,7 @@ extern "C" {
 
 class Strategy {
   private:
-    struct tdc_problem* fProblem;
+    const struct tdc_problem* fProblem;
     int fStrategy;
 
 	protected:
@@ -18,7 +18,7 @@ class Strategy {
 			* A n'utiliser que depuis le wrapper.
 			* @see Wrap
 			*/
-		struct tdc_problem* problem();
+		const struct tdc_problem* problem();
 
 		/** Retourne le numero de la strategie.
 			* A n'utiliser que depuis le wrapper.
@@ -27,7 +27,7 @@ class Strategy {
 		int strategy();
 
   public:
-		Strategy(struct tdc_problem *pb, int s);
+		Strategy(const struct tdc_problem *pb, int s);
 		~Strategy();
 
 		/** Retourne le nom de la strategie.

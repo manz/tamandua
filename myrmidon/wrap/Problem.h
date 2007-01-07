@@ -16,14 +16,14 @@ using namespace std;
 	*/
 class Problem {
   private:
-    struct tdc_problem* fProblem;
+    const struct tdc_problem* fProblem;
 		vector<Strategy*> fStrategies;
   
 	public:
 		/** Constructeur à un paramètre.
 			* A n'utiliser que depuis le wrapper.
 			*/
-		Problem(struct tdc_problem* pb);
+		Problem(const struct tdc_problem* pb);
 
 		/** Destructeur.
 			*/
