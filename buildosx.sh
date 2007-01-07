@@ -1,10 +1,10 @@
 # teste la non existence du Makefile
 if [ ! -e Makefile ];
 then
-	cmake -DCMAKE_BUILD_TYPE=Debug.
+	cmake -DCMAKE_BUILD_TYPE=Debug .
 fi;
 
-make myrmidon
+make
 
 PLUGINPATH="myrmidon/myrmidon.app/Contents/PlugIns"
 

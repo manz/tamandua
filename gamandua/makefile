@@ -34,10 +34,10 @@ RM = /sw/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /sw/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/manz/ter/trunk
+CMAKE_SOURCE_DIR = /tmp/wee/trunk
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/manz/ter/trunk
+CMAKE_BINARY_DIR = /tmp/wee/trunk
 
 # Include the progress variables for this target.
 include CMakeFiles/progress.make
@@ -48,7 +48,7 @@ include CMakeFiles/progress.make
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	cd /Users/manz/ter/trunk/gamandua && /sw/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	cd /tmp/wee/trunk/gamandua && /sw/bin/ccmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 
 # Special rule for the target edit_cache
 edit_cache/fast: edit_cache
@@ -56,70 +56,35 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	cd /Users/manz/ter/trunk/gamandua && /sw/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	cd /tmp/wee/trunk/gamandua && /sw/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 
 # Special rule for the target rebuild_cache
 rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /Users/manz/ter/trunk && $(CMAKE_COMMAND) -E cmake_progress_start /Users/manz/ter/trunk/CMakeFiles $(CMAKE_ALL_PROGRESS)
-	cd /Users/manz/ter/trunk && $(MAKE) -f CMakeFiles/Makefile2 gamandua/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/manz/ter/trunk/CMakeFiles 0
+	cd /tmp/wee/trunk && $(CMAKE_COMMAND) -E cmake_progress_start /tmp/wee/trunk/CMakeFiles $(CMAKE_ALL_PROGRESS)
+	cd /tmp/wee/trunk && $(MAKE) -f CMakeFiles/Makefile2 gamandua/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /tmp/wee/trunk/CMakeFiles 0
 
 # The main clean target
 clean:
-	cd /Users/manz/ter/trunk && $(MAKE) -f CMakeFiles/Makefile2 gamandua/clean
+	cd /tmp/wee/trunk && $(MAKE) -f CMakeFiles/Makefile2 gamandua/clean
 
 # The main clean target
 clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /Users/manz/ter/trunk && $(MAKE) -f CMakeFiles/Makefile2 gamandua/preinstall
+	cd /tmp/wee/trunk && $(MAKE) -f CMakeFiles/Makefile2 gamandua/preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /Users/manz/ter/trunk && $(MAKE) -f CMakeFiles/Makefile2 gamandua/preinstall
+	cd /tmp/wee/trunk && $(MAKE) -f CMakeFiles/Makefile2 gamandua/preinstall
 
 # clear depends
 depend:
 	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
-
-# Convenience name for target.
-gamandua/CMakeFiles/gamandua.dir/rule:
-	cd /Users/manz/ter/trunk && $(MAKE) -f CMakeFiles/Makefile2 gamandua/CMakeFiles/gamandua.dir/rule
-
-# Convenience name for target.
-gamandua: gamandua/CMakeFiles/gamandua.dir/rule
-
-# fast build rule for target.
-gamandua/fast:
-	cd /Users/manz/ter/trunk && $(MAKE) -f gamandua/CMakeFiles/gamandua.dir/build.make gamandua/CMakeFiles/gamandua.dir/build
-
-# target to build an object file
-gamandua.o:
-	cd /Users/manz/ter/trunk && $(MAKE) -f gamandua/CMakeFiles/gamandua.dir/build.make gamandua/CMakeFiles/gamandua.dir/gamandua.o
-
-# target to preprocess a source file
-gamandua.i:
-	cd /Users/manz/ter/trunk && $(MAKE) -f gamandua/CMakeFiles/gamandua.dir/build.make gamandua/CMakeFiles/gamandua.dir/gamandua.i
-
-# target to generate assembly for a file
-gamandua.s:
-	cd /Users/manz/ter/trunk && $(MAKE) -f gamandua/CMakeFiles/gamandua.dir/build.make gamandua/CMakeFiles/gamandua.dir/gamandua.s
-
-# target to build an object file
-gamandua_callbacks.o:
-	cd /Users/manz/ter/trunk && $(MAKE) -f gamandua/CMakeFiles/gamandua.dir/build.make gamandua/CMakeFiles/gamandua.dir/gamandua_callbacks.o
-
-# target to preprocess a source file
-gamandua_callbacks.i:
-	cd /Users/manz/ter/trunk && $(MAKE) -f gamandua/CMakeFiles/gamandua.dir/build.make gamandua/CMakeFiles/gamandua.dir/gamandua_callbacks.i
-
-# target to generate assembly for a file
-gamandua_callbacks.s:
-	cd /Users/manz/ter/trunk && $(MAKE) -f gamandua/CMakeFiles/gamandua.dir/build.make gamandua/CMakeFiles/gamandua.dir/gamandua_callbacks.s
 
 # Help Target
 help::
@@ -128,14 +93,7 @@ help::
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... gamandua"
 	@echo "... rebuild_cache"
-	@echo "... gamandua.o"
-	@echo "... gamandua.i"
-	@echo "... gamandua.s"
-	@echo "... gamandua_callbacks.o"
-	@echo "... gamandua_callbacks.i"
-	@echo "... gamandua_callbacks.s"
 
 
 
@@ -146,5 +104,5 @@ help::
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /Users/manz/ter/trunk && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /tmp/wee/trunk && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 
