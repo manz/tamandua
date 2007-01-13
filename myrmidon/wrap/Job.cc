@@ -4,6 +4,11 @@ Job::Job(struct tdc_job *j) :
 	fJob(j)
 {
 	fProblem = new Problem(fJob->problem);
+	
+	for (int i=0;i<tasksCount();i++) {
+		fTasks.push_back(new Task(fJob->tasks[i]));
+	}
+	
 }
 
 Problem *Job::problem() {

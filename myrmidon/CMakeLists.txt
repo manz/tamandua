@@ -6,6 +6,7 @@ set(myrmidon_src
 		wrap/Wrap.cc
 		wrap/Generator.cc
 		wrap/Job.cc
+		wrap/Task.cc
 		ProblemDialog.cc
 		MainMenuBar.cc
 		main.cc

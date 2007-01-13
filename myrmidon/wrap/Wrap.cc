@@ -11,6 +11,8 @@ Wrap::Wrap(QString &path) {
 
 	//tdc_test();
 	fContext = new Context(fRContext);
+	fTimer = new QTimer();
+	connect(fTimer, SIGNAL(timeout()), this, SLOT(_CheckOut()));
 }
 
 Wrap::~Wrap() {
@@ -62,6 +64,21 @@ void Wrap::simulate(Generator *g) {
 	/*
 	if (tdc_problem_n_machines_settable(pb))
 		job->n_machines=4;
-*/
+		*/
+	fTimer->start(100);
 	tdc_commit(job), job=NULL;
+//	tdc_checkout
+}
+
+void Wrap::_CheckOut() {
+	struct tdc_job *res = tdc_checkout();
+	if (res) {
+		// le job à bien été traité.
+		fTimer->stop();
+		printf("Timer stop, result checkouted\n");
+		emit result(new Job(res));
+	} else {
+		// sinon on attends :p
+		printf("on attends ...\n");
+	}
 }

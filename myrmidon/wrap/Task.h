@@ -1,10 +1,16 @@
 #ifndef TASK_H
 #define TASK_H
 
+extern "C" {
+	#include <td_base.h>
+	#include <td_core.h>
+}
+
 class Task {
 	private:
+		struct tdc_task *fTask;
 	public:
-		Task();
+		Task(struct tdc_task *task);
 		~Task();
 
 		int id();

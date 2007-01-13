@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QTimer>
 
 extern "C" {
 #include <td_base.h>
@@ -11,19 +12,29 @@ extern "C" {
 
 #include "Context.h"
 #include "Generator.h"
+#include "Job.h"
 
 class Wrap : public QObject {
 	Q_OBJECT
   private:
     Context *fContext;
 		struct tdc_context *fRContext;
+		struct tdc_job *fJob;
+		QTimer *fTimer;
+		
+	private slots:
+		void _CheckOut(void);
+		
 	public:
-//		Wrap();
 		Wrap(QString &path);
 		~Wrap();
 		Context* context();
 
 		void simulate(Generator *g);
+		
+	signals:
+		// pointeur à la charge du client
+		void result(Job *j);
 };
 
 #endif
