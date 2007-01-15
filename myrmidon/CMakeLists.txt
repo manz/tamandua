@@ -8,13 +8,13 @@ set(myrmidon_src
 		wrap/Job.cc
 		wrap/Task.cc
 		ProblemDialog.cc
-		MainMenuBar.cc
+		MainWindow.cc
 		main.cc
    )
  
 set(moc_hdr
 		ProblemDialog.h
-		MainMenuBar.h
+		MainWindow.h
 		wrap/Wrap.h
 		)
 

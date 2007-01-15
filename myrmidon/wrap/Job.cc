@@ -12,6 +12,7 @@ Job::Job(struct tdc_job *j) :
 }
 
 Problem *Job::problem() {
+	return fProblem;
 }
 
 int Job::machineCount() {

@@ -17,7 +17,7 @@ extern "C" {
 // wrapper
 #include "wrap/Context.h"
 #include "ProblemDialog.h"
-#include "MainMenuBar.h"
+#include "MainWindow.h"
 
 int main(int argc, char** argv) {
 	// initialisation de la base
@@ -25,7 +25,13 @@ int main(int argc, char** argv) {
 #ifdef __APPLE__
 	QString pluginpath = app.applicationDirPath().append("/../PlugIns");
 #else
-	QString pluginpath = ("/usr/local/share/tamandua/problems");
+	QString pluginpath;
+	if (argc > 1) {
+		pluginpath = QString(argv[1]);
+	}
+	else {
+		pluginpath = QString("/usr/local/share/tamandua/problems");
+	}
 #endif
 	QGraphicsScene scene;
 	scene.addText("Hello, world!");
@@ -42,8 +48,8 @@ int main(int argc, char** argv) {
 		  scene.setBackgroundBrush(gradient);
 
 	Wrap *fWrap=new Wrap(pluginpath);
-	MainMenuBar menu(fWrap);
-	menu.show();
+	MainWindow win(fWrap);
+	win.show();
 /*
 	QMenuBar menu;
 	menu.addMenu("Fichier");

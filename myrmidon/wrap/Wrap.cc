@@ -17,6 +17,7 @@ Wrap::Wrap(QString &path) {
 
 Wrap::~Wrap() {
 	delete fContext;
+	delete fTimer;
 	tdc_exit();
 	tdb_exit();
 }
