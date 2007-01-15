@@ -1,4 +1,8 @@
+#include <QGraphicsView>
+#include <QDockWidget>
+
 #include "MainWindow.h"
+#include "ShowWindow.h"
 
 MainWindow::MainWindow(Wrap *wrap) : QMainWindow() {
 	fWrap = wrap;
@@ -23,7 +27,16 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::showResult(Job *j) {
-	// display
+        //QDockWidget *dockWidget = new QDockWidget( this);;
+
+	ShowWindow *showWindow = new ShowWindow( j);
+	
+	QGraphicsView *windowView= new QGraphicsView( showWindow);
+	windowView->setAlignment( Qt::AlignLeft | Qt::AlignTop);
+	windowView->show();
+	//dockWidget->setWidget( (QWidget*) &windowView);
+	//addDockWidget( Qt::TopDockWidgetArea, dockWidget);
+	printf( "Affichage\n");
 }
 
 void MainWindow::newSimulation() {

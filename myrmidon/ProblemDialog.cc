@@ -64,7 +64,7 @@ ProblemDialog::ProblemDialog(Wrap *wrap, QWidget *parent) :
 		fDialogLayout->addWidget(buttonBox, 7, 0, 1, 2);
 
 		connect(fPbCombo, SIGNAL(activated(int)), this, SLOT(updateSt(int)));
-		connect(buttonBox, SIGNAL(accepted()), this, SLOT(accepted()));
+		connect(buttonBox, SIGNAL( accepted()), this, SLOT(accepted()));
 		connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
 		this->setLayout(fDialogLayout);

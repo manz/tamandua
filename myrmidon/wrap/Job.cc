@@ -27,6 +27,10 @@ int Job::tasksCount() {
 	return fJob->n_tasks;
 }
 
+Task *Job::task( int i) {
+    return fTasks[i];
+}
+
 Job::~Job() {
 	delete fProblem;
 }
