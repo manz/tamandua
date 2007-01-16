@@ -17,6 +17,7 @@ extern "C" {
 class Wrap : public QObject {
 	Q_OBJECT
   private:
+		int fJobCount;
     Context *fContext;
 		struct tdc_context *fRContext;
 		struct tdc_job *fJob;

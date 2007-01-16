@@ -239,7 +239,7 @@ void ProblemDialog::accepted() {
 
 	fGenerator->setWeightMax(fSpinWeightMax->value());
 	fGenerator->setWeightMin(fSpinWeightMin->value());
-
+	fGenerator->setCompareStrategies(fChkCompare->isChecked());
 	fWrap->simulate(fGenerator);
 
 	accept();

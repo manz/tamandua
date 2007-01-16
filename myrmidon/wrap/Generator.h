@@ -16,6 +16,7 @@ class Generator {
 		vector<int> fLMin;
 		int fMachineCount;
 		int fTaskCount;
+		bool fCompareStrategies;
 
 	public:
 		Generator();
@@ -41,7 +42,10 @@ class Generator {
 
 		void setTaskCount(int value);
 		int taskCount();
-	
+
+		bool compareStrategies();
+		void setCompareStrategies(bool val);
+
 		int problemNumber();
 		int populationCount();
 };

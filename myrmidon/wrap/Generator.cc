@@ -70,3 +70,11 @@ int Generator::strategyNumber() {
 int Generator::populationCount() {
 	return 1;
 }
+
+bool Generator::compareStrategies() {
+	return fCompareStrategies;
+}
+
+void Generator::setCompareStrategies(bool val) {
+	fCompareStrategies = val;
+}
