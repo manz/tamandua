@@ -1,0 +1,112 @@
+\documentclass[A4]{report}
+\usepackage[francais]{babel}
+\usepackage[utf8]{inputenc}
+
+% pour les algos
+\usepackage{algorithm, algorithmic}
+\floatname{algorithm}{Algorithme}
+\renewcommand{\algorithmicrequire}{\textbf{Précondition:}}
+\renewcommand{\algorithmicensure}{\textbf{Postcondition:}}
+\renewcommand{\algorithmicend}{\textbf{fin}}
+\renewcommand{\algorithmicif}{\textbf{si}}
+\renewcommand{\algorithmicthen}{\textbf{alors}}
+\renewcommand{\algorithmicelse}{\textbf{sinon}}
+\renewcommand{\algorithmicfor}{\textbf{pour}}
+\renewcommand{\algorithmicforall}{\textbf{pour chaque}}
+\renewcommand{\algorithmicdo}{\textbf{:}}
+\renewcommand{\algorithmicwhile}{\textbf{tant que}}
+\renewcommand{\algorithmicloop}{\textbf{boucle}}
+\renewcommand{\algorithmicrepeat}{\textbf{répéter}}
+\renewcommand{\algorithmicuntil}{\textbf{jusqu'à}}
+
+% pour les tableaux
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{booktabs}
+
+% pour les maths
+\usepackage{amssymb,amsmath}
+\usepackage{amsthm}
+\newtheorem{thm}{Théorème}[chapter]
+\newtheorem{cor}[thm]{Corollaire}
+\newtheorem{lem}[thm]{Lemme}
+\theoremstyle{remark}
+\newtheorem*{rmk}{Remarque}
+% gestion des marges
+\usepackage[left=4cm,right=3cm,top=2cm,bottom=2cm]{geometry}
+
+% Definition du petit header visible sur les pages non plain
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markright{\thechapter\ #1}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+\fancyhead[R]{\thepage}
+\fancyhead[C]{\scshape\rightmark}
+\fancyhead[L]{}
+\fancyfoot[C]{}
+\renewcommand{\headrulewidth}{0pt}
+
+% pour les bouts de code
+\usepackage{listings}
+\lstset{language=C,
+		  tabsize=2,
+		  numberstyle=\tiny,
+		  basicstyle=\ttfamily\small,
+		  commentstyle=\ttfamily\small,
+		  numbersep=5pt}
+\usepackage{fancyvrb}
+
+% Pour les n'images
+\usepackage[pdftex]{graphicx,color}
+
+% Page de garde à refaire avec chtite n'images et noms de tout le monde
+\title{Sujet 1 : Algorithme d'ordonnancement}
+\author{Groupe 1}
+\date{Année 2006-2007}
+
+
+\newcommand{\sups}[1]{\raisebox{1ex}{\small #1}}
+
+\begin{document}
+\begin{titlepage}
+\begin{center}
+{\large
+Ministère de l'Education Nationale \\
+\vspace{0.8cm}
+Université Montpellier II \\
+\vspace{1.5cm}
+Rapport de projet de l'unité d'enseignement ULIN507 \\
+de la licence informatique 3\sups{ème} année \\
+effectué lors du second semestre de l'année 2006-2007 \\
+}
+\vspace{4cm}
+{\huge Sujet 1 }\\
+\vspace{0.2cm}
+\hrule
+\vspace{0.2cm}
+{\Huge Algorithmes d'ordonnancement}
+\vspace{7cm}
+\end{center}
+\begin{flushright}
+{\raggedleft
+\begin{tabular}{r|l}
+Auteurs & ABERMAN jonathan \\
+& BOZADJIEV Victor \\
+& DUBUISSON Nathalie \\
+& MENDES Samuel \\
+& MICHEL Kevin \\
+& PANCALDI Vincent \\
+& PERALTA Emmanuel \\
+& RENGOT Thomas \\
+\end{tabular}
+}
+\end{flushright}
+\end{titlepage}
+\tableofcontents
+
+\include{chapitres/introduction}
+\include{chapitres/algo}
+	\include{chapitres/graham}
+	\include{chapitres/smith}
+	\include{chapitres/johnson}
+\end{document}

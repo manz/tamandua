@@ -1,5 +1,5 @@
-#ifndef GAMANDUA_H
-#define GAMANDUA_H
+#ifndef INC_GAMANDUA_H
+#define INC_GAMANDUA_H 1
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -16,6 +16,28 @@
 
 #include <td_base.h>
 #include <td_core.h>
+
+static const int colors[] = {
+  0x729fcf,
+  0x3465a4,
+  0xef2929,
+  0xcc0000,
+  0xfce94f
+};
+
+#define COLOR_STEP 15
+static const int id_colors[] = {
+  0xbdd169,
+  0xf09534
+};
+
+static const int wrap_colors[] = {
+  0xeeeeee,
+  0xdddddd
+};
+
+
+
 typedef struct _Page Page;
 struct _Page {
   GtkWidget *root;
@@ -48,10 +70,20 @@ struct _Gui
   GtkWidget *notebook;
   GtkWidget *buttonbox;
   GtkWidget *buttonbox2;
-  GtkWidget *btn_exec;
+  GtkWidget *btn_calc;
   GtkWidget *btn_help;
-  GtkWidget *frame_info;
-
+  GtkWidget *btn_clear;
+  GtkWidget *btn_export;
+  GtkWidget *btn_quit;
+  GtkWidget *logo;
+  GtkWidget *hbox;
+  GdkPixbuf *gradpix;
+  GdkPixbuf *logopix;
+  int logopix_w;
+  int logopix_h;
+  GdkPixbuf *tooltippix;
+  int tooltippix_w;
+  int tooltippix_h;
   GSList *drawings;
   GSList *pages;
 };
@@ -79,16 +111,19 @@ Gamandua *gamandua;
 GtkWidget *init_combo_prob(void);
 GtkWidget *init_combo_strat(void);
 GtkWidget *init_spin_machine(void);
+void init_menu(void);
 
 void remove_page(GtkWidget *notebook);
 void append_page(GtkWidget *notebook);
 void apply_pop_settings(struct tdc_generator *generator);
-void draw_task(int x, int y, int width, int height, int color);
-void draw_task_txt_size(int size, int x, int y, int color);
-void draw_selection(void);
+void apply_job_settings(struct tdc_job *job, size_t n_machines, size_t strat);
+void draw_task(GdkDrawable* drawable, int x, int y, int width, int height, int color);
+void draw_task_txt_size(GdkDrawable* drawable, int size, int x, int y, int color);
+void draw_selection(GdkDrawable* drawable);
 void append_help(GtkNotebook *notebook);
 void append_drawing(GtkNotebook *notebook);
 Canvas *get_current_canvas(void);
-GtkWidget *init_frame_info(void);
+void switch_to_logo(int logo);
+GdkDrawable* job_to_drawable(GdkDrawable* win, struct tdc_job* job);
 
-#endif /* GAMANDUA_H */
+#endif /* INC_GAMANDUA_H */

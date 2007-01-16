@@ -1,7 +1,7 @@
 #include <td_base.h>
 #include <td_core.h>
 
-#include "johnson.h"
+#include "flowshop2.h"
 
 
 int johnson

@@ -59,12 +59,7 @@ int isinT
   /* Simulation de la machine M'1 == (M1 + M2),
    * et de la machine M'2 == (M2 + M3)
    */
-  return
-   (
-    (self->steps[0].length + self->steps[1].length)
-    <=
-    (self->steps[1].length + self->steps[2].length)
-   );
+  return ( self->steps[0].length <= self->steps[2].length );
 }
 
 /* Reorganise, couplé avec un qsort, les tâches de telle façon que
@@ -83,12 +78,8 @@ int compare
     {
       if(isinT(*b))
         {
-          return
-           (
-            ( (*a)->steps[0].length + (*a)->steps[1].length )
-            -
-            ( (*b)->steps[0].length + (*b)->steps[1].length )
-           );
+          return ( ( (*a)->steps[0].length + (*a)->steps[1].length ) -
+                   ( (*b)->steps[0].length + (*b)->steps[1].length ));
         }
       else
         {
@@ -103,12 +94,8 @@ int compare
         }
       else
         {
-          return
-           (
-            ( (*b)->steps[1].length + (*b)->steps[2].length )
-            -
-            ( (*a)->steps[1].length + (*a)->steps[2].length )
-           );
+          return ( ( (*b)->steps[1].length + (*b)->steps[2].length ) -
+                   ( (*a)->steps[1].length + (*a)->steps[2].length ));
         }
     }
 }

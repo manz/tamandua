@@ -1,0 +1,198 @@
+\section{Ordonnancement selon la règle de Smith}
+\subsection{Problème}
+Il s'agit ici d'ordonnancer un ensemble de {\em n} tâches sur une seule machine.
+Comme dans le problème précédent on considère qu'elles ne sont pas
+interdépendantes. En revanche, cette fois-ci on considère avec la durée un poid
+associé pour chaques tâches. Il nous faut donc une solution tenant compte de ces
+deux propriétés dans l'ordre de priorité. 
+ 
+\subsection{Principe}
+La règle de Smith, ou du Temps Opératoire Minimum Pondéré est un moyen 
+d'ordonnancer des tâches en donnant priorité aux tâches ayant le plus faible 
+quotient de leur durée opératoire à leur coefficient de pondération. Wayne Smith 
+a démontré en 1956 que cette règle produit une séquence optimale sur une machine 
+lorsque toutes les tâches sont disponibles simultanément.\\
+L'algorithme est très simple, il suffit de trier les tâches selon le quotient 
+susmentionné, ceci se fait bien évidemment en $O(n.log(n))$.
+
+\subsection{Algorithme}
+\begin{algorithm}
+\caption{Algorithme de la règle de Smith}
+\begin{algorithmic}
+\STATE $Trier(taches, (p_i*w_j - p_j*w_i))$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Exemple}
+Nous voulons ordonner $n = 6$ tâches tel que :
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+$j$ & 1 & 2 & 3 & 4 & 5 & 6  \\
+\hline
+$p_j$ & 8 & 6 & 3 & 7 & 4 & 8  \\
+$w_j$ & 8 & 3 & 6 & 7 & 8 & 1  \\
+\hline
+$\frac{p_j}{w_j}$ & 1 & 2 & $\frac{1}{2}$ & 1 & $\frac{1}{2}$ & 8 \\
+\hline
+\end{tabular}
+\end{center}
+En triant les tâches nous obtenons $j_3,j_5,j_1,j_4,j_2,j_6$.
+
+\subsection{Démonstration}
+Étant donnée une suite $S$ de $n$ tâches $J^S_1...J^S_n$ de temps d'exécution 
+$p^S_1...p^S_n$ et munies de poids $w^S_1...w^S_n$ strictement positifs.  On dit 
+que celle-ci respecte la règle de Smith si elle respecte la relation d'ordre:
+\begin{equation}
+\forall i \in [1,n-1]: \quad \frac{p^S_i}{w^S_i} \leq 
+\frac{p^S_{i+1}}{w^S_{i+1}}
+\end{equation}
+Que l'on peut étendre par transitivité :
+\begin{equation}
+\forall i,j \in [1,n-1]: \quad i\leq j \Leftrightarrow \frac{p^S_i}{w^S_i} \leq 
+\frac{p^S_j}{w^S_j}
+\end{equation}
+Et enfin que l'on peut aussi écrire :
+\begin{equation}\label{inek}
+\forall i,j \in [1,n-1]: \quad i\leq j \Leftrightarrow p^S_iw^S_j \leq 
+p^S_jw^S_i
+\end{equation}
+
+\begin{rmk}
+La règle de Smith étant une relation d'ordre, si une suite $S$ la respecte, 
+alors toute sous-suite de $S$ la respecte.
+\end{rmk}
+
+Soit $T(S)$ la valeur du temps opératoire pondéré d'une suite $S$ de longueur 
+$n$, calculée ainsi:
+\begin{equation}
+T(S) = \sum_{i=1}^n \left(w^S_i\sum_{j=1}^i\left(p^S_j\right)\right)
+\end{equation}
+
+\subsection{Déplacement d'un élément}
+Prenons une suite $L$ de $n$ tâches ordonnée selon la règle de Smith, et une 
+permutation $L'$ de $L$ telle que:
+\begin{align}
+L'_1 &= L_q \\
+\forall i\in[2,q]:L'_i &= L_{i-1} \\
+\forall i\in[q+1,n]:L'_i &= L_i
+\end{align}
+C'est à dire la suite $L$ avec son $q$\textsuperscript{ième} élément replacé au 
+début.  Afin de comparer $T(L')$ à $T(L)$, développons $T(L')$:
+\begin{align}
+T(L') &= \sum_{i=1}^n \left(w^{L'}_i\sum_{j=1}^i\left(p^{L'}_j\right)\right) \\
+&= w^{L'}_1p^{L'}_1 + \sum_{i=2}^q 
+\left(w^{L'}_i\sum_{j=1}^i\left(p^{L'}_j\right)\right) + \sum_{i=q+1}^n
+\left(w^{L'}_i\sum_{j=1}^i\left(p^{L'}_j\right)\right) \\
+&=  w^{L'}_1p^{L'}_1 + \sum_{i=2}^q 
+\left(w^{L'}_i\biggl(p^{L'}_1+\sum_{j=2}^i\left(p^{L'}_j\right)\biggr)\right) 
++ \sum_{i=q+1}^n
+\left(w^{L'}_i\sum_{j=1}^i\left(p^{L'}_j\right)\right) \\
+&= w^{L'}_1p^{L'}_1 + \sum_{i=2}^q \left(w^{L'}_ip^{L'}_1\right) +  \sum_{i=2}^q 
+\left(w^{L'}_i\sum_{j=2}^i\left(p^{L'}_j\right)\right) + \sum_{i=q+1}^n
+\left(w^{L'}_i\sum_{j=1}^i\left(p^{L'}_j\right)\right)
+\end{align}
+Maintenant, remplaçons les éléments de $L'$ par des éléments de $L$:
+\begin{align}
+T(L') &=  w^{L}_qp^{L}_q + \sum_{i=1}^{q-1} \left(w^{L}_ip^{L}_q\right) 
++  \sum_{i=2}^q \left(w^{L}_{i-1}\sum_{j=2}^i\left(p^{L}_{j-1}\right)\right) 
++ \sum_{i=q+1}^n \left(w^{L}_i\sum_{j=1}^i\left(p^{L}_j\right)\right)\\
+&= \sum_{i=1}^{q} \left(w^{L}_ip^{L}_q\right) +  \sum_{i=1}^{q-1} 
+\left(w^{L}_{i}\sum_{j=1}^i\left(p^{L}_{j}\right)\right) + \sum_{i=q+1}^n 
+\left(w^{L}_i\sum_{j=1}^i\left(p^{L}_j\right)\right)
+\end{align}
+Et enfin, introduisons une variable:
+\begin{align}
+T(L') &= \sum_{i=1}^{q} \left(w^{L}_ip^{L}_q\right) +  \sum_{i=1}^{q-1} 
+\left(w^{L}_{i}\sum_{j=1}^i\left(p^{L}_{j}\right)\right) + \sum_{i=q+1}^n 
+\left(w^{L}_i\sum_{j=1}^i\left(p^{L}_j\right)\right) + w^L_q\sum_{j=1}^q(p^L_j) 
+- w^L_q\sum_{j=1}^q(p^L_j) \\
+ &= \sum_{i=1}^{q} \left(w^{L}_ip^{L}_q\right) +  \sum_{i=1}^{q} 
+ \left(w^{L}_{i}\sum_{j=1}^i\left(p^{L}_{j}\right)\right) + \sum_{i=q+1}^n 
+ \left(w^{L}_i\sum_{j=1}^i\left(p^{L}_j\right)\right) - w^L_q\sum_{j=1}^q(p^L_j) 
+ \\
+ &= \sum_{i=1}^{q} \left(w^{L}_ip^{L}_q\right) +  \sum_{i=1}^{n} 
+ \left(w^{L}_{i}\sum_{j=1}^i\left(p^{L}_{j}\right)\right) 
+ - \sum_{j=1}^q(w^L_qp^L_j) \\
+ &= \sum_{i=1}^{n} \left(w^{L}_{i}\sum_{j=1}^i\left(p^{L}_{j}\right)\right) 
+ + \sum_{j=1}^q(w^L_jp^L_q- w^L_qp^L_j) \\
+ &= T(L) +  \sum_{j=1}^q(w^L_jp^L_q- w^L_qp^L_j)
+ \end{align}
+On remarque d'après l'équation \eqref{inek} que la différence entre $T(L')$ et 
+$T(L)$ est une somme de valeurs positives. On en déduit que $T(L')$ est 
+supérieur à $T(L)$. Ce que l'on peut plus généralement exprimer ainsi:
+\begin{lem}\label{lem1}
+Si on déplace un élément d'une suite respectant la règle de Smith en première 
+position, alors le temps opératoire pondéré de celle-ci augmente.
+\end{lem}
+On note de plus que la nouvelle suite privée de son premier élément est une 
+sous-suite de la suite originale et est donc une suite respectant la règle de 
+Smith.
+
+\subsection{Concaténation de suites}
+Revenons maintenant sur la définition de $T$ et appliquons la à une suite $S$ 
+sectionnée en 2 parties $S_1...S_{q-1}$ et $S_q...S_n$ que l'on nomme 
+respectivement $A$ et $B$ :
+\begin{align}
+T(S) &= \sum_{i=1}^n \left(w^S_i\sum_{j=1}^i\left(p^S_j\right)\right) \\
+&= \sum_{i=1}^{q-1} \left(w^S_i\sum_{j=1}^i\left(p^S_j\right)\right) 
++ \sum_{i=q}^n \left(w^S_i\sum_{j=1}^i\left(p^S_j\right)\right)
+\end{align}
+Nous remarquons rapidement la présence de $T(A)$:
+\begin{align}
+&= T(A) + \sum_{i=q}^n \left(w^S_i\sum_{j=1}^i\left(p^S_j\right)\right) \\
+&= T(A) + \sum_{i=q}^n \left(w^S_i\left( \sum_{j=1}^{q-1}\left(p^S_j\right) 
++  \sum_{j=q}^i\left(p^S_j\right) \right)\right) \\
+&= T(A) + \sum_{j=1}^{q-1}\left(p^S_j\right) \sum_{i=q}^n \left(w^S_i\right) +
+\sum_{i=q}^n \left(w^S_i\ \sum_{j=q}^i\left(p^S_j\right)\right) \\
+\end{align}
+Et enfin nous arrivons à faire apparaitre $T(B)$:
+\begin{align}
+&=  T(A) + \sum_{j=1}^{q-1}\left(p^A_j\right) \sum_{i=1}^{n-q+1} 
+\left(w^B_i\right) +
+\sum_{i=1}^{n-q+1} \left(w^B_i\ \sum{j=q}^i\left(p^B_j\right)\right) \\
+&= T(A) + \sum_{j=1}^{q-1}\left(p^A_j\right) \sum_{i=1}^{n-q+1} 
+\left(w^B_i\right) + T(B)
+\end{align}
+Équation que nous pouvons exprimer ainsi:
+\begin{lem}\label{lem2}
+Le temps opératoire pondéré de la concaténation de 2 suites est égal à la somme  
+de leur temps opératoire pondéré plus le produit de la durée de la première 
+suite avec la somme des poids de la seconde.\end{lem}
+Étant donné que la permutation d'éléments dans une suite ne modifie ni sa durée 
+totale ni la somme des poids de ses éléments, on peut déduire le corollaire 
+suivant.
+\begin{cor}\label{lem3}
+Si le temps opératoire pondéré d'une partie d'une suite augmente suite à une 
+permutation d'éléments au sein de cette partie, alors le temps opératoire 
+pondéré de la suite entière augmente.
+\end{cor}
+\subsection{Conclusion}
+Considérons enfin une classe de suites $V^q$ telles que :
+\begin{itemize}
+\item $V^q$ est une permutation de $L$, une suite respectant la règle de Smith.
+\item $N$ est une permutation quelconque de $L$.
+\item Pour tout $q\in[0,n]$, $V^q$ est la concaténation du préfixe de $N$ de 
+longueur $q$ et d'une sous-suite de $L$ de longueur $n-q$. On nommera chaque 
+partie respectivement $A^q$ et $B^q$.
+\end{itemize}
+On remarque que $V^0=L$ et $V^n=N$. On remarque aussi que le successeur du 
+dernier élément de $A^q$ dans $N$ se trouve forcément dans $B^q$ étant donné que 
+$A^q.B^q$ est une permutation de $N$.
+
+Considérons la suite $V'^q=A'^q.B'^q$ telle que $A'^q=A^q$ et $B'^q$ soit une 
+permutation de $B^q$ telle que l'on ait déplacé le successeur du dernier élément 
+de $A^q$ dans $N$ en première position.
+
+Alors $A'^q$ concaténé avec le premier élément de $B'^q$ est le préfixe de $N$ 
+de longueur $q+1$ et $B'^q$ sans son premier élément est une sous-suite de $L$ 
+de longueur $n-(q+1)$. En d'autres termes, $V'^q=V^{q+1}$.
+
+Or on sait que $T(A'^q)=T(A^q)$ et que d'après le lemme \ref{lem1} $T(B'^q)\geq 
+T(B^q)$.  Donc, d'après le lemme \ref{lem3} $T(V'^q)\geq T(V^q)$ et donc enfin 
+$T(V^{q+1}) \geq T(V^q)$.
+
+Il existe donc une transformation systématique de chaque $V^q$ vers $V^{q+1}$ 
+garantissant $T(V^{q+1}) \geq T(V^q)$ donc, par transitivité $T(V^q) \geq 
+T(V^0)$, soit $T(N) \geq T(L)$ quelque soit la permutation $N$ de $L$. $L$ est 
+donc une solution minimisant $T$, CQFD.

@@ -30,8 +30,8 @@ include_directories(td_base td_core)
 
 add_library(dispatch MODULE problems/dispatch/dispatch.c)
 add_library(smith MODULE problems/smith/smith.c)
+add_library(flowshop2 MODULE problems/flowshop2/flowshop2.c)
 add_library(flowshop3 MODULE problems/flowshop3/flowshop3.c)
-add_library(johnson MODULE problems/johnson/johnson.c)
 
 
 #if (NOT APPLE)

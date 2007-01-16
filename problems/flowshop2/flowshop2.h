@@ -1,6 +1,7 @@
 const char name[]        =   "Flowshop2"   ;
-const char description[] =   "Algorithme de répartion de tâches "
-                             "en fonction de leurs temps d'excution." ;
+const char description[] =   "Algorithme d'optimisation du temps d'exécution "
+                             "d'une liste de tâche passée succéssivement sur "
+                             "deux machines.";
 const char *strategies[] = { "Johnson"  };
 
 int problem(size_t strategies, struct tdc_job *job);

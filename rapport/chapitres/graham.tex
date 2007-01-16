@@ -1,0 +1,204 @@
+\section{Répartition de tâches sans précédences sur plusieurs machines}
+\subsection{Problème}
+Dans ce problème, il s'agit de répartir un ensemble de tâches de durées 
+diverses, sans dépendances entre elles sur plusieurs machines identiques, 
+l'objectif de l'ordonnancement étant de minimiser le temps total de calcul.
+Nous allons tout d'abord utiliser une répartition de type premier arrivé-premier 
+servi sur l'ensemble des tâches, puis utiliser l'algorithme de coffman-graham en 
+utilisant la durée des taches comme relation d'ordre de priorité avant de les 
+répartir.
+
+\subsection{Algorithme naïf}
+\subsubsection{Présentation}
+Le principe est de prendre une liste de tâches dans un ordre quelconque et 
+à chaque itération de prendre la première tâche de la liste et de l'affecter 
+à la première machine disponible.
+\subsubsection{Exemple}
+Prenons ${n=13}$ ${m=4}$ et ${(p_{1},p_{2},...,p_{12},p_{13}) 
+= (1,1,...,1,4)}$.\\
+L'application de l'algorithme à cet ensemble donne le résultat suivant, ayant 
+pour temps d'exécution total $7$ :
+\begin{center}
+$m_{1} = {p_{1},p_{5},p_{9},p_{13}}$ \\
+$m_{2} = {p_{2},p_{6},p_{10}}$ \\
+$m_{3} = {p_{3},p_{7},p_{11}}$ \\
+$m_{4} = {p_{4},p_{8},p_{12}}$ \\
+\end{center}
+Or on peut facilement produire à la main un meilleur résultat :
+\begin{center}
+$m_{1} = {p_{1},p_{4},p_{7},p_{10}}$ \\
+$m_{2} = {p_{2},p_{5},p_{8},p_{11}}$ \\
+$m_{3} = {p_{3},p_{6},p_{9},p_{12}}$ \\
+$m_{4} = {p_{13}}$ \\
+\end{center}
+Celui-ci a un temps d'exécution total de $4$, les bornes inférieures que nous 
+allons donner par la suite pour $C^*_{max}$ montrent que c'est un résultat 
+optimal.
+\subsubsection{Mesure du ratio de performance}
+Commençons tout d'abord par poser deux bornes inférieures pour $C^*_{max}$, 
+toutes deux relativement triviales. La première est déterminée par le cas 
+optimal où toutes les machines sont occupées pendant toute la durée du calcul, 
+et donc où toutes les machines s'arrètent de travailler en même temps.
+\begin{equation}
+\label{graham-chien}
+C^*_{max} \geq \frac{\sum_{i=1}^n p_{i}}{m}
+\end{equation}
+Une seconde borne encore plus triviale est la durée de la plus longue de toutes 
+les tâches.
+\begin{equation}
+\label{graham-lapin}
+C^*_{max} \geq max^n_{i=1}(p_{i})
+\end{equation}
+Soit $j'$ la tâche qui se termine à $C^{LS}_{max}$ :
+\begin{equation}
+C^{LS}_{max} = t_{j'} + p_{j'}
+\end{equation}
+Nous avons de plus :
+\begin{equation}
+p_{j'} \leq max^n_{i=1}(p_{i})
+\end{equation}
+Ce qui combiné avec \eqref{graham-lapin} nous donne le résultat suivant :
+\begin{align}
+p_{j'} &\leq C^*_{max} \\
+\label{graham-canard}
+C^{LS}_{max} &\leq t_{j'} + C^*_{max}
+\end{align}
+Or $t_{j'}$ est le moment ou $j'$ débute, ce qui signifie que lors de son 
+affectation à une machine toute les autres machines sont déja occupées jusqu'à 
+au moins $t_{j'}$ ce qui signifie qu'à cet instant les machines ont déja calculé 
+pendant une durée de $m*t_{j'}$, or le temps de travail des machines est 
+forcément inférieur à la durée total de calcul des tâches, ce qui nous donne :
+\begin{align}
+m*t_{j'} &\leq \sum_{i=1}^n p_{i} \\
+\label{graham-ours}
+t_{j'} &\leq \frac{\sum_{i=1}^n p_{i}}{m} \\
+t_{j'} &\leq C^*_{max}
+\end{align}
+Ce qui combiné avec \eqref{graham-canard} nous donne enfin le ratio de 
+performance :
+\begin{align}
+C^{LS}_{max} &\leq 2*C^*_{max} \\
+\frac{C^{LS}_{max}}{C^*_{max}} &\leq 2 
+\end{align}
+\subsubsection{Complexité de l'implémentation}
+Pour implémenter cet algorithme, nous avons besoin de deux structures de 
+données, la première est la liste des tâches, étant donné que nous ne voulons 
+que prendre le premier élément, une pile ou une itération sur un tableau sont 
+suffisantes. La seconde structure est celle qui permet de savoir à chaque 
+itération sur un élément de la liste des tâches quelle est la première machine 
+disponible, nous avons choisit pour cela un tas binaire ordonné avec la première 
+machine disponible en haut du tas.
+
+Le tas binaire permet d'accéder à cet élément en temps constant, de le supprimer 
+en $O(log(m))$ et de le réinserer une fois la durée de la nouvelle tâche ajoutée 
+en $O(log(m))$.
+L'opération complète que l'on nomme $Augmenter\_minimum(tas, duree)$ prends donc 
+$O(log(m))$ et est répétée pour chaque tâche, ce qui nous fait une complexité 
+totale de $O(n.log(m))$.
+
+On note enfin que la création du tas initial avec toute les durées à 0 et avec 
+un élément pour chaque machine se fait en $O(m)$ avec une implémentation en 
+tableau du tas, $m$ étant typiquement inférieur à $n$ (sans quoi 
+l'ordonnancement est trivial) cela n'influence pas la complexité.
+\begin{algorithm}
+\caption{Augmenter\_minimum(tas, duree)}
+\begin{algorithmic}
+\STATE $elem \leftarrow extraire\_minimum(tas)$
+\STATE $machine \leftarrow machine(elem)$
+\STATE $duree(elem) \leftarrow duree(elem) + duree$
+\STATE $inserer(tas, elem)$
+\STATE \textbf{retourner} $machine$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Ordonnancement\_LS(taches)}
+\begin{algorithmic}
+\STATE $tas = creer\_tas()$
+\FORALL{$tache$ \textbf{dans} $taches$}
+\STATE $machine(tache) = Augmenter\_minimum(tas, duree(tache))$
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+\subsection{Algorithme de Coffman-Graham}
+
+\subsubsection{Présentation}
+L'algorithme de Coffman-Graham est similaire au précédent, avec pour seul 
+différence un tri préalable des tâches selon le durée, et ceci de manière 
+décroissante. Le tri induit un calcul préalable de complexité $O(n.log(n))$ mais 
+améliore, comme nous allons le démontrer le ratio de performance en l'abaissant 
+à $\frac{4}{3}$.
+\begin{algorithm}
+\caption{Ordonnancement\_LPT(taches)}
+\begin{algorithmic}
+\STATE $Trier(taches, duree(b)-duree(a))$
+\STATE $Ordonnancement\_LS(taches)$
+\end{algorithmic}
+\end{algorithm}
+\subsubsection{Démonstration}
+Nous pouvons tout d'abord partir de l'équation \eqref{graham-ours} trouvée lors 
+de l'étude de $C^{LS}_{max}$ :
+\begin{align}
+C^{LPT}_{max} &= t_{j'} + p_{j'} \\
+C^{LPT}_{max} &\leq \frac{\sum_{i=1}^n p_{i}}{m} + p_{j'} \\
+\end{align}
+Puis en employant \eqref{graham-chien}, nous obtenons :
+\begin{equation}
+C^{LPT}_{max} \leq C^*_{max} + p_{j'}
+\end{equation}
+Distinguons maintenant deux cas, selon la valeur de $p_{j'}$, tout d'abord si 
+$p_{j'} \leq \frac{C^*_{max}}{3}$ :
+\begin{align}
+C^{LPT}_{max} &\leq C^*_{max} + \frac{C^*_{max}}{3} \\
+C^{LPT}_{max} &\leq \frac{4}{3} C^*_{max} \\
+\frac{C^{LPT}_{max}}{C^*_{max}} &\leq \frac{4}{3}
+\end{align}
+Cependant si $p_{j'} > \frac{C^*_{max}}{3}$ la solution n'est pas aussi simple.  
+Tout d'abord on peut écarter le cas où $n\leq m$, dans ce cas on ne peut faire 
+mieux que de mettre zéro ou une tâche sur chaque machine, la solution est 
+triviale. Ètudions maintenant le cas contraire.
+
+Appelons $M$ la machine traitant $j'$, celle-ci traite un certain nombre 
+d'autres tâches. On sait que le temps d'exécution de $M$ est le plus élevé de 
+toutes les machines et détermine $C^{LPT}_{max}$. On sait aussi que les autres 
+machines ont toutes un temps d'exécution d'au moins $t_{j'}$. On sait enfin que  
+toutes les tâches sur $M$ sont de durées supérieure à $p_{j'}$ étant donné que 
+$j'$ est la dernière traitée et que les tâches sont traitées par durée 
+décroissante.
+
+On ne peut enlever une tâche de $M$ pour la mettre sur une autre machine, les 
+autres machines ayant un temps d'exécution déja supérieur à $t_{j'}$ et les 
+tâches de $M$ ayant toutes une durée supérieure à $p_{j'}$, le temps d'exécution 
+de l'autre machine deviendrait supérieur à $t_{j'}+p_{j'}$ donc supérieur 
+à $C^{LPT}_{max}$ ce qui ne raccourcirait pas l'ordonnancement.
+
+Cela signifie donc que pour réduire la durée d'exécution de $M$, il faut 
+permuter des tâches de $M$ avec celles d'autres machines. Si on permute une 
+tâche $a$ de $M$ avec une tâche $b$ d'une autre machine, la tâche $b$ se doit 
+d'être de durée supérieur à $p_{j'}$ sinon cela signifie qu'elle est démarre 
+après $t_{j'}$ et donc que la machine $M'$ d'ou vient $b$ aura un temps 
+d'exécution supérieur à $t_{j'}+p_{j'}$ ce qui ne raccourcirait toujours pas 
+l'ordonnancement.
+
+Enfin on remarque que s'il y a trois tâches ou plus avant $j'$ sur $M$, alors 
+$t_{j'} > 3*p_{j'}$. Or $C^*_{max} \geq \frac{\sum_{i=1}^n p_{i}}{m} \geq 
+t_{j'}$, ce qui nous amène enfin à $C^*_{max} \geq 3*p_{j'}$ ce qui contredit 
+notre hypothèse sur $p_{j'}$.  Il y a donc au plus deux tâches avant $j'$ sur 
+$M$.
+
+Cela signifie donc que l'on peut avoir au plus deux permutations pour réduire la 
+durée d'exécution de $M$ et qu'on l'on ne peut répartir l'excédent que sur au 
+plus deux autres machines. Ètant donné que toutes les autres machines ont un 
+temps d'exécution supérieur à $t_{j'}$ on ne peut pas réduire la durée de $M$ de 
+plus de $\frac{2}{3}p_{j'}$. Ce qui nous amène à la conclusion :
+
+\begin{align}
+C^*_{max} &\geq C^{LPT}_{max} - \frac{2*p_{j'}}{3} \\
+C^*_{max} &\geq C^{LPT}_{max} - \frac{2*C^*_{max}}{9} \\
+\frac{11}{9}C^*_{max} &\geq C^{LPT}_{max} \\
+\frac{12}{9}C^*_{max} &\geq C^{LPT}_{max} \\
+\frac{4}{3} &\geq \frac{C^{LPT}_{max}}{C^*_{max}} \\
+\end{align}
+
+Nous avons ainsi démontré que le ration de performance de $C^{LPT}_{max}$ est 
+inférieur à $\frac{4}{3}$ dans tout les cas, CQFD.

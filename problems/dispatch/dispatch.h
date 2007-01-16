@@ -1,6 +1,6 @@
 const char name[] = "Dispatch";
 const char description[] =
-"Algorithme de répartition d'un ensemble de tâches"
+"Algorithme de répartition d'un ensemble de tâches "
 "sur un nombre fixé de machines.";
 const char* strategies[] = {
 	"Méthode naïve",

@@ -23,9 +23,9 @@ main(int argc, char **argv)
   tdb_init(stderr, &argc, argv);
   if (argc > 1)
     {
-      if(!strcmp("-h", argv[1]) || !strcmp("--help", argv[1]))
+      if(argv[1][0]=='-')
         {
-          printf("usage: gamandua [-h|--help] | [problems_path]\n");
+          printf("usage: gamandua [problems_path\n");
           return EXIT_SUCCESS;
         }
       else
@@ -52,9 +52,15 @@ main(int argc, char **argv)
   gui->spin_machine = init_spin_machine();
   gui->notebook = init_notebook();
   gui->drawing_area = init_drawing_area(gui);
-  gui->frame_info = init_frame_info();
+  gui->gradpix = gdk_pixbuf_new_from_file("grad.png", NULL);
+  gui->logopix = gdk_pixbuf_new_from_file("gamandua_shaded.png", NULL);
+  gui->logopix_w = gdk_pixbuf_get_width(gui->logopix);
+  gui->logopix_h = gdk_pixbuf_get_height(gui->logopix);
+  gui->tooltippix = gdk_pixbuf_new_from_file("tooltip.png", NULL);
+  gui->tooltippix_w = gdk_pixbuf_get_width(gui->tooltippix);
+  gui->tooltippix_h = gdk_pixbuf_get_height(gui->tooltippix);
   init_packing(gui);
-
+  switch_to_logo(1);
   gtk_main();
   return EXIT_SUCCESS;
 }
@@ -95,10 +101,11 @@ init_window(void)
   gtk_window_set_title(window, "Tamandua");
   gtk_window_set_wmclass(window, "tamandua", "tamandua");
   gtk_container_set_border_width(GTK_CONTAINER(window), 2);
-  gtk_window_resize(window, 800, 600);
+  gtk_window_resize(window, 700, 400);
   gtk_widget_show(GTK_WIDGET(window));
   gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(cb_window_destroy), NULL);
-
+  gtk_signal_connect_after(GTK_OBJECT(window), "key-press-event", 
+                           GTK_SIGNAL_FUNC(cb_keybindings), NULL);
   return GTK_WIDGET(window);
 }
 
@@ -109,8 +116,8 @@ init_buttonbox(void)
   GtkWidget *box;
   GtkWidget *vbox;
   GtkWidget *icon;
-  GtkWidget *btn_exec;
   GtkWidget *btn_calc;
+  GtkWidget *btn_export;
 
   gui = gamandua->gui;
   if (!gui) return NULL;
@@ -123,26 +130,27 @@ init_buttonbox(void)
   icon = gtk_image_new_from_stock(GTK_STOCK_EXECUTE, GTK_ICON_SIZE_SMALL_TOOLBAR);
   gtk_widget_show(icon);
   gtk_box_pack_start(GTK_BOX(vbox), icon, TRUE, TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(vbox), init_label("Executer"), TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox), init_label("Calculer"), TRUE, TRUE, 0);
+  gui->btn_calc = btn_calc;
 
-  btn_exec = gtk_button_new();
-  gtk_button_set_relief(GTK_BUTTON(btn_exec), GTK_RELIEF_NONE);
+  btn_export = gtk_button_new();
+  gtk_button_set_relief(GTK_BUTTON(btn_export), GTK_RELIEF_NONE);
   vbox = init_vbox();
-  gtk_container_add(GTK_CONTAINER(btn_exec), vbox);
-  icon = gtk_image_new_from_stock(GTK_STOCK_CONVERT, GTK_ICON_SIZE_SMALL_TOOLBAR);
+  gtk_container_add(GTK_CONTAINER(btn_export), vbox);
+  icon = gtk_image_new_from_stock(GTK_STOCK_SAVE, GTK_ICON_SIZE_SMALL_TOOLBAR);
   gtk_widget_show(icon);
   gtk_box_pack_start(GTK_BOX(vbox), icon, TRUE, TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(vbox), init_label("Relancer"), TRUE, TRUE, 0);
-  gtk_widget_set_sensitive(btn_exec, 0);
-  gui->btn_exec = btn_exec;
+  gtk_box_pack_start(GTK_BOX(vbox), init_label("Enregistrer"), TRUE, TRUE, 0);
 
-  gtk_widget_show(btn_exec);
   gtk_widget_show(btn_calc);
+  gtk_widget_show(btn_export);
+  gui->btn_export = btn_export;
+  gtk_widget_set_sensitive(btn_export, 0);
   gtk_box_pack_start(GTK_BOX(box), btn_calc, TRUE, TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(box), btn_exec, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(box), btn_export, TRUE, TRUE, 0);
 
   gtk_signal_connect(GTK_OBJECT(btn_calc), "clicked", GTK_SIGNAL_FUNC(cb_btn_calc_clicked), NULL);
-  gtk_signal_connect(GTK_OBJECT(btn_exec), "clicked", GTK_SIGNAL_FUNC(cb_btn_exec_clicked), NULL);
+  gtk_signal_connect(GTK_OBJECT(btn_export), "clicked", GTK_SIGNAL_FUNC(cb_btn_export_clicked), NULL);
 
   gtk_widget_show(box);
   return box;
@@ -157,6 +165,7 @@ init_buttonbox2(void)
   GtkWidget *icon;
   GtkWidget *btn_clear;
   GtkWidget *btn_help;
+  GtkWidget *btn_quit;
 
   gui = gamandua->gui;
   if (!gui) return NULL;
@@ -180,14 +189,29 @@ init_buttonbox2(void)
   gtk_box_pack_start(GTK_BOX(vbox), icon, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vbox), init_label("Aide"), TRUE, TRUE, 0);
 
+  btn_quit = gtk_button_new();
+  gtk_button_set_relief(GTK_BUTTON(btn_quit), GTK_RELIEF_NONE);
+  vbox = init_vbox();
+  gtk_container_add(GTK_CONTAINER(btn_quit), vbox);
+  icon = gtk_image_new_from_stock(GTK_STOCK_QUIT, GTK_ICON_SIZE_SMALL_TOOLBAR);
+  gtk_widget_show(icon);
+  gtk_box_pack_start(GTK_BOX(vbox), icon, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox), init_label("Quitter"), TRUE, TRUE, 0);
+
   gtk_widget_show(btn_clear);
   gtk_widget_show(btn_help);
+  gtk_widget_show(btn_quit);
+  gui->btn_clear = btn_clear;
   gui->btn_help = btn_help;
+  gui->btn_quit = btn_quit;
+  gtk_widget_set_sensitive(btn_clear, 0);
   gtk_box_pack_start(GTK_BOX(box), btn_clear, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(box), btn_help, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(box), btn_quit, TRUE, TRUE, 0);
 
   gtk_signal_connect(GTK_OBJECT(btn_clear), "clicked", GTK_SIGNAL_FUNC(cb_btn_clear_clicked), NULL);
   gtk_signal_connect(GTK_OBJECT(btn_help), "clicked", GTK_SIGNAL_FUNC(cb_btn_help_clicked), NULL);
+  gtk_signal_connect(GTK_OBJECT(btn_quit), "clicked", GTK_SIGNAL_FUNC(cb_btn_quit_clicked), NULL);
 
   gtk_widget_show(box);
   return box;
@@ -208,8 +232,6 @@ init_combo_prob(void)
     }
   gtk_signal_connect(GTK_OBJECT(combo), "changed", 
                      GTK_SIGNAL_FUNC(cb_combo_changed), gamandua);
-  gtk_signal_connect(GTK_OBJECT(combo), "changed", 
-                     GTK_SIGNAL_FUNC(cb_unsensitive_btn_exec), NULL);
   gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
   gtk_widget_show(GTK_WIDGET(combo));
 
@@ -243,6 +265,16 @@ init_combo_strat(void)
     {
       gtk_combo_box_append_text(combo, problem->strategies[i]);
     }
+  
+  if (problem->n_strategies <= 1) 
+    {
+      gtk_widget_set_sensitive(GTK_WIDGET(combo), 0);
+    }
+  else 
+    {
+      gtk_combo_box_append_text(combo, "Toutes");
+      gtk_widget_set_sensitive(GTK_WIDGET(combo), 1);
+    }
 
   gtk_combo_box_set_active(combo, 0);
   gtk_widget_show(GTK_WIDGET(combo));
@@ -274,7 +306,6 @@ init_notebook(void)
 
   notebook = gtk_notebook_new();
   gtk_notebook_set_scrollable(GTK_NOTEBOOK(notebook), 1);
-//  gtk_notebook_set_tab_pos(GTK_NOTEBOOK(notebook), GTK_POS_LEFT);
   gtk_widget_show(notebook);
   return notebook;
 }
@@ -293,7 +324,6 @@ remove_page(GtkWidget *notebook)
   list = g_slist_last(gui->pages);
   page = list->data;
   gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), n_pages-1);
-  //gtk_widget_destroy(page->root);
   free(page->steps_min);
   free(page->steps_max);
   free(page);
@@ -322,7 +352,7 @@ append_page(GtkWidget *notebook)
   if (!gui||!problem) return;
   n_pages = gtk_notebook_get_n_pages(GTK_NOTEBOOK(notebook));
 
-  page = calloc(1, sizeof(Page));
+  page = tdb_calloc(1, sizeof(Page));
   gui->pages = g_slist_append(gui->pages, page);
   page->root = init_vbox();
 
@@ -337,8 +367,6 @@ append_page(GtkWidget *notebook)
   page->slider_task = gtk_hscale_new_with_range(1, 100, 1);
   gtk_range_set_value(GTK_RANGE(page->slider_task), 7);
   gtk_container_add(GTK_CONTAINER(frame), page->slider_task);
-  gtk_signal_connect(GTK_OBJECT(page->slider_task), "value_changed", 
-                     GTK_SIGNAL_FUNC(cb_unsensitive_btn_exec), NULL);
 
   if (problem->tasks.weighted)
     {
@@ -361,10 +389,6 @@ append_page(GtkWidget *notebook)
       gtk_box_pack_start(GTK_BOX(hbox), page->weight_min, FALSE, FALSE, 0);
       gtk_box_pack_start(GTK_BOX(hbox), init_label(" et "), FALSE, FALSE, 0);
       gtk_box_pack_start(GTK_BOX(hbox), page->weight_max, FALSE, FALSE, 0);
-      gtk_signal_connect(GTK_OBJECT(page->weight_min), "value_changed", 
-                         GTK_SIGNAL_FUNC(cb_unsensitive_btn_exec), NULL);
-      gtk_signal_connect(GTK_OBJECT(page->weight_max), "value_changed", 
-                         GTK_SIGNAL_FUNC(cb_unsensitive_btn_exec), NULL);
     }
 
   /* Length */
@@ -378,8 +402,8 @@ append_page(GtkWidget *notebook)
   gtk_container_add(GTK_CONTAINER(frame), vbox);
   gtk_container_set_border_width(GTK_CONTAINER(vbox), 10);
 
-  page->steps_min = calloc(problem->tasks.steps, sizeof(GtkWidget *));
-  page->steps_max = calloc(problem->tasks.steps, sizeof(GtkWidget *));
+  page->steps_min = tdb_calloc(problem->tasks.steps, sizeof(GtkWidget *));
+  page->steps_max = tdb_calloc(problem->tasks.steps, sizeof(GtkWidget *));
   for (i=0; i<problem->tasks.steps; i++)
     {
       hbox = init_hbox();
@@ -392,10 +416,6 @@ append_page(GtkWidget *notebook)
       gtk_box_pack_start(GTK_BOX(hbox), page->steps_min[i], FALSE, FALSE, 0);
       gtk_box_pack_start(GTK_BOX(hbox), init_label(" et "), FALSE, FALSE, 0);
       gtk_box_pack_start(GTK_BOX(hbox), page->steps_max[i], FALSE, FALSE, 0);
-      gtk_signal_connect(GTK_OBJECT(page->steps_min[i]), "value_changed", 
-                         GTK_SIGNAL_FUNC(cb_unsensitive_btn_exec), NULL);
-      gtk_signal_connect(GTK_OBJECT(page->steps_max[i]), "value_changed", 
-                         GTK_SIGNAL_FUNC(cb_unsensitive_btn_exec), NULL);
     }
 
   gtk_widget_show_all(page->root);
@@ -435,6 +455,7 @@ append_help(GtkNotebook *notebook)
 
   hbox = init_hbox();
   label = init_label("Aide");
+  gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
   gtk_notebook_append_page(notebook, align, NULL);
   btn_close = gtk_button_new();
   gtk_button_set_image(GTK_BUTTON(btn_close), 
@@ -443,7 +464,7 @@ append_help(GtkNotebook *notebook)
   gtk_signal_connect(GTK_OBJECT(btn_close), "clicked",
                      GTK_SIGNAL_FUNC(cb_drawing_page_close), align);
 
-  gtk_box_pack_start(GTK_BOX(hbox), label, 0, 0, 0);
+  gtk_box_pack_start(GTK_BOX(hbox), label, 1, 1, 0);
   gtk_box_pack_start(GTK_BOX(hbox), btn_close, 0, 0, 0);
   gtk_widget_show_all(hbox);
 
@@ -452,6 +473,8 @@ append_help(GtkNotebook *notebook)
   gtk_widget_set_sensitive(gamandua->gui->btn_help, 0);
   gamandua->gui->drawings = g_slist_append(gamandua->gui->drawings, NULL);
   gtk_notebook_set_current_page(notebook, gtk_notebook_get_n_pages(notebook)-1);
+  gtk_widget_set_sensitive(gamandua->gui->btn_clear, 1);
+  switch_to_logo(0);
 }
 
 void
@@ -476,7 +499,9 @@ append_drawing(GtkNotebook *notebook)
                                         drawing_area);
   gtk_signal_connect(GTK_OBJECT(drawing_area), "expose-event", 
                      GTK_SIGNAL_FUNC(cb_drawing_area_exposed), NULL);
-  gtk_signal_connect(GTK_OBJECT(scrolled), "button-press-event", 
+  gtk_signal_connect(GTK_OBJECT(scrolled), "button-release-event", 
+                     GTK_SIGNAL_FUNC(cb_drawing_area_mouse_down), NULL);
+  gtk_signal_connect(GTK_OBJECT(scrolled), "popup-menu", 
                      GTK_SIGNAL_FUNC(cb_drawing_area_mouse_down), NULL);
 
   gtk_notebook_append_page(notebook, scrolled, NULL);
@@ -486,6 +511,7 @@ append_drawing(GtkNotebook *notebook)
   if (!gamandua->problem) return;
   asprintf(&str, "%s (%d)", gamandua->problem->name, ++gamandua->n_results);
   label = gtk_label_new(str);
+  gtk_misc_set_alignment(GTK_MISC(label), 0.0, 0.5);
   free(str);
 
   btn_close = gtk_button_new();
@@ -495,7 +521,7 @@ append_drawing(GtkNotebook *notebook)
   gtk_signal_connect(GTK_OBJECT(btn_close), "clicked",
                      GTK_SIGNAL_FUNC(cb_drawing_page_close), scrolled);
 
-  gtk_box_pack_start(GTK_BOX(hbox), label, 0, 0, 0);
+  gtk_box_pack_start(GTK_BOX(hbox), label, 1, 1, 0);
   gtk_box_pack_start(GTK_BOX(hbox), btn_close, 0, 0, 0);
   gtk_widget_show_all(hbox);
 
@@ -508,6 +534,8 @@ append_drawing(GtkNotebook *notebook)
   gamandua->gui->drawings = g_slist_append(gamandua->gui->drawings, canvas);
 
   gtk_notebook_set_current_page(notebook, gtk_notebook_get_n_pages(notebook)-1);
+  gtk_widget_set_sensitive(gamandua->gui->btn_clear, 1);
+  switch_to_logo(0);
 }
 
 GtkWidget *
@@ -520,7 +548,8 @@ init_drawing_area(Gui *gui)
   gtk_notebook_set_scrollable(GTK_NOTEBOOK(gui->drawing_notebook), 1);
   gtk_signal_connect(GTK_OBJECT(gui->drawing_notebook), "switch-page", 
                      GTK_SIGNAL_FUNC(cb_drawing_notebook_change_current), NULL);
-  append_help(GTK_NOTEBOOK(gui->drawing_notebook));
+  gtk_signal_connect(GTK_OBJECT(gui->drawing_notebook), "button-press-event", 
+                     GTK_SIGNAL_FUNC(cb_buttonbindings), NULL);
 
   return gui->drawing_area;
 }
@@ -556,6 +585,19 @@ init_spin_machine(void)
     }
 
   return spin;
+}
+
+void
+init_menu(void)
+{
+  GtkWidget *menu;
+  GtkWidget *item;
+
+  menu = gtk_menu_new();
+  item = gtk_menu_item_new_with_label("lala");
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
+  gtk_widget_show_all(menu);
+  gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, 3, 0);
 }
 
 static void
@@ -599,6 +641,7 @@ init_packing(Gui *gui)
   gtk_container_set_border_width(GTK_CONTAINER(vbox), 10);
   gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(hbox), gui->drawing_notebook, TRUE, TRUE, 10);
+  gui->hbox = hbox;
 
   align = gtk_alignment_new(0.5, 0, 0, 0);
   gtk_box_pack_start(GTK_BOX(vbox), align, FALSE, FALSE, 0);
@@ -610,14 +653,38 @@ init_packing(Gui *gui)
   gtk_box_pack_start(GTK_BOX(hbox), gui->spin_pop, FALSE, FALSE, 0);
   gtk_signal_connect(GTK_OBJECT(gui->spin_pop), "value_changed", 
                      GTK_SIGNAL_FUNC(cb_spin_pop_changed), gui->notebook);
-  gtk_signal_connect(GTK_OBJECT(gui->spin_pop), "value_changed", 
-                     GTK_SIGNAL_FUNC(cb_unsensitive_btn_exec), NULL);
 
   gtk_box_pack_start(GTK_BOX(vbox), gui->notebook, TRUE, TRUE, 10);
   append_page(gui->notebook);
-  gtk_box_pack_start(GTK_BOX(vbox), gui->frame_info, FALSE, FALSE, 10);
-
   gtk_widget_show_all(gui->window);
+}
+
+void
+switch_to_logo(int val)
+{
+  Gui *gui;
+  GtkWidget *image;
+
+  gui = gamandua->gui;
+  if (!gui || !gui->hbox) return;
+
+  if (!(image = gui->logo))
+    {
+      image = gtk_image_new_from_file("./gamandua_logo.png");
+      gtk_box_pack_start(GTK_BOX(gui->hbox), image, TRUE, TRUE, 20);
+      gui->logo = image;
+    }
+  
+  if (val)
+    {
+      gtk_widget_hide(gui->drawing_notebook);
+      gtk_widget_show(gui->logo);
+    }
+  else
+    {
+      gtk_widget_show(gui->drawing_notebook);
+      gtk_widget_hide(gui->logo);
+    }
 }
 
 void
@@ -664,22 +731,130 @@ apply_pop_settings(struct tdc_generator *generator)
 }
 
 void
-draw_task(int x, int y, int width, int height, int color)
+apply_job_settings(struct tdc_job *job, size_t n_machines, size_t strat)
+{
+  job = tdc_copy_job(gamandua->base_job);
+  if (tdc_problem_n_machines_settable(gamandua->problem))
+    job->n_machines = n_machines;
+  job->strategy = strat;
+  tdc_commit(job);
+  g_timeout_add(50, cb_checkout_job, NULL);
+}
+
+GdkDrawable* job_to_drawable(GdkDrawable* win, struct tdc_job* job)
+{
+  GdkGC *gc;
+  GdkDrawable *drawable;
+  const struct tdc_problem* problem = job->problem;
+  size_t width = job->timespan+140;
+  size_t height = 50*job->n_machines+70;
+  size_t i, j;
+  Gui* gui = gamandua->gui;
+
+  drawable = GDK_DRAWABLE(gdk_pixmap_new(win, width, height, -1));
+  gc = gdk_gc_new(drawable);
+
+  gdk_rgb_gc_set_foreground(gc, 0xffffff);
+  gdk_draw_rectangle(drawable, gc, TRUE, 0, 0, width, height);
+
+  PangoLayout *layout;
+  PangoContext *context;
+  char *str;
+  asprintf(&str, 
+           "Problème <i>%s</i>, Stratégie <i>%s</i>\n"
+           "<b>%d</b> tâche%c ordonnancée%c sur <b>%d</b> Machine%c",
+           problem->name, problem->strategies[job->strategy], job->n_tasks, 
+           job->n_tasks > 1 ? 's': '\0', job->n_tasks > 1 ? 's': '\0',
+           job->n_machines, job->n_machines > 1 ? 's': '\0');
+  context = gtk_widget_get_pango_context(gui->drawing_area);
+  layout  = pango_layout_new(context);
+  pango_layout_set_markup(layout, str, -1);
+  gdk_rgb_gc_set_foreground(gc, 0x000000);
+  gdk_draw_layout(drawable, gc, 5, 5, layout);
+
+  free(str);
+
+  struct tdc_task *task;
+  size_t max_length = 0;
+  double *machines;
+  size_t n_steps = tdc_problem_get_n_steps(problem);
+  machines = tdb_calloc(job->n_machines, sizeof(*machines));
+
+  for (i=0; i<job->n_tasks; i++)
+    {
+      task = job->tasks[i];
+      for (j=0; j<n_steps; j++)
+        {
+          if (machines[task->steps[j].machine] < task->steps[j].start_time + task->steps[j].length)
+            machines[task->steps[j].machine] = task->steps[j].start_time + task->steps[j].length;
+          if (machines[max_length] < machines[task->steps[j].machine])
+            max_length = task->steps[j].machine;
+        }
+    }
+  gamandua->max_length = max_length;
+
+  size_t *draw;
+  draw = tdb_calloc(job->n_machines, sizeof(size_t));
+  for (i=0; i<job->n_tasks; i++)
+    {
+      size_t col;
+      int color;
+      
+      task = job->tasks[i];
+      for (j=0; j<n_steps; j++)
+        {
+          if (task->n_steps > 1) {
+            color = id_colors[draw[task->steps[j].machine]%2]+COLOR_STEP*task->id;
+			}
+          else {
+            color = colors[draw[task->steps[j].machine]%2 
+             + (task->steps[j].machine == max_length ? 2:0)];
+			}
+
+          draw_task(drawable, task->steps[j].start_time, task->steps[j].machine*50+40, 
+                    task->steps[j].length, 40, 
+                    color);
+			/* dessin du 'wrapper' */
+			if (j > 0) {
+				GdkSegment segment ={
+					4+task->steps[j-1].start_time+task->steps[j-1].length,
+					task->steps[j-1].machine*50+80,
+					5+task->steps[j].start_time,
+					task->steps[j].machine*50+39
+				};
+				gdk_rgb_gc_set_foreground(gc, color);
+				gdk_draw_arc(drawable, gc, FALSE, segment.x1, segment.y1-5, segment.x2-segment.x1, 9, 180*64, 90*64);
+				gdk_draw_arc(drawable, gc, FALSE, segment.x1, segment.y1+5, segment.x2-segment.x1, 9, 0*64, 90*64);
+			}
+          draw[task->steps[j].machine]++;
+
+          if (task->steps[j].start_time + task->steps[j].length == machines[task->steps[j].machine])
+            draw_task_txt_size(drawable, machines[task->steps[j].machine],
+                               task->steps[j].start_time + task->steps[j].length + 10,
+                               task->steps[j].machine*50+50,
+                               0x000000);
+        }
+    }
+  free(draw);
+  free(machines);
+  if (G_IS_OBJECT(gc)) gdk_gc_unref(gc);
+  return drawable;
+}
+
+void
+draw_task(GdkDrawable *drawable, int x, int y, int width, int height, int color)
 {
   Gui *gui;
-  GdkDrawable *drawable;
   GdkGC *gc;
   GdkPixbuf *pix;
 
   gui = gamandua->gui;
-  if (!gui || !gui->drawing_area) return;
-  drawable = GDK_DRAWABLE(gui->drawing_area->window);
+  if (!gui) return;
   gc = gdk_gc_new(drawable);
 
   gdk_rgb_gc_set_foreground(gc, color);
   gdk_draw_rectangle(drawable, gc, TRUE, x+5, y, width, height);
-  pix = gdk_pixbuf_new_from_file_at_scale("grad.png", width, height, 
-                                          FALSE, NULL);
+  pix = gdk_pixbuf_scale_simple(gui->gradpix, width, height, GDK_INTERP_NEAREST);
   gdk_draw_pixbuf(drawable, gc, pix, 0, 0, x+5, y, width, height, 0, 0, 0);
 
   if (GDK_IS_PIXBUF(pix)) gdk_pixbuf_unref(pix);
@@ -687,10 +862,9 @@ draw_task(int x, int y, int width, int height, int color)
 }
 
 void
-draw_task_txt_size(int size, int x, int y, int color)
+draw_task_txt_size(GdkDrawable* drawable, int size, int x, int y, int color)
 {
   Gui *gui;
-  GdkDrawable *drawable;
   GdkGC *gc;
   PangoLayout *layout;
   PangoContext *context;
@@ -698,7 +872,6 @@ draw_task_txt_size(int size, int x, int y, int color)
 
   gui = gamandua->gui;
   if (!gui || !gui->drawing_area) return;
-  drawable = GDK_DRAWABLE(gui->drawing_area->window);
   gc = gdk_gc_new(drawable);
 
   context = gtk_widget_get_pango_context(gui->drawing_area);
@@ -713,16 +886,48 @@ draw_task_txt_size(int size, int x, int y, int color)
 }
 
 void
-draw_selection(void)
+draw_selection(GdkDrawable* drawable)
 {
   struct tdc_task *task;
   size_t step;
+  GdkGC* gc;
+  Gui* gui;
+  char* weight;
+  char* msg;
+  size_t x, y;
+  PangoLayout *layout;
+  PangoContext *context;
+  struct tdc_job* job;
 
+  gui = gamandua->gui;
   task = gamandua->selection.task;
-  if (!task) return;
+  if (!gui || !gui->drawing_area || !task || !drawable) return;
+  gc = gdk_gc_new(drawable);
+
+  context = gtk_widget_get_pango_context(gui->drawing_area);
+  layout  = pango_layout_new(context);
+
+  job = g_object_get_data(G_OBJECT(gui->drawing_area), "job");
   
   step = gamandua->selection.step;
-  draw_task(task->steps[step].start_time, task->steps[step].machine*50+40, 
+  x = task->steps[step].start_time+task->steps[step].length+3;
+  y = task->steps[step].machine*50+55;
+  gdk_draw_pixbuf(drawable, gc, gui->tooltippix, 0, 0, x, y, gui->tooltippix_w, gui->tooltippix_h, 0, 0, 0);
+
+  if (job->problem->tasks.weighted)  {
+		asprintf(&weight, "\n  Poids : %i", task->weight);
+  } else {
+		weight = NULL;
+  }
+  asprintf(&msg, "<b>Tâche n°%i</b>\n  Début : %i\n  Durée : %i%s",
+   task->id, task->steps[step].start_time, task->steps[step].length, weight?weight:"");
+  pango_layout_set_markup(layout, msg, -1);
+  gdk_draw_layout(drawable, gc, x+15, y+8, layout);
+  free(msg);
+  free(weight);
+
+  if (G_IS_OBJECT(gc)) gdk_gc_unref(gc);
+  draw_task(drawable, task->steps[step].start_time, task->steps[step].machine*50+40, 
             task->steps[step].length, 40, 
             0xfce94f);
 }
@@ -739,30 +944,4 @@ get_current_canvas(void)
   canvas = g_slist_nth_data(gui->drawings, 
                             gtk_notebook_get_current_page(GTK_NOTEBOOK(gui->drawing_notebook)));
   return canvas;
-}
-
-GtkWidget *
-init_frame_info(void)
-{
-  Gui *gui;
-  GtkWidget *frame;
-  GtkWidget *label;
-
-  gui = gamandua->gui;
-  if (!gui) return NULL;
-
-  if (!(frame = gui->frame_info))
-    {
-      frame = gtk_frame_new("Informations");
-      gtk_frame_set_shadow_type(GTK_FRAME(frame), GTK_SHADOW_ETCHED_IN);
-    }
-  
-  label = gtk_bin_get_child(GTK_BIN(frame));
-  if (label) gtk_widget_destroy(label);
-  label = gtk_label_new(NULL);
-  gtk_label_set_markup(GTK_LABEL(label), "<i>Cliquez sur une tâche\n pour plus d'informations</i>");
-  gtk_container_add(GTK_CONTAINER(frame), label);
-  gtk_widget_show(label);
-
-  return frame;
 }

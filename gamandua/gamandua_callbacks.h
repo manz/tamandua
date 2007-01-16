@@ -16,5 +16,10 @@ void cb_drawing_notebook_change_current(GtkNotebook *notebook, GtkNotebookPage *
 void cb_drawing_page_close(GtkButton *button, void *data);
 void cb_btn_clear_clicked(GtkButton *button, void *data);
 void cb_btn_help_clicked(GtkButton *button, void *data);
+void cb_btn_export_clicked(GtkButton *button, void *data);
+int cb_checkout_job(void *data);
+void cb_keybindings(GtkWidget *widget, GdkEventKey *ev, void *data);
+gboolean cb_buttonbindings(GtkWidget *widget, GdkEventButton *ev, void *data);
+
 
 #endif /* GAMANDUA_CALLBACKS_H */
