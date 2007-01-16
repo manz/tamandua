@@ -21,7 +21,7 @@
 
 using namespace std;
 
-class ProblemDialog : public QDialog {
+class ProblemDialog : public QWidget {
 	Q_OBJECT
 	private:
 		Wrap *fWrap;
@@ -72,6 +72,7 @@ class ProblemDialog : public QDialog {
 	public slots:
 		void updateSt(int s);
 		void accepted();
+		void rejected();
 };
 
 #endif /* PROBLEMDIALOG_H */
