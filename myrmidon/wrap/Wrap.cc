@@ -59,14 +59,15 @@ void Wrap::simulate(Generator *g) {
 	struct tdc_job *job;
 	if (g->compareStrategies()) {
 		job = tdc_create_job(tdgen);
-		job->strategy=0;
+		//job->strategy=0;
 		
 		struct tdc_job *copy=job;
 
-		for (int i=1;i<pb->n_strategies;i++) {
-			copy = tdc_copy_job(job);
+		for (int i=0;i<pb->n_strategies;i++) {
+			//copy = tdc_copy_job(job);
 			job->strategy=i;
-			tdc_commit(copy);
+			tdc_commit( job);
+			job = tdc_copy_job( job);
 			fJobCount++;
 		}
 		
@@ -75,6 +76,8 @@ void Wrap::simulate(Generator *g) {
 	else {
 		job = tdc_create_job(tdgen);
 		job->strategy=g->strategyNumber();
+		
+		tdc_commit(job);
 	}
 	/*
 	if (tdc_problem_n_machines_settable(pb))
