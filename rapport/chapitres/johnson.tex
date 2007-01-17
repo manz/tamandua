@@ -11,8 +11,8 @@ dans le cas où $m=2$.
 \subsection{Présentation}
 L'algorithme de Johnson consiste à créer deux listes $T$ et $R$. Et d'y placer 
 le numéro des tâches en fonction de leurs durée minimale entre les deux 
-machines. On tri ensuite $T$ par ordre croissant selon $p_{i1}$ et $R$ par
-ordre decroissant selon $p_{i2}$. Et enfin on retourne leurs concaténation.
+machines. On trie ensuite $T$ par ordre croissant selon $p_{i1}$ et $R$ par
+ordre décroissant selon $p_{i2}$. Et enfin on retourne leur concaténation.
 Ce résultat nous donne $L$ l'ordre des tâches à effectuer sur {\em m1},
 dès qu'une tâche a été traité sur {\em m1} elle passe sur {\em m2}.
 
@@ -39,7 +39,7 @@ dès qu'une tâche a été traité sur {\em m1} elle passe sur {\em m2}.
 \end{algorithm}
 
 \subsection{Implémentation}
-Notre implémention travail sur un tableau de tâches (selon les spécifications de
+Notre implémention travaille sur un tableau de tâches (selon les spécifications de
 tamandua), l'utilisation de listes est donc simulée.
 Nous travaillons directement sur le résultat concatené, ce qui implique une
 minimisation des données nécessaires. On opère un tri des tâches en respectant
@@ -80,7 +80,7 @@ Une tâche répond au prédicat {\em est dans T} si elle s'execute plus rapideme
 sur {\em m1} que sur {\em m2}.
 Nous avons une compléxité en $O(1)$ pour cet algorithme, tout ce joue dans le
 tri. Avec un {\em qsort} associé à un {\em mergesort} nous redonne la compléxité
-de Johnon, soit $O(n.log_2(n))$.
+de Johnson, soit $O(n.log_2(n))$.
 
 
 \subsection{Exemple}

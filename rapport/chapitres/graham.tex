@@ -68,7 +68,7 @@ Or $t_{j'}$ est le moment ou $j'$ débute, ce qui signifie que lors de son
 affectation à une machine toute les autres machines sont déja occupées jusqu'à 
 au moins $t_{j'}$ ce qui signifie qu'à cet instant les machines ont déja calculé 
 pendant une durée de $m*t_{j'}$, or le temps de travail des machines est 
-forcément inférieur à la durée total de calcul des tâches, ce qui nous donne :
+forcément inférieur à la durée totale de calcul des tâches, ce qui nous donne :
 \begin{align}
 m*t_{j'} &\leq \sum_{i=1}^n p_{i} \\
 \label{graham-ours}
@@ -93,7 +93,7 @@ machine disponible en haut du tas.
 Le tas binaire permet d'accéder à cet élément en temps constant, de le supprimer 
 en $O(log(m))$ et de le réinserer une fois la durée de la nouvelle tâche ajoutée 
 en $O(log(m))$.
-L'opération complète que l'on nomme $Augmenter\_minimum(tas, duree)$ prends donc 
+L'opération complète que l'on nomme $Augmenter\_minimum(tas, duree)$ prend donc 
 $O(log(m))$ et est répétée pour chaque tâche, ce qui nous fait une complexité 
 totale de $O(n.log(m))$.
 
@@ -125,7 +125,7 @@ l'ordonnancement est trivial) cela n'influence pas la complexité.
 
 \subsubsection{Présentation}
 L'algorithme de Coffman-Graham est similaire au précédent, avec pour seul 
-différence un tri préalable des tâches selon le durée, et ceci de manière 
+différence un tri préalable des tâches selon la durée, et ceci de manière 
 décroissante. Le tri induit un calcul préalable de complexité $O(n.log(n))$ mais 
 améliore, comme nous allons le démontrer le ratio de performance en l'abaissant 
 à $\frac{4}{3}$.
@@ -157,13 +157,13 @@ C^{LPT}_{max} &\leq \frac{4}{3} C^*_{max} \\
 Cependant si $p_{j'} > \frac{C^*_{max}}{3}$ la solution n'est pas aussi simple.  
 Tout d'abord on peut écarter le cas où $n\leq m$, dans ce cas on ne peut faire 
 mieux que de mettre zéro ou une tâche sur chaque machine, la solution est 
-triviale. Ètudions maintenant le cas contraire.
+triviale. Étudions maintenant le cas contraire.
 
 Appelons $M$ la machine traitant $j'$, celle-ci traite un certain nombre 
 d'autres tâches. On sait que le temps d'exécution de $M$ est le plus élevé de 
 toutes les machines et détermine $C^{LPT}_{max}$. On sait aussi que les autres 
 machines ont toutes un temps d'exécution d'au moins $t_{j'}$. On sait enfin que  
-toutes les tâches sur $M$ sont de durées supérieure à $p_{j'}$ étant donné que 
+toutes les tâches sur $M$ sont de durées supérieures à $p_{j'}$ étant donné que 
 $j'$ est la dernière traitée et que les tâches sont traitées par durée 
 décroissante.
 
@@ -176,8 +176,8 @@ de l'autre machine deviendrait supérieur à $t_{j'}+p_{j'}$ donc supérieur
 Cela signifie donc que pour réduire la durée d'exécution de $M$, il faut 
 permuter des tâches de $M$ avec celles d'autres machines. Si on permute une 
 tâche $a$ de $M$ avec une tâche $b$ d'une autre machine, la tâche $b$ se doit 
-d'être de durée supérieur à $p_{j'}$ sinon cela signifie qu'elle est démarre 
-après $t_{j'}$ et donc que la machine $M'$ d'ou vient $b$ aura un temps 
+d'être de durée supérieure à $p_{j'}$ sinon cela signifie qu'elle démarre 
+après $t_{j'}$ et donc que la machine $M'$ d'où vient $b$ aura un temps 
 d'exécution supérieur à $t_{j'}+p_{j'}$ ce qui ne raccourcirait toujours pas 
 l'ordonnancement.
 
@@ -189,7 +189,7 @@ $M$.
 
 Cela signifie donc que l'on peut avoir au plus deux permutations pour réduire la 
 durée d'exécution de $M$ et qu'on l'on ne peut répartir l'excédent que sur au 
-plus deux autres machines. Ètant donné que toutes les autres machines ont un 
+plus deux autres machines. Étant donné que toutes les autres machines ont un 
 temps d'exécution supérieur à $t_{j'}$ on ne peut pas réduire la durée de $M$ de 
 plus de $\frac{2}{3}p_{j'}$. Ce qui nous amène à la conclusion :
 
