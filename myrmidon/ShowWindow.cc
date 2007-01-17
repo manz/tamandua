@@ -36,11 +36,37 @@ ShowWindow::ShowWindow( Job *j, QWidget *parent) : QGraphicsScene( ){
             rectTask.setWidth( 2 * taskP->stepLength( j));
             printf("Tache : id = %d, step = %d", i, j);
             printf("Rectangle : x = %d, y= %d, width = %d, height = %d\n", rectTask.x(), rectTask.y(), rectTask.width(), rectTask.height());
-            addRect( rectTask, QPen( Qt::black), QBrush( colorRect));
+						TaskItem *it=new TaskItem(taskP, 0, this);
+						it->setColor(colorRect);
+						it->setRect(rectTask);
+		//				addItem(it);
+            //addRect( rectTask, QPen( Qt::black), QBrush( colorRect));
         }
     }
+		
 }
 
 TaskItem::TaskItem( Task *t, QGraphicsItem * parent , QGraphicsScene * scene ) : QGraphicsRectItem( parent, scene) {
     task = t;
 }
+
+
+void TaskItem::paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0) {
+	QPainterPath path;
+	QLinearGradient grad(rect().x(), rect().y(), rect().x()+rect().width(), rect().y()+rect().height());
+
+	grad.setColorAt(0,  color());
+	grad.setColorAt(1, color().dark());
+	painter->setPen(Qt::NoPen);
+	painter->setBrush(grad);
+	painter->drawRect(rect());
+}
+
+void TaskItem::setColor(QColor c) {
+	fColor = c;
+}
+
+QColor TaskItem::color() {
+	return fColor;
+}
+

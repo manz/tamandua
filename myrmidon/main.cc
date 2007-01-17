@@ -33,10 +33,14 @@ int main(int argc, char** argv) {
 		pluginpath = QString("/usr/local/share/tamandua/problems");
 	}
 #endif
-	/*QGraphicsScene scene;
+	/*
+	QGraphicsScene scene;
 	scene.addText("Hello, world!");
 
 	QGraphicsView view(&scene);
+	
+	QGraphicsRectItem it(10, 10, 50, 50);
+	scene.addItem(&it);
 	view.show();
 
 
@@ -45,8 +49,8 @@ int main(int argc, char** argv) {
 	  // a gradient background
 	  QRadialGradient gradient(0, 0, 50);
 		 gradient.setSpread(QGradient::RepeatSpread);
-		  scene.setBackgroundBrush(gradient);*/
-
+		  scene.setBackgroundBrush(gradient);
+*/
 	Wrap *fWrap=new Wrap(pluginpath);
 	MainWindow win(fWrap);
 	win.show();
