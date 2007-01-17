@@ -1,4 +1,35 @@
 \chapter{Tamandua}
 \section{Architecture}
-Le programme à été conçu avec deux buts. Faciliter le développement des 
-algorithmes à implémanter. Et permetre 
+Afin de simplifier au maximum les implémentations de ces problèmes 
+d'ordonnancements. Tamandua à été découpé en trois parties :
+\begin{itemize}
+   \item un noyau sous la forme d'une bibliothèque dynamique
+   \item des greffons implémentant les problèmes
+   \item des clients se chargeant de rendre le résultat
+\end{itemize}
+
+\subsection{Le noyau}
+Le noyau de l'application comprend {\em td\_base} et {\em td\_core}. Cette
+bibliothèque fournis un format et un ensemble d'outils, pour implémanter
+facilement des problèmes d'ordonnancements. \\
+Le principe est de créer un {\em générateur}, qui n'est rien qu'une structure de
+données contenant les paramètres à utiliser pour générer un ensemble de tâches.
+Ces paramètres comportent entre autre le nombre de machines, le nombre de
+{\em populations} de tâches à générer. Et pour chaques populations le bornage 
+des poids et des durées de ces tâches.\\
+Avoir des populations distinctes permet de créer des cas d'ordonnancement
+aléatoire plus complexe. Par exemple on peut prendre un cas avec 2 populations, 
+l'une contenant beaucoup de courtes tâches et l'autre peu de très longues 
+tâches. Bien entendu on peu aussi obtenir ce cas avec un seul bornage, mais pas 
+de manière aussi sûr.\\
+Une fois tous les paramètres réglés, le générateur va créer un {\em job}
+contenant un jeu de tâches correspondant et généré aléatoirement. Ce job est
+ensuite passé aux greffons des problèmes pour être traité.
+
+\subsection{Les greffons}
+Plus connu sous le nom de plugins. Ils implémantent une interface prenant un job
+et le retourne ordonné. Chargés à l'intialisation de la bibliothèque, ils
+ne contiennent que le code de résolution du problème. Toutefois ils peuvent
+comprendre plusieurs stratégies, donc plusieurs manière de résoudre un même
+problème. 
+
