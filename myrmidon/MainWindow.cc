@@ -43,6 +43,7 @@ void MainWindow::showResult(Job *j) {
 	
     QGraphicsView *windowView= new QGraphicsView( showWindow);
     windowView->setAlignment( Qt::AlignLeft | Qt::AlignTop);
+    windowView->setRenderHints( QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
     windowView->show();
     
     SimulItem *rectItem = new SimulItem( windowView);
@@ -67,11 +68,38 @@ void MainWindow::showResult(Job *j) {
     
     textItem = new QGraphicsTextItem( text);
     
-    if( lastItem)
-        rectItem->setRect( 0, 15 + lastItem->boundingRect().bottom(), 20 + textItem->boundingRect().width(), 20 + textItem->boundingRect().height());
-    else
-        rectItem->setRect( 0, 15, 20 + textItem->boundingRect().width(), 20 + textItem->boundingRect().height());
-    textItem->setPos( QPointF( rectItem->rect().center().x() - (textItem->boundingRect().width() / 2), rectItem->rect().center().y() - (textItem->boundingRect().height() / 2)));
+    QPainterPath roundRectPath;
+    int x = (int) textItem->boundingRect().width();
+    int y = (int) textItem->boundingRect().height();
+    roundRectPath.moveTo( x + 20.0, 5.0);
+    roundRectPath.arcTo( x, 0.0, 20.0, 10.0, 0.0, 90.0);
+    roundRectPath.lineTo( 10.0, 0.0);
+    roundRectPath.arcTo( 0.0, 0.0, 20.0, 10.0, 90.0, 90.0);
+    roundRectPath.lineTo( 0.0, y + 5.0);
+    roundRectPath.arcTo( 0.0, y, 20.0, 10.0, 180.0, 90.0);
+    roundRectPath.lineTo( x + 10.0, y + 9.0);
+    roundRectPath.arcTo( x, y, 20.0, 10.0, 270.0, 90.0);
+    //roundRectPath.lineTo( textItem->boundingRect().width() + 0.0, 5.0);
+    roundRectPath.closeSubpath();
+     
+     rectItem->setPath( roundRectPath);
+    if( lastItem) {
+        //rectItem->setRect( 0, 15 + lastItem->boundingRect().bottom(), 20 + textItem->boundingRect().width(), 20 + textItem->boundingRect().height());
+        rectItem->setPos( QPointF( 0., 15. + lastItem->boundingRect().bottom()));
+    }
+    else {
+        rectItem->setPos( QPointF( 0., 15.));
+        //rectItem->setRect( 0, 15, 20 + textItem->boundingRect().width(), 20 + textItem->boundingRect().height());
+    }
+    
+    rectItem->setPen( QPen( Qt::NoPen));
+    
+    QColor color( Qt::green);
+    color.setAlpha( 50);
+    rectItem->setBrush( QBrush( color));
+    
+    textItem->setPos( QPointF( rectItem->boundingRect().center().x() - (textItem->boundingRect().width() / 2), rectItem->boundingRect().center().y() - (textItem->boundingRect().height() / 2)));
+    //textItem->setPos( QPointF( rectItem->rect().center().x() - (textItem->boundingRect().width() / 2), rectItem->rect().center().y() - (textItem->boundingRect().height() / 2)));
     
     textItem->setParentItem( rectItem);
     rectItem->setParentItem( lastItem);
@@ -105,12 +133,14 @@ void MainWindow::newSimulation() {
 	//printf("toto!=%d, %d\n", res, pb.result());
 }
 
-SimulItem::SimulItem( QGraphicsView *newWin) : QGraphicsRectItem() {
+SimulItem::SimulItem( QGraphicsView *newWin) : QGraphicsPathItem() {
     win = newWin;
 }
 
 void SimulItem::mousePressEvent ( QGraphicsSceneMouseEvent * event ) {
-    this->setBrush( QBrush( Qt::black));
+    QColor color( Qt::green);
+    color.setAlpha( 50);
+    this->setBrush( QBrush( color));
 }
 
 void SimulItem::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) {

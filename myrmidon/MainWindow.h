@@ -12,28 +12,7 @@
 #include "ProblemDialog.h"
 #include "wrap/Wrap.h"
 
-class MainWindow : public QMainWindow {
-	Q_OBJECT
-	
-	private:
-		Wrap *fWrap;
-		QMenu *fFileMenu;
-		QMenu *fEditMenu;
-		ProblemDialog *problemDialog;
-		QGraphicsScene *scene;
-		float lastItemPosY;
-		QGraphicsRectItem *lastItem;
-		
-	public:
-		MainWindow(Wrap *wrap);
-		~MainWindow();
-		
-	public slots:
-		void newSimulation();
-		void showResult(Job *j);
-};
-
-class SimulItem : public QGraphicsRectItem {
+class SimulItem : public QGraphicsPathItem {
     protected:
         void mousePressEvent ( QGraphicsSceneMouseEvent * event );
         void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
@@ -44,4 +23,26 @@ class SimulItem : public QGraphicsRectItem {
     public:
         SimulItem( QGraphicsView *newWin);
 };
+
+class MainWindow : public QMainWindow {
+	Q_OBJECT
+	
+	private:
+		Wrap *fWrap;
+		QMenu *fFileMenu;
+		QMenu *fEditMenu;
+		ProblemDialog *problemDialog;
+		QGraphicsScene *scene;
+		float lastItemPosY;
+		SimulItem *lastItem;
+		
+	public:
+		MainWindow(Wrap *wrap);
+		~MainWindow();
+		
+	public slots:
+		void newSimulation();
+		void showResult(Job *j);
+};
+
 #endif /* MAINWINDOW_H */
