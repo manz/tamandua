@@ -31,5 +31,17 @@ Plus connu sous le nom de plugins. Ils implémantent une interface prenant un jo
 et le retourne ordonné. Chargés à l'intialisation de la bibliothèque, ils
 ne contiennent que le code de résolution du problème. Toutefois ils peuvent
 comprendre plusieurs stratégies, donc plusieurs manière de résoudre un même
-problème. 
+problème.\\
+Ces greffons sont vraiment la partie importante du programme, puisqu'ils ne
+contiennent que le code de l'ordonnancement. C'est un avantage à l'écriture
+puisque le programmeur ne ce soucis que de l'essentiel. Et c'est aussi un
+avantage pour la longévité du programme dans son ensemble, puisque l'on peut
+rajouter des fonctionnalitées sans intervenir sur le code de l'application.
 
+\subsection{Les clients}
+Les clients sont des interfaces graphiques, utilisant la bibliothèque. Leurs but
+est de fournir un moyen simple et convivial de faire des tests, ainsi
+qu'afficher le résultat. Nous avons conçu 2 clients, {\em gamandua} et {\em
+myrmidon} le premier est en C/GTK+ et le second en C++/QT. Cela démontre bien
+que la bibliothèque peut être facilement integré avec tout les langages
+s'interfaçant facilement avec le C.
