@@ -19,8 +19,10 @@ class MainWindow : public QMainWindow {
 		Wrap *fWrap;
 		QMenu *fFileMenu;
 		QMenu *fEditMenu;
-		std::vector <ShowWindow> *vWinSim; //liste des fenetres de simulation
 		ProblemDialog *problemDialog;
+		QGraphicsScene *scene;
+		float lastItemPosY;
+		QGraphicsRectItem *lastItem;
 		
 	public:
 		MainWindow(Wrap *wrap);
@@ -31,4 +33,15 @@ class MainWindow : public QMainWindow {
 		void showResult(Job *j);
 };
 
+class SimulItem : public QGraphicsRectItem {
+    protected:
+        void mousePressEvent ( QGraphicsSceneMouseEvent * event );
+        void mouseReleaseEvent ( QGraphicsSceneMouseEvent * event );
+        
+    private:
+        QGraphicsView *win;
+        
+    public:
+        SimulItem( QGraphicsView *newWin);
+};
 #endif /* MAINWINDOW_H */

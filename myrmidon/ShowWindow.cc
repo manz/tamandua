@@ -2,8 +2,7 @@
 
 ShowWindow::ShowWindow( Job *j, QWidget *parent) : QGraphicsScene( ){
     job = j;
-    
-    setBackgroundBrush( Qt::white);
+        
     QString *text = new QString;
     text->append( QString::fromUtf8( "Problème "));
     text->append( job->problem()->name());
@@ -34,8 +33,6 @@ ShowWindow::ShowWindow( Job *j, QWidget *parent) : QGraphicsScene( ){
             rectTask.setY( (int) textItem->boundingRect().bottom() + ( 10 * ( 1 + taskP->stepMachine( j)))+ ( 50 * taskP->stepMachine( j)));
             rectTask.setHeight( 50);
             rectTask.setWidth( 2 * taskP->stepLength( j));
-            printf("Tache : id = %d, step = %d", i, j);
-            printf("Rectangle : x = %d, y= %d, width = %d, height = %d\n", rectTask.x(), rectTask.y(), rectTask.width(), rectTask.height());
 						TaskItem *it=new TaskItem(taskP, 0, this);
 						it->setColor(colorRect);
 						it->setRect(rectTask);
