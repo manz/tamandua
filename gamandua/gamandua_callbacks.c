@@ -461,14 +461,3 @@ cb_keybindings(GtkWidget *widget, GdkEventKey *ev, void *data)
       gtk_button_clicked(GTK_BUTTON(gui->btn_quit));
     }
 }
-
-gboolean
-cb_buttonbindings(GtkWidget *widget, GdkEventButton *ev, void *data)
-{
-  if (ev->button == 3)
-    {
-      init_menu();
-      return TRUE;
-    }
-  return FALSE;
-}

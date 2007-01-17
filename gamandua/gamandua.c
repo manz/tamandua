@@ -499,9 +499,7 @@ append_drawing(GtkNotebook *notebook)
                                         drawing_area);
   gtk_signal_connect(GTK_OBJECT(drawing_area), "expose-event", 
                      GTK_SIGNAL_FUNC(cb_drawing_area_exposed), NULL);
-  gtk_signal_connect(GTK_OBJECT(scrolled), "button-release-event", 
-                     GTK_SIGNAL_FUNC(cb_drawing_area_mouse_down), NULL);
-  gtk_signal_connect(GTK_OBJECT(scrolled), "popup-menu", 
+  gtk_signal_connect(GTK_OBJECT(scrolled), "button-press-event", 
                      GTK_SIGNAL_FUNC(cb_drawing_area_mouse_down), NULL);
 
   gtk_notebook_append_page(notebook, scrolled, NULL);
@@ -548,8 +546,6 @@ init_drawing_area(Gui *gui)
   gtk_notebook_set_scrollable(GTK_NOTEBOOK(gui->drawing_notebook), 1);
   gtk_signal_connect(GTK_OBJECT(gui->drawing_notebook), "switch-page", 
                      GTK_SIGNAL_FUNC(cb_drawing_notebook_change_current), NULL);
-  gtk_signal_connect(GTK_OBJECT(gui->drawing_notebook), "button-press-event", 
-                     GTK_SIGNAL_FUNC(cb_buttonbindings), NULL);
 
   return gui->drawing_area;
 }
@@ -585,19 +581,6 @@ init_spin_machine(void)
     }
 
   return spin;
-}
-
-void
-init_menu(void)
-{
-  GtkWidget *menu;
-  GtkWidget *item;
-
-  menu = gtk_menu_new();
-  item = gtk_menu_item_new_with_label("lala");
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-  gtk_widget_show_all(menu);
-  gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, 3, 0);
 }
 
 static void
