@@ -241,8 +241,15 @@ void ProblemDialog::accepted() {
 	fGenerator->setTaskCount(fTaskSpin->value());
 
 	for (int i=0;i<fStepsLenMin.size();i++) {
-		fGenerator->addLengthMax(fStepsLenMax.at(i)->value());
-		fGenerator->addLengthMin(fStepsLenMin.at(i)->value());
+	   int min = fStepsLenMin.at(i)->value();
+	   int max = fStepsLenMax.at(i)->value();
+	   if( min > max) {
+	       int tmp = min;
+	       min = max;
+	       max = tmp;
+	       }
+		fGenerator->addLengthMax( max);
+		fGenerator->addLengthMin( min);
 	}
 
 	fGenerator->setWeightMax(fSpinWeightMax->value());
