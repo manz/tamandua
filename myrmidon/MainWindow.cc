@@ -139,12 +139,14 @@ SimulItem::SimulItem( QGraphicsView *newWin) : QGraphicsPathItem() {
 
 void SimulItem::mousePressEvent ( QGraphicsSceneMouseEvent * event ) {
     QColor color( Qt::green);
-    color.setAlpha( 50);
+    color.setAlpha( 150);
     this->setBrush( QBrush( color));
 }
 
 void SimulItem::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) {
-    this->setBrush( QBrush( Qt::NoBrush));
+    QColor color( Qt::green);
+    color.setAlpha( 50);
+    this->setBrush( QBrush( color));
     if( win->isHidden() )
         win->show();
     else
