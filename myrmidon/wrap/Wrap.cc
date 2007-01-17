@@ -61,19 +61,18 @@ void Wrap::simulate(Generator *g) {
 		job = tdc_create_job(tdgen);
 		//job->strategy=0;
 		
-		struct tdc_job *copy=job;
+		struct tdc_job *copy;
 
 		for (int i=0;i<pb->n_strategies;i++) {
-			//copy = tdc_copy_job(job);
+			copy = tdc_copy_job(job);
 			job->strategy=i;
 			tdc_commit( job);
-			job = tdc_copy_job( job);
+			job = copy;
 			fJobCount++;
 		}
-		
-		tdc_commit(job);
 	}
 	else {
+	       fJobCount++;
 		job = tdc_create_job(tdgen);
 		job->strategy=g->strategyNumber();
 		
