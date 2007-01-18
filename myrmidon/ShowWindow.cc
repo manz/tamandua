@@ -16,6 +16,23 @@ ShowWindow::ShowWindow( Job *j, QWidget *parent) : QGraphicsScene( ){
 
     TaskItem *taskItem;
     QColor colorRect;
+
+		double *machines = new double[job->machineCount()];
+		int max_len=0;
+
+		Task *task;
+		for (int m=0; m<job->tasksCount(); m++) {
+			task = job->task(m);
+			for (int k=0; k<task->stepCount(); k++) {
+				if (machines[task->stepMachine(k)] < task->stepStartTime(k)
+						+ task->stepLength(k))
+					machines[task->stepMachine(k)] = task->stepStartTime(k)
+						+ task->stepLength(k);
+				if (machines[max_len] < machines[task->stepMachine(k)])
+					max_len = task->stepMachine(k);
+			}
+		}
+
     bool tabBool[ job->machineCount()];
     for( int i = 0; i < job->machineCount(); i++) {
         tabBool[i] = true;
@@ -41,7 +58,26 @@ ShowWindow::ShowWindow( Job *j, QWidget *parent) : QGraphicsScene( ){
             if (j>0) {
                 addLine(QLineF(x1, y1+50, x+taskP->stepLength(j), y), QPen(colorRect)); 
             }
-            
+
+            if (i==job->tasksCount()-1 && taskP->stepCount() > 1) {
+							QGraphicsTextItem *len = addText(QString("%1").arg(taskP->stepLength(j)+taskP->stepStartTime(j)));
+							QPointF pt;
+							pt.setX(10+2*(taskP->stepLength(j)+taskP->stepStartTime(j)));
+							pt.setY(y);
+							len->setPos(pt);
+						}
+						if (taskP->stepCount()==1 && (taskP->stepLength(j) + taskP->stepStartTime(j) == machines[taskP->stepMachine(j)])) {
+							QGraphicsTextItem *len = addText(QString("%1").arg(taskP->stepLength(j)+taskP->stepStartTime(j)));
+							if (taskP->stepMachine(j) == max_len)
+								len->setDefaultTextColor(Qt::red);
+							QPointF pt;
+							pt.setX(10+2*(taskP->stepLength(j)+taskP->stepStartTime(j)));
+							pt.setY(y);
+							len->setPos(pt);
+							printf("gué ?\n");
+						}
+
+
             rectTask.setHeight(50);
             rectTask.setWidth( 2 * taskP->stepLength( j));
 
@@ -50,8 +86,10 @@ ShowWindow::ShowWindow( Job *j, QWidget *parent) : QGraphicsScene( ){
             it->setRect(rectTask);
             x1=x+taskP->stepLength(j);
             y1=y;
-            }
+          }
+				
         }
+		delete machines;
 }
 
 TaskItem::TaskItem( Task *t, bool isWeighted, int step, QGraphicsItem * parent , QGraphicsScene * scene ) : QGraphicsRectItem( parent, scene) {

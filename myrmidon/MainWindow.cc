@@ -53,7 +53,7 @@ void MainWindow::showResult(Job *j) {
     windowView->setAlignment( Qt::AlignLeft | Qt::AlignTop);
     windowView->setMinimumSize( 200, 200); //taille minimale de la fenetre !
     int sizeX = (int) windowView->sceneRect().width() + 15 , sizeY = (int) windowView->sceneRect().height() + 15;
-    windowView->setMaximumSize( sizeX, sizeY);
+   // windowView->setMaximumSize( sizeX, sizeY);
     if( sizeX > 600 )
         sizeX = 600;
     if( sizeY > 600 )
