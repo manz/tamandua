@@ -19,5 +19,7 @@ if (NOT APPLE)
 	INSTALL(TARGETS gamandua RUNTIME DESTINATION /usr/local/bin)
 	INSTALL(FILES gamandua_logo.png DESTINATION /usr/local/share/tamandua/gamandua)
 	INSTALL(FILES gamandua_shaded.png DESTINATION /usr/local/share/tamandua/gamandua)
+	INSTALL(FILES grad.png DESTINATION /usr/local/share/tamandua/gamandua)
+	INSTALL(FILES tooltip.png DESTINATION /usr/local/share/tamandua/gamandua)
 endif (NOT APPLE)
 
