@@ -85,7 +85,11 @@ void ProblemDialog::_CreateMachine() {
 	QGridLayout *layout = new QGridLayout();
 
 	fMachineSpin = new QSpinBox(this); //QSlider(Qt::Horizontal, this);
+	fMachineSpin->setMinimum(1);
+
 	fTaskSpin = new QSpinBox(this);
+	fTaskSpin->setMinimum(1);
+	fTaskSpin->setValue(7);
 
 	QLabel *label = new QLabel("Nombre de Machines", this);
 	QLabel *label2 = new QLabel("Nombre de taches", this);

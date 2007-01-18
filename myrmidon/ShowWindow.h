@@ -4,6 +4,8 @@
 #include <QGraphicsScene>
 #include <QGraphicsRectItem>
 #include <QPainter>
+#include <QToolTip>
+#include <QGraphicsSceneEvent>
 #include "wrap/Job.h"
 
 class Qwidget;
@@ -22,14 +24,17 @@ class ShowWindow : public QGraphicsScene {
 class TaskItem : public QGraphicsRectItem {
             
     public:
-        TaskItem (Task *t, QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
+        TaskItem (Task *t, int step, QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
 				void paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
         void setColor(QColor c);
 				QColor color();
-
-    private:
+				QString toolTip();
+		protected:
+				void mousePressEvent ( QGraphicsSceneMouseEvent * event );
+		private:
         Task *task;
 				QColor fColor;
+				QString fToolTip;
 };
 
 #endif /* SHOWWINDOW_H */

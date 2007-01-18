@@ -45,7 +45,7 @@ ShowWindow::ShowWindow( Job *j, QWidget *parent) : QGraphicsScene( ){
             rectTask.setHeight(50);
             rectTask.setWidth( 2 * taskP->stepLength( j));
 
-            TaskItem *it=new TaskItem(taskP, 0, this);
+            TaskItem *it=new TaskItem(taskP, j, 0, this);
             it->setColor(colorRect);
             it->setRect(rectTask);
             x1=x+taskP->stepLength(j);
@@ -54,8 +54,9 @@ ShowWindow::ShowWindow( Job *j, QWidget *parent) : QGraphicsScene( ){
         }
 }
 
-TaskItem::TaskItem( Task *t, QGraphicsItem * parent , QGraphicsScene * scene ) : QGraphicsRectItem( parent, scene) {
+TaskItem::TaskItem( Task *t, int step, QGraphicsItem * parent , QGraphicsScene * scene ) : QGraphicsRectItem( parent, scene) {
     task = t;
+		fToolTip = QString::fromUtf8("id: %1\nDurée: %2\nStartime: %3").arg(task->id()).arg(task->stepLength(step)).arg(task->stepStartTime(step));
 }
 
 
@@ -68,6 +69,14 @@ void TaskItem::paint (QPainter * painter, const QStyleOptionGraphicsItem * optio
     painter->setPen(Qt::NoPen);
     painter->setBrush(grad);
     painter->drawRect(rect());
+}
+
+QString TaskItem::toolTip() {
+	return fToolTip;
+}
+
+void TaskItem::mousePressEvent ( QGraphicsSceneMouseEvent * event ) {
+	QToolTip::showText(QPoint(event->screenPos().x(), event->screenPos().y()), fToolTip);
 }
 
 void TaskItem::setColor(QColor c) {
