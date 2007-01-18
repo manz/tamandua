@@ -3,7 +3,8 @@ PROJECT(Tamandua)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 FIND_PACKAGE(Qt4 REQUIRED)
-#FIND_PACKAGE(GTK2)
+FIND_PACKAGE(GTK2)
+INCLUDE(UseLATEX)
 
 include(${QT_USE_FILE})
 
@@ -50,4 +51,5 @@ endif (NOT APPLE)
 subdirs(
 	gamandua
 	myrmidon
+	rapport
 	)
