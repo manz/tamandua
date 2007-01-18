@@ -8,6 +8,7 @@
 #include <QMenuBar>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QCleanlooksStyle>
 // tamandua core
 extern "C" {
 #include <td_base.h>
@@ -32,6 +33,7 @@ extern "C" {
              else {
                  pluginpath = QString("/usr/local/share/tamandua/problems");
              }
+             app.setStyle( new QCleanlooksStyle());
 #endif
 	/*
              QGraphicsScene scene;
