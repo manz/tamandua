@@ -50,7 +50,6 @@ void MainWindow::showResult(Job *j) {
     windowView->setAlignment( Qt::AlignLeft | Qt::AlignTop);
     windowView->setMinimumSize( 200, 200); //taille minimale de la fenetre !
     int sizeX = (int) windowView->sceneRect().width() + 15 , sizeY = (int) windowView->sceneRect().height() + 15;
-   // windowView->setMaximumSize( sizeX, sizeY);
     if( sizeX > 600 )
         sizeX = 600;
     if( sizeY > 600 )
@@ -91,17 +90,14 @@ void MainWindow::showResult(Job *j) {
     roundRectPath.arcTo( 0.0, y, 20.0, 10.0, 180.0, 90.0);
     roundRectPath.lineTo( x + 10.0, y + 9.0);
     roundRectPath.arcTo( x, y, 20.0, 10.0, 270.0, 90.0);
-    //roundRectPath.lineTo( textItem->boundingRect().width() + 0.0, 5.0);
     roundRectPath.closeSubpath();
      
     rectItem->setPath( roundRectPath);
     if( lastItem) {
-        //rectItem->setRect( 0, 15 + lastItem->boundingRect().bottom(), 20 + textItem->boundingRect().width(), 20 + textItem->boundingRect().height());
         rectItem->setPos( QPointF( 0., 15. + lastItem->boundingRect().bottom()));
     }
     else {
         rectItem->setPos( QPointF( 0., 15.));
-        //rectItem->setRect( 0, 15, 20 + textItem->boundingRect().width(), 20 + textItem->boundingRect().height());
     }
     
     rectItem->setPen( QPen( Qt::NoPen));
@@ -111,17 +107,12 @@ void MainWindow::showResult(Job *j) {
     rectItem->setBrush( QBrush( color));
     
     textItem->setPos( QPointF( rectItem->boundingRect().center().x() - (textItem->boundingRect().width() / 2), rectItem->boundingRect().center().y() - (textItem->boundingRect().height() / 2)));
-    //textItem->setPos( QPointF( rectItem->rect().center().x() - (textItem->boundingRect().width() / 2), rectItem->rect().center().y() - (textItem->boundingRect().height() / 2)));
     
     textItem->setParentItem( rectItem);
     rectItem->setParentItem( lastItem);
     
     lastItem = rectItem;
-    //rectItem->setPos( QPointF( rectItem->boundingRect().x(), 15 + lastItemPosY ));
     
-    //textItem->setPos( QPointF( rectItem->rect().center().x() - (textItem->boundingRect().width() / 2), rectItem->rect().center().y() - (textItem->boundingRect().height() / 2)));
-    
-    //lastItemPosY += rectItem->boundingRect().bottom();
     scene->addItem( rectItem);
 }
 
@@ -134,15 +125,6 @@ void MainWindow::newSimulation() {
     else {
         problemDialog->show();
     }
-    /*int res = pb.exec();
-    if (res) {
-    printf("%d %d\n", pb.problemSelected(), pb.strategySelected());
-    printf("%d\n", pb.generator());
-    fWrap->simulate(pb.generator());
-}
-    else {
-}*/
-	//printf("toto!=%d, %d\n", res, pb.result());
 }
 
 SimulItem::SimulItem( QGraphicsView *newWin) : QGraphicsPathItem() {

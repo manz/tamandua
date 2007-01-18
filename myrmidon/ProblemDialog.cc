@@ -65,16 +65,11 @@ ProblemDialog::ProblemDialog(Wrap *wrap, QWidget *parent) : QDialog(parent)
 
 		fDialogLayout->addWidget(fChkCompare, 6, 0, 1, 2);
 		fDialogLayout->addWidget(buttonBox, 7, 0, 1, 2);
-		//fDialogLayout->addWidget( buttonOk, 7, 0, 1, 1);
-		//fDialogLayout->addWidget( buttonCancel, 7, 1, 1, 1);
 
 		connect(fPbCombo, SIGNAL(activated(int)), this, SLOT(updateSt(int)));
 		connect(buttonBox, SIGNAL( accepted()), this, SLOT(accepted()));
 		connect(buttonBox, SIGNAL( rejected()), this, SLOT(rejected()));
 		
-		//connect( buttonOk, SIGNAL( clicked()), this, SLOT( accepted()));
-		//connect( buttonCancel, SIGNAL( clicked()), this, SLOT( rejected()));
-
 		this->setLayout(fDialogLayout);
 		fDialogLayout->setSizeConstraint(QLayout::SetFixedSize);
 	}
@@ -84,7 +79,7 @@ void ProblemDialog::_CreateMachine() {
 	fMachineBox = new QGroupBox("Taches et Machines", this);
 	QGridLayout *layout = new QGridLayout();
 
-	fMachineSpin = new QSpinBox(this); //QSlider(Qt::Horizontal, this);
+	fMachineSpin = new QSpinBox(this);
 	fMachineSpin->setMinimum(1);
 
 	fTaskSpin = new QSpinBox(this);
@@ -240,7 +235,6 @@ void ProblemDialog::updateSt(int p) {
 			fWeightBox->setEnabled(true);
 		}
 		else {
-			//fMachineSpin->setEnabled(true);
 			fWeightBox->setEnabled(false);
 		}
 	
@@ -249,9 +243,7 @@ void ProblemDialog::updateSt(int p) {
 
 void ProblemDialog::accepted() {
 	fGenerator = new Generator();
-	/*
-	 * blah blah
-	 */
+
 	fGenerator->setProblemNumber(fPbCombo->currentIndex());
 	fGenerator->setStrategyNumber(fStCombo->currentIndex());
 
@@ -279,7 +271,6 @@ void ProblemDialog::accepted() {
 }
 
 void ProblemDialog::rejected() {
-   // hide();
 	reject();
 }
 

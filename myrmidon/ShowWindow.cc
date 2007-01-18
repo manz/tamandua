@@ -53,8 +53,6 @@ ShowWindow::ShowWindow( Job *j, QWidget *parent) : QGraphicsScene( ){
 
             rectTask.setX(x);
             rectTask.setY(y);
-            //rectTask.setX( 10 + 2 * taskP->stepStartTime( j));
-            //rectTask.setY( (int) textItem->boundingRect().bottom() + ( 10 * ( 1 + taskP->stepMachine( j)))+ ( 50 * taskP->stepMachine( j)));
             if (j>0) {
                 addLine(QLineF(x1, y1+50, x+taskP->stepLength(j), y), QPen(colorRect)); 
             }
