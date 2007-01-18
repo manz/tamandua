@@ -1,5 +1,6 @@
 #include "gamandua.h"
 #include "gamandua_callbacks.h"
+#include "gamandua_help.h"
 
 /* Private Declarations */
 static GtkWidget *init_window        (void);
@@ -428,7 +429,6 @@ append_page(GtkWidget *notebook)
 void
 append_help(GtkNotebook *notebook)
 {
-  const char* helptext = "Pinky-Winky, Dipsy, Lala,\nPooooooooooooOOOoooOOOOooooo(wa)";
   GtkWidget *align;
   GtkWidget *hbox;
   GtkWidget *btn_close;
@@ -447,7 +447,8 @@ append_help(GtkNotebook *notebook)
   gtk_text_view_set_editable (GTK_TEXT_VIEW(tbox), FALSE);
   gtk_text_view_set_pixels_above_lines (GTK_TEXT_VIEW(tbox), 4);
   gtk_text_view_set_left_margin(GTK_TEXT_VIEW(tbox), 4);
-  gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(tbox)), helptext, -1);
+  gtk_text_view_set_wrap_mode(GTK_TEXT_VIEW(tbox), GTK_WRAP_WORD);
+  gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(tbox)), HELP_MESSAGE, -1);
   align = gtk_alignment_new(0.5, 0.5, 1, 1);
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scrolled), tbox);
   gtk_container_add(GTK_CONTAINER(align), scrolled);
