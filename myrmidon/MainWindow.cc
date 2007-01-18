@@ -44,7 +44,7 @@ bool MainWindow::close() {
     emit closeWin();
 }
 
-void MainWindow::hideEvent ( QHideEvent * event ) {
+void MainWindow::closeEvent ( QHideEvent * event ) {
     emit closeWin();
 }
 

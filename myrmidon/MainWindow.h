@@ -50,7 +50,7 @@ class MainWindow : public QMainWindow {
         void showResult(Job *j);
         
     protected:
-        void hideEvent ( QHideEvent * event );
+        void closeEvent ( QHideEvent * event );
 };
 
 #endif /* MAINWINDOW_H */
