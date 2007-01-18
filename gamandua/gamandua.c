@@ -757,6 +757,7 @@ GdkDrawable* job_to_drawable(GdkDrawable* win, struct tdc_job* job)
   gdk_draw_layout(drawable, gc, 5, 5, layout);
 
   free(str);
+  if (G_IS_OBJECT(layout)) g_object_unref(layout);
 
   struct tdc_task *task;
   size_t max_length = 0;
@@ -867,6 +868,7 @@ draw_task_txt_size(GdkDrawable* drawable, int size, int x, int y, int color)
   free(str);
 
   if (G_IS_OBJECT(gc)) gdk_gc_unref(gc);
+  if (G_IS_OBJECT(layout)) g_object_unref(layout);
 }
 
 void
@@ -882,6 +884,7 @@ draw_selection(GdkDrawable* drawable)
   PangoLayout *layout;
   PangoContext *context;
   struct tdc_job* job;
+  PangoFontDescription *font_descr;
 
   gui = gamandua->gui;
   task = gamandua->selection.task;
@@ -906,11 +909,17 @@ draw_selection(GdkDrawable* drawable)
   asprintf(&msg, "<b>Tâche n°%i</b>\n  Début : %i\n  Durée : %i%s",
    task->id, task->steps[step].start_time, task->steps[step].length, weight?weight:"");
   pango_layout_set_markup(layout, msg, -1);
+  font_descr = pango_font_description_new();
+  pango_font_description_set_size(font_descr, 8*PANGO_SCALE);
+  pango_font_description_set_family(font_descr, "Vera");
+  pango_layout_set_font_description(layout, font_descr);
   gdk_draw_layout(drawable, gc, x+15, y+8, layout);
   free(msg);
   free(weight);
 
   if (G_IS_OBJECT(gc)) gdk_gc_unref(gc);
+  if (G_IS_OBJECT(layout)) g_object_unref(layout);
+
   draw_task(drawable, task->steps[step].start_time, task->steps[step].machine*50+40, 
             task->steps[step].length, 40, 
             0xfce94f);

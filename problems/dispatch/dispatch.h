@@ -4,8 +4,7 @@ const char description[] =
 "sur un nombre fixé de machines.";
 const char* strategies[] = {
 	"Méthode naïve",
-	"Tâches triées",
-	"Prog. dynamique"
+	"Tâches triées"
 };
 
 int problem

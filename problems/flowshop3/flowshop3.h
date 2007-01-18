@@ -1,6 +1,6 @@
 const char name[]        =   "Flowshop3";
 const char description[] =   "Algorithme d'optimisation du temps d'exécution "
-                             "d'une liste de tâche passée succéssivement sur "
+                             "d'une liste de tâches passée successivement sur "
                              "trois machines.";
 const char *strategies[] = { "Johnson" };
 

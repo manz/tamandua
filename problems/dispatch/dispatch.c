@@ -107,7 +107,6 @@ int problem
 			sort_tasks(job);
 		case 0:
 			return dispatch(job);
-		case 2:
 		default:
 			tdb_warn("Strategy not implemented");
 			return EXIT_FAILURE;
