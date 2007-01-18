@@ -31,6 +31,7 @@ class MainWindow : public QMainWindow {
 		Wrap *fWrap;
 		QMenu *fFileMenu;
 		QMenu *fEditMenu;
+		QAction *fQuit;
 		ProblemDialog *problemDialog;
 		QGraphicsScene *scene;
 		float lastItemPosY;

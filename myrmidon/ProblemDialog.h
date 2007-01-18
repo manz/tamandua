@@ -21,7 +21,7 @@
 
 using namespace std;
 
-class ProblemDialog : public QWidget {
+class ProblemDialog : public QDialog {
 	Q_OBJECT
 	private:
 		Wrap *fWrap;

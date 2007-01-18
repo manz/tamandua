@@ -16,8 +16,8 @@ MainWindow::MainWindow(Wrap *wrap) : QMainWindow() {
     QAction *newSimul = new QAction("Nouvelle Simulation", this);
     fFileMenu->addAction(newSimul);
 
-    QAction *quit = new QAction("Quitter", this);
-    fFileMenu->addAction(quit);
+    fQuit = new QAction("Quitter", this);
+    fFileMenu->addAction(fQuit);
     
     scene = new QGraphicsScene();
     
@@ -29,9 +29,11 @@ MainWindow::MainWindow(Wrap *wrap) : QMainWindow() {
     setCentralWidget( view);
     
     connect(newSimul, SIGNAL(triggered()), this, SLOT(newSimulation()));
-    connect(quit, SIGNAL(triggered()), this, SLOT(close()));
+    connect(fQuit, SIGNAL(triggered()), this, SLOT(close()));
     connect(fWrap, SIGNAL(result(Job*)), this, SLOT(showResult(Job*)));
-    //move(0,0);
+#ifdef _APPLE_
+    move(0,0);
+#endif
 }
 
 MainWindow::~MainWindow() {
@@ -115,7 +117,8 @@ void MainWindow::showResult(Job *j) {
 
 void MainWindow::newSimulation() {
     if( NULL == problemDialog) {
-        ProblemDialog *pb = new ProblemDialog(fWrap, 0);
+        ProblemDialog *pb = new ProblemDialog(fWrap, this);
+				connect(fQuit, SIGNAL(clicked()), problemDialog, SLOT(close()));
         problemDialog = pb;
         pb->show();
     }

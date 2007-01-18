@@ -1,6 +1,6 @@
 #include "ProblemDialog.h"
 
-ProblemDialog::ProblemDialog(Wrap *wrap, QWidget *parent) : QWidget(parent)
+ProblemDialog::ProblemDialog(Wrap *wrap, QWidget *parent) : QDialog(parent)
 {
         fWrap = wrap;
 	Context *c = fWrap->context();
@@ -17,11 +17,11 @@ ProblemDialog::ProblemDialog(Wrap *wrap, QWidget *parent) : QWidget(parent)
 	}
 	else {
 		fDialogLayout = new QGridLayout();
-		/*QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+		QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
 
 		buttonBox->addButton(QString::fromUtf8("Ok"), QDialogButtonBox::AcceptRole);
 		buttonBox->addButton(QString::fromUtf8("Annuler"), QDialogButtonBox::RejectRole);
-		*/
+		
 		
 		QPushButton *buttonOk = new QPushButton( QString::fromUtf8( "Ok"));
 		QPushButton *buttonCancel = new QPushButton( QString::fromUtf8( "Annuler"));
@@ -64,15 +64,16 @@ ProblemDialog::ProblemDialog(Wrap *wrap, QWidget *parent) : QWidget(parent)
 		fDialogLayout->addWidget(fMachineBox, 5, 0, 1, 2);
 
 		fDialogLayout->addWidget(fChkCompare, 6, 0, 1, 2);
-		//fDialogLayout->addWidget(buttonBox, 7, 0, 1, 2);
-		fDialogLayout->addWidget( buttonOk, 7, 0, 1, 1);
-		fDialogLayout->addWidget( buttonCancel, 7, 1, 1, 1);
+		fDialogLayout->addWidget(buttonBox, 7, 0, 1, 2);
+		//fDialogLayout->addWidget( buttonOk, 7, 0, 1, 1);
+		//fDialogLayout->addWidget( buttonCancel, 7, 1, 1, 1);
 
 		connect(fPbCombo, SIGNAL(activated(int)), this, SLOT(updateSt(int)));
-		//connect(buttonBox, SIGNAL( accepted()), this, SLOT(accepted()));
-		//connect(buttonBox, SIGNAL( rejected()), this, SLOT(rejected()));
-		connect( buttonOk, SIGNAL( clicked()), this, SLOT( accepted()));
-		connect( buttonCancel, SIGNAL( clicked()), this, SLOT( rejected()));
+		connect(buttonBox, SIGNAL( accepted()), this, SLOT(accepted()));
+		connect(buttonBox, SIGNAL( rejected()), this, SLOT(rejected()));
+		
+		//connect( buttonOk, SIGNAL( clicked()), this, SLOT( accepted()));
+		//connect( buttonCancel, SIGNAL( clicked()), this, SLOT( rejected()));
 
 		this->setLayout(fDialogLayout);
 		fDialogLayout->setSizeConstraint(QLayout::SetFixedSize);
@@ -255,11 +256,13 @@ void ProblemDialog::accepted() {
 	fGenerator->setWeightMax(fSpinWeightMax->value());
 	fGenerator->setWeightMin(fSpinWeightMin->value());
 
-        fGenerator->setCompareStrategies(fChkCompare->isChecked());
+  fGenerator->setCompareStrategies(fChkCompare->isChecked());
 	fWrap->simulate(fGenerator);
+	accept();
 }
 
 void ProblemDialog::rejected() {
-    hide();
+   // hide();
+	reject();
 }
 
