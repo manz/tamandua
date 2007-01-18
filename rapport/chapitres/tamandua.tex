@@ -1,47 +1,75 @@
 \chapter{Tamandua}
+\section{Présentation}
+Pour achever notre travail sur les algorithmes précédement exposés, nous avons
+dû concevoir une architecture permettant de les implémenter, de leur fournir des
+données à traiter et enfin de visualiser le résultat et les comparer entre eux.
 \section{Architecture}
-Afin de simplifier au maximum les implémentations de ces problèmes 
-d'ordonnancements. Tamandua à été découpé en trois parties :
+Dans un soucis d'efficacité de programmation et de réutilisabilité, l'ensemble
+des problèmes à été implementé au sein d'une même architecture générique, celle-ci
+se divise en plusieurs couches superposées:
 \begin{itemize}
-   \item un noyau sous la forme d'une bibliothèque dynamique
-   \item des greffons implémentant les problèmes
-   \item des clients se chargeant de rendre le résultat
+   \item td\_base contient des éléments fondamentaux n'ayant aucune spécifité
+   vis-à-vis du projet, tel que la gestion mémoire et des algorithmes génériques.
+   \item td\_core est le noyau de calcul, c'est dans cette partie que se trouve
+   tout le code spécifique de génération de données, de répartition des calculs
+   et d'extraction de résultats.
+   \item les problèmes sont des bibliothèques dynamiques chargées à l'exécutions
+   par le td\_core ils exportent une interface commune permettant d'informer le
+   noyau des types de tâches qui l'intéresse, du nom du problème et des
+   différents algorithmes de résolutions existants pour résoudre un problème,
+   ces différents algorithmes sont appelés stratégies.
+   \item l'interface graphique, au sommet de tout, charge la bibliothèque du 
+   noyau et communique avec pour permettre à l'utilisateur de configurer la
+   génération de donnée, et recevoir le résultat des calculs pour en faire
+   quelque chose de lisible.
 \end{itemize}
+\section{Détails d'implémentation}
+Le tout est réalisé en C sauf l'interface graphique en Qt programmée en C++.
+Le noyau implémente un mécanisme simple de parallélisme basé sur les Posix Threads.
+Ce mécanisme est à double usage, il permet d'une part de communiquer de manière
+asynchrone avec les interfaces graphiques afin de ne pas provoquer de bloquage
+inesthétique de l'interface pendant les calculs. D'autre part en associant une
+liste d'attente de tâches et un ensemble de Threads, il profite des architectures
+multi-thread et multi-coeur que l'on trouve de plus en plus même dans le grand
+public.
+\section{Génération de tâches}
+La conception de la génération d'ensemble de tâches à faire traiter par un
+algorithme n'a pas été triviale, plusieux choix s'offraient à nous avec différents
+compromis de flexibilité et d'ergonomie, nous avions par exemple :
+\begin{itemize}
+   \item Une liste de tâche entièrement éditable à la main, précise mais extrèmement
+   fastidieuse pour de grands ensembles ou pour en produire de nombreuses différentes.
+   \item Un générateur aléatoire simple et homogène.
+   \item La possibilité pour l'utilisateur de spécifier des contraintes sous forme
+   d'équations, peut-être idéal pour tester directement certaines configurations
+   connues mais d'implémentation difficile et peu intuitive lorsqu'on doit créer
+   ces contraintes.
+\end{itemize}
+Nous avons finalement opté pour un mélange des deux premières solutions, en
+employant une liste éditable de générateurs aléatoires, chacun pouvant être
+configuré différemment, chaque générateur produit une population de tâches,
+le tout est réunit pour faire un grand ensemble qui est alors envoyé aux
+stratégies de résolution. On peut pousser l'extrème en employant autant de
+populations que de tâches et en limitant chacune à une seule tâche pour reproduire
+la première solution et à l'inverse n'avoir qu'une population et reproduire la seconde
+solution.
+\section{Présentation des interfaces graphiques}
+\subsection{Gamandua}
+Gamandua est l'interface en C utilisant la bibliothèque graphique GTK, elle est
+constituée d'une fenêtre unique. En haut une barre d'outils permet de choisir 
+le problème, la stratégie de résolution et le nombre de machines le cas échéant.
+On y trouve aussi les contrôles principaux permettant d'exécuter des calculs,
+d'exporter une image du résultat ainsi que l'aide. Sur le coté se trouve la
+configuration des générateurs aléatoires de tâches, avec le choix du nombre
+de populations et des paramètres séparés sur chacune.
 
-\subsection{Le noyau}
-Le noyau de l'application comprend {\em td\_base} et {\em td\_core}. Cette
-bibliothèque fournis un format et un ensemble d'outils, pour implémanter
-facilement des problèmes d'ordonnancements. \\
-Le principe est de créer un {\em générateur}, qui n'est rien qu'une structure de
-données contenant les paramètres à utiliser pour générer un ensemble de tâches.
-Ces paramètres comportent entre autre le nombre de machines, le nombre de
-{\em populations} de tâches à générer. Et pour chaques populations le bornage 
-des poids et des durées de ces tâches.\\
-Avoir des populations distinctes permet de créer des cas d'ordonnancement
-aléatoire plus complexe. Par exemple on peut prendre un cas avec 2 populations, 
-l'une contenant beaucoup de courtes tâches et l'autre peu de très longues 
-tâches. Bien entendu on peu aussi obtenir ce cas avec un seul bornage, mais pas 
-de manière aussi sûr.\\
-Une fois tous les paramètres réglés, le générateur va créer un {\em job}
-contenant un jeu de tâches correspondant et généré aléatoirement. Ce job est
-ensuite passé aux greffons des problèmes pour être traité.
-
-\subsection{Les greffons}
-Plus connu sous le nom de plugins. Ils implémantent une interface prenant un job
-et le retourne ordonné. Chargés à l'intialisation de la bibliothèque, ils
-ne contiennent que le code de résolution du problème. Toutefois ils peuvent
-comprendre plusieurs stratégies, donc plusieurs manière de résoudre un même
-problème.\\
-Ces greffons sont vraiment la partie importante du programme, puisqu'ils ne
-contiennent que le code de l'ordonnancement. C'est un avantage à l'écriture
-puisque le programmeur ne ce soucis que de l'essentiel. Et c'est aussi un
-avantage pour la longévité du programme dans son ensemble, puisque l'on peut
-rajouter des fonctionnalitées sans intervenir sur le code de l'application.
-
-\subsection{Les clients}
-Les clients sont des interfaces graphiques, utilisant la bibliothèque. Leurs but
-est de fournir un moyen simple et convivial de faire des tests, ainsi
-qu'afficher le résultat. Nous avons conçu 2 clients, {\em gamandua} et {\em
-myrmidon} le premier est en C/GTK+ et le second en C++/QT. Cela démontre bien
-que la bibliothèque peut être facilement integré avec tout les langages
-s'interfaçant facilement avec le C.
+Enfin le plus important au
+milieu, les résultats des calculs, présentés sous forme de barres horizontales.
+Dans le sens principal se trouve le temps, et à la verticale les différentes
+machines, chaque tâche est représentée par un rectangle de couleur. La couleur
+n'a aucune signification logique si ce n'est tenter de rendre le graphique
+lisible. en cliquant sur les tâches une petite bulle s'affiche comportant des
+informations supplémentaires. Plusieurs graphiques peuvent être conservés
+simultanément grâce à un dispositif d'onglets en haut de l'affichage. Grâce au
+bouton idoïne dans la barre d'outil, on peut exporter cette image en png si
+on souhaite par exemple l'intégrer à un rapport ou la conserver en lieu sûr.
