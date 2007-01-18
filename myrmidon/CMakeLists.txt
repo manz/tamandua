@@ -30,3 +30,8 @@ endif (APPLE)
 
 target_link_libraries(myrmidon ${QT_LIBRARIES} td_base td_core)
 
+if (NOT APPLE)
+	INSTALL(TARGETS myrmidon
+		RUNTIME DESTINATION /usr/local/bin
+		)
+endif (NOT APPLE)

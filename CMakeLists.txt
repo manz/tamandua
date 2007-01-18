@@ -34,16 +34,18 @@ add_library(flowshop2 MODULE problems/flowshop2/flowshop2.c)
 add_library(flowshop3 MODULE problems/flowshop3/flowshop3.c)
 
 
-#if (NOT APPLE)
-#	INSTALL(TARGETS myrmidon td_core td_base dispatch smith td_core/td_core.h td_base/td_base.h
-#			RUNTIME DESTINATION /usr/local/bin
-#			LIBRARY DESTINATION /usr/local/lib
-#			LIBRARY DESTINATION /usr/local/lib
-#			LIBRARY DESTINATION /usr/local/share/tamandua/problems
-#			FILE DESTINATION /usr/local/include
-#			FILE DESTINATION /usr/local/include
-#			)
-#endif (NOT APPLE)
+if (NOT APPLE)
+	INSTALL(TARGETS td_core td_base
+			LIBRARY DESTINATION /usr/local/lib
+			LIBRARY DESTINATION /usr/local/lib
+			)
+	INSTALL(TARGETS dispatch smith flowshop2 flowshop3 
+			LIBRARY DESTINATION /usr/local/share/tamandua/problems
+			LIBRARY DESTINATION /usr/local/share/tamandua/problems
+			LIBRARY DESTINATION /usr/local/share/tamandua/problems
+			LIBRARY DESTINATION /usr/local/share/tamandua/problems
+			)
+endif (NOT APPLE)
 
 subdirs(
 	gamandua

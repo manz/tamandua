@@ -31,8 +31,10 @@ MainWindow::MainWindow(Wrap *wrap) : QMainWindow() {
     connect(newSimul, SIGNAL(triggered()), this, SLOT(newSimulation()));
     connect(fQuit, SIGNAL(triggered()), this, SLOT(close()));
     connect(fWrap, SIGNAL(result(Job*)), this, SLOT(showResult(Job*)));
-#ifdef _APPLE_
-    move(0,0);
+		
+		//layout()->setSizeConstraint(QLayout::SetFixedSize);
+#ifdef __APPLE__
+    window()->move(0,0);
 #endif
 }
 

@@ -15,3 +15,7 @@ ADD_EXECUTABLE(gamandua ${gamandua_src})
 SET_TARGET_PROPERTIES(gamandua PROPERTIES COMPILE_FLAGS "${GTK2_CFLAGS}")
 TARGET_LINK_LIBRARIES(gamandua ${GTK2_LINKFLAGS} td_base td_core)
 
+if (NOT APPLE)
+	INSTALL(TARGETS gamandua RUNTIME DESTINATION /usr/local/bin)
+endif (NOT APPLE)
+

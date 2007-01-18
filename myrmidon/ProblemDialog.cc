@@ -212,6 +212,12 @@ void ProblemDialog::updateSt(int p) {
 		fStCombo->insertItem(i, st->name());
 	}
 
+	if (pb->stepsCount()>1) {
+		fMachineSpin->setValue(pb->stepsCount());
+		fMachineSpin->setEnabled(false);
+	}
+	else fMachineSpin->setEnabled(true);
+
 	if (pb->strategiesCount()==1) {
 		fStCombo->setEnabled(false);
 		fChkCompare->setEnabled(false);
