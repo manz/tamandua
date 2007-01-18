@@ -5,12 +5,12 @@
 #include "MainWindow.h"
 #include "ShowWindow.h"
 
-MainWindow::MainWindow(Wrap *wrap, QApplication *app) : QMainWindow() {
+MainWindow::MainWindow(Wrap *wrap) : QMainWindow() {
     fWrap = wrap;
     problemDialog = NULL;
     lastItemPosY = 0;
     lastItem = NULL;
-    
+
     resize( 600, 600);
 	
     fFileMenu=this->menuBar()->addMenu("Fichier");
@@ -32,20 +32,11 @@ MainWindow::MainWindow(Wrap *wrap, QApplication *app) : QMainWindow() {
     setCentralWidget( view);
     
     connect(newSimul, SIGNAL(triggered()), this, SLOT(newSimulation()));
-    connect(fQuit, SIGNAL(triggered()), this, SLOT(close()));
+    connect(fQuit, SIGNAL(triggered()), this, SLOT( close()));
     connect(fWrap, SIGNAL(result(Job*)), this, SLOT(showResult(Job*)));
-    connect( this, SIGNAL( closeWin()), app, SLOT( closeAllWindows()));
 #ifdef __APPLE__
     window()->move(0,0);
 #endif
-}
-
-bool MainWindow::close() {
-    emit closeWin();
-}
-
-void MainWindow::closeEvent ( QHideEvent * event ) {
-    emit closeWin();
 }
 
 MainWindow::~MainWindow() {
@@ -58,7 +49,7 @@ void MainWindow::showResult(Job *j) {
     QGraphicsView *windowView= new QGraphicsView( showWindow);
     windowView->setAlignment( Qt::AlignLeft | Qt::AlignTop);
     windowView->setMinimumSize( 200, 200); //taille minimale de la fenetre !
-    int sizeX = windowView->sceneRect().width() + 15 , sizeY = windowView->sceneRect().height() + 15;
+    int sizeX = (int) windowView->sceneRect().width() + 15 , sizeY = (int) windowView->sceneRect().height() + 15;
     windowView->setMaximumSize( sizeX, sizeY);
     if( sizeX > 600 )
         sizeX = 600;

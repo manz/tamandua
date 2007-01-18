@@ -38,19 +38,12 @@ class MainWindow : public QMainWindow {
         SimulItem *lastItem;
 		
     public:
-        MainWindow(Wrap *wrap, QApplication *app);
+        MainWindow(Wrap *wrap);
         ~MainWindow();
-		
-    signals:
-        void closeWin();
-	   
+
     public slots:
-        bool close();
         void newSimulation();
         void showResult(Job *j);
-        
-    protected:
-        void closeEvent ( QHideEvent * event );
 };
 
 #endif /* MAINWINDOW_H */

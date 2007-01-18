@@ -52,8 +52,10 @@ extern "C" {
              scene.setBackgroundBrush(gradient);
         */
              Wrap *fWrap=new Wrap(pluginpath);
-             MainWindow win(fWrap, &app);
-             win.show();
+             MainWindow *win = new MainWindow(fWrap);
+             win->setAttribute( Qt::WA_DeleteOnClose, true);
+             app.connect( win, SIGNAL( destroyed()), &app, SLOT( closeAllWindows()));
+             win->show();
 /*
              QMenuBar menu;
              menu.addMenu("Fichier");
@@ -71,6 +73,4 @@ extern "C" {
              printf("result %d\n", res);
 */
              return app.exec();
-
-                 }
-
+}
