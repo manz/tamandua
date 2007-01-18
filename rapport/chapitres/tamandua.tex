@@ -75,3 +75,11 @@ informations supplémentaires. Plusieurs graphiques peuvent être conservés
 simultanément grâce à un dispositif d'onglets en haut de l'affichage. Grâce au
 bouton idoïne dans la barre d'outil, on peut exporter cette image en png si
 on souhaite par exemple l'intégrer à un rapport ou la conserver en lieu sûr.
+\subsection{Myrmidon}
+Myrmidon est une interface réalisée en C++ grâce à la bibliothèque Qt ( riche en fonctionnalités et portable). Contrairement à gamandua elle ne se constitue pas d'une fenêtre unique mais d'une fenêtre principale où est resumée un historique des calculs effectués et permet de créer de nouvelles simulations et d'une fenêtre par calcul ce qui permet une comparaison aisée des stratégies s'appliquant à un problème donné.
+Pour faire le lien avec tamandua écrit en C un wrapper a été ecrit ce qui nous a facilité l'écriture de l'interface.
+\begin{center}
+\includegraphics{myrmidon.png}
+\end{center}
+Les calculs sont présentés de la même façon que sous gamandua. Un nouveau calcul se lance en cliqant sur Fichier --\textgreater Nouvelle Simulation dans la barre d'outils.
+Les fenêtres des calculs peuvent être fermées, puis réouvertes en cliquant sur leur résumé dans la fenêtre principale.
