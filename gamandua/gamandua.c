@@ -52,11 +52,11 @@ main(int argc, char **argv)
   gui->spin_machine = init_spin_machine();
   gui->notebook = init_notebook();
   gui->drawing_area = init_drawing_area(gui);
-  gui->gradpix = gdk_pixbuf_new_from_file("grad.png", NULL);
-  gui->logopix = gdk_pixbuf_new_from_file("gamandua_shaded.png", NULL);
+  gui->gradpix = gdk_pixbuf_new_from_file(PACKAGE_DATA_DIR"grad.png", NULL);
+  gui->logopix = gdk_pixbuf_new_from_file(PACKAGE_DATA_DIR"gamandua_shaded.png", NULL);
   gui->logopix_w = gdk_pixbuf_get_width(gui->logopix);
   gui->logopix_h = gdk_pixbuf_get_height(gui->logopix);
-  gui->tooltippix = gdk_pixbuf_new_from_file("tooltip.png", NULL);
+  gui->tooltippix = gdk_pixbuf_new_from_file(PACKAGE_DATA_DIR"tooltip.png", NULL);
   gui->tooltippix_w = gdk_pixbuf_get_width(gui->tooltippix);
   gui->tooltippix_h = gdk_pixbuf_get_height(gui->tooltippix);
   init_packing(gui);
@@ -653,7 +653,7 @@ switch_to_logo(int val)
 
   if (!(image = gui->logo))
     {
-      image = gtk_image_new_from_file("./gamandua_logo.png");
+      image = gtk_image_new_from_file(PACKAGE_DATA_DIR"gamandua_logo.png");
       gtk_box_pack_start(GTK_BOX(gui->hbox), image, TRUE, TRUE, 20);
       gui->logo = image;
     }
