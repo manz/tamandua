@@ -1,14 +1,17 @@
 #include <QGraphicsView>
 #include <QDockWidget>
+#include <QApplication>
 
 #include "MainWindow.h"
 #include "ShowWindow.h"
 
-MainWindow::MainWindow(Wrap *wrap) : QMainWindow() {
+MainWindow::MainWindow(Wrap *wrap, QApplication *app) : QMainWindow() {
     fWrap = wrap;
     problemDialog = NULL;
     lastItemPosY = 0;
     lastItem = NULL;
+    
+    resize( 600, 600);
 	
     fFileMenu=this->menuBar()->addMenu("Fichier");
     fEditMenu=this->menuBar()->addMenu("Edition");
@@ -31,11 +34,18 @@ MainWindow::MainWindow(Wrap *wrap) : QMainWindow() {
     connect(newSimul, SIGNAL(triggered()), this, SLOT(newSimulation()));
     connect(fQuit, SIGNAL(triggered()), this, SLOT(close()));
     connect(fWrap, SIGNAL(result(Job*)), this, SLOT(showResult(Job*)));
-		
-		//layout()->setSizeConstraint(QLayout::SetFixedSize);
+    connect( this, SIGNAL( closeWin()), app, SLOT( closeAllWindows()));
 #ifdef __APPLE__
     window()->move(0,0);
 #endif
+}
+
+bool MainWindow::close() {
+    emit closeWin();
+}
+
+void MainWindow::hideEvent ( QHideEvent * event ) {
+    emit closeWin();
 }
 
 MainWindow::~MainWindow() {
@@ -47,7 +57,14 @@ void MainWindow::showResult(Job *j) {
 	
     QGraphicsView *windowView= new QGraphicsView( showWindow);
     windowView->setAlignment( Qt::AlignLeft | Qt::AlignTop);
-    windowView->setRenderHints( QPainter::Antialiasing | QPainter::TextAntialiasing | QPainter::SmoothPixmapTransform);
+    windowView->setMinimumSize( 200, 200); //taille minimale de la fenetre !
+    int sizeX = windowView->sceneRect().width() + 15 , sizeY = windowView->sceneRect().height() + 15;
+    windowView->setMaximumSize( sizeX, sizeY);
+    if( sizeX > 600 )
+        sizeX = 600;
+    if( sizeY > 600 )
+        sizeY = 600;
+    windowView->resize( sizeX, sizeY);
     windowView->show();
     
     SimulItem *rectItem = new SimulItem( windowView);
@@ -86,7 +103,7 @@ void MainWindow::showResult(Job *j) {
     //roundRectPath.lineTo( textItem->boundingRect().width() + 0.0, 5.0);
     roundRectPath.closeSubpath();
      
-     rectItem->setPath( roundRectPath);
+    rectItem->setPath( roundRectPath);
     if( lastItem) {
         //rectItem->setRect( 0, 15 + lastItem->boundingRect().bottom(), 20 + textItem->boundingRect().width(), 20 + textItem->boundingRect().height());
         rectItem->setPos( QPointF( 0., 15. + lastItem->boundingRect().bottom()));
@@ -120,7 +137,6 @@ void MainWindow::showResult(Job *j) {
 void MainWindow::newSimulation() {
     if( NULL == problemDialog) {
         ProblemDialog *pb = new ProblemDialog(fWrap, this);
-				connect(fQuit, SIGNAL(clicked()), problemDialog, SLOT(close()));
         problemDialog = pb;
         pb->show();
     }
@@ -129,12 +145,12 @@ void MainWindow::newSimulation() {
     }
     /*int res = pb.exec();
     if (res) {
-        printf("%d %d\n", pb.problemSelected(), pb.strategySelected());
-        printf("%d\n", pb.generator());
-        fWrap->simulate(pb.generator());
-    }
+    printf("%d %d\n", pb.problemSelected(), pb.strategySelected());
+    printf("%d\n", pb.generator());
+    fWrap->simulate(pb.generator());
+}
     else {
-    }*/
+}*/
 	//printf("toto!=%d, %d\n", res, pb.result());
 }
 

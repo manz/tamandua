@@ -25,25 +25,32 @@ class SimulItem : public QGraphicsPathItem {
 };
 
 class MainWindow : public QMainWindow {
-	Q_OBJECT
+    Q_OBJECT
 	
-	private:
-		Wrap *fWrap;
-		QMenu *fFileMenu;
-		QMenu *fEditMenu;
-		QAction *fQuit;
-		ProblemDialog *problemDialog;
-		QGraphicsScene *scene;
-		float lastItemPosY;
-		SimulItem *lastItem;
+    private:
+        Wrap *fWrap;
+        QMenu *fFileMenu;
+        QMenu *fEditMenu;
+        QAction *fQuit;
+        ProblemDialog *problemDialog;
+        QGraphicsScene *scene;
+        float lastItemPosY;
+        SimulItem *lastItem;
 		
-	public:
-		MainWindow(Wrap *wrap);
-		~MainWindow();
+    public:
+        MainWindow(Wrap *wrap, QApplication *app);
+        ~MainWindow();
 		
-	public slots:
-		void newSimulation();
-		void showResult(Job *j);
+    signals:
+        void closeWin();
+	   
+    public slots:
+        bool close();
+        void newSimulation();
+        void showResult(Job *j);
+        
+    protected:
+        void hideEvent ( QHideEvent * event );
 };
 
 #endif /* MAINWINDOW_H */

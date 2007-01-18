@@ -2,7 +2,7 @@
 
 ShowWindow::ShowWindow( Job *j, QWidget *parent) : QGraphicsScene( ){
     job = j;
-        
+
     QString *text = new QString;
     text->append( QString::fromUtf8( "Problème "));
     text->append( job->problem()->name());
@@ -12,7 +12,7 @@ ShowWindow::ShowWindow( Job *j, QWidget *parent) : QGraphicsScene( ){
     QGraphicsTextItem *textItem = new QGraphicsTextItem;
     textItem = this->addText( *text);
     
-		int x, y, x1, y1;
+    int x, y, x1, y1;
 
     TaskItem *taskItem;
     QColor colorRect;
@@ -31,30 +31,27 @@ ShowWindow::ShowWindow( Job *j, QWidget *parent) : QGraphicsScene( ){
         }
         tabBool[ taskP->stepMachine( 0)] = !tabBool[ taskP->stepMachine( 0)];
         for( int j = 0; j < taskP->stepCount(); j++) {
-						x = 10 + 2 * taskP->stepStartTime(j);
-						y = textItem->boundingRect().bottom() + (30 * ( 1 +taskP->stepMachine(j))) + (50 * taskP->stepMachine(j));
+            x = 10 + 2 * taskP->stepStartTime(j);
+            y = (int) textItem->boundingRect().bottom() + (30 * ( 1 +taskP->stepMachine(j))) + (50 * taskP->stepMachine(j));
 
-						rectTask.setX(x);
-						rectTask.setY(y);
+            rectTask.setX(x);
+            rectTask.setY(y);
             //rectTask.setX( 10 + 2 * taskP->stepStartTime( j));
             //rectTask.setY( (int) textItem->boundingRect().bottom() + ( 10 * ( 1 + taskP->stepMachine( j)))+ ( 50 * taskP->stepMachine( j)));
-						if (j>0) {
-							addLine(QLineF(x1, y1+50, x+taskP->stepLength(j), y), QPen(colorRect)); 
-						}
+            if (j>0) {
+                addLine(QLineF(x1, y1+50, x+taskP->stepLength(j), y), QPen(colorRect)); 
+            }
             
-						rectTask.setHeight(50);
+            rectTask.setHeight(50);
             rectTask.setWidth( 2 * taskP->stepLength( j));
 
-						TaskItem *it=new TaskItem(taskP, 0, this);
-						it->setColor(colorRect);
-						it->setRect(rectTask);
-						x1=x+taskP->stepLength(j);
-						y1=y;
-		//				addItem(it);
-            //addRect( rectTask, QPen( Qt::black), QBrush( colorRect));
+            TaskItem *it=new TaskItem(taskP, 0, this);
+            it->setColor(colorRect);
+            it->setRect(rectTask);
+            x1=x+taskP->stepLength(j);
+            y1=y;
+            }
         }
-    }
-		
 }
 
 TaskItem::TaskItem( Task *t, QGraphicsItem * parent , QGraphicsScene * scene ) : QGraphicsRectItem( parent, scene) {
@@ -63,21 +60,21 @@ TaskItem::TaskItem( Task *t, QGraphicsItem * parent , QGraphicsScene * scene ) :
 
 
 void TaskItem::paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0) {
-	QPainterPath path;
-	QLinearGradient grad(rect().x(), rect().y(), rect().x()+rect().width(), rect().y()+rect().height());
+    QPainterPath path;
+    QLinearGradient grad(rect().x(), rect().y(), rect().x()+rect().width(), rect().y()+rect().height());
 
-	grad.setColorAt(0,  color());
-	grad.setColorAt(1, color().dark());
-	painter->setPen(Qt::NoPen);
-	painter->setBrush(grad);
-	painter->drawRect(rect());
+    grad.setColorAt(0,  color());
+    grad.setColorAt(1, color().dark());
+    painter->setPen(Qt::NoPen);
+    painter->setBrush(grad);
+    painter->drawRect(rect());
 }
 
 void TaskItem::setColor(QColor c) {
-	fColor = c;
+    fColor = c;
 }
 
 QColor TaskItem::color() {
-	return fColor;
+    return fColor;
 }
 
