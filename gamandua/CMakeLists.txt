@@ -17,5 +17,7 @@ TARGET_LINK_LIBRARIES(gamandua ${GTK2_LINKFLAGS} td_base td_core)
 
 if (NOT APPLE)
 	INSTALL(TARGETS gamandua RUNTIME DESTINATION /usr/local/bin)
+	INSTALL(FILES gamandua_logo.png DESTINATION /usr/local/share/tamandua/gamandua)
+	INSTALL(FILES gamandua_shaded.png DESTINATION /usr/local/share/tamandua/gamandua)
 endif (NOT APPLE)
 
