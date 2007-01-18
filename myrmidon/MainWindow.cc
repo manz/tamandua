@@ -17,9 +17,12 @@ MainWindow::MainWindow(Wrap *wrap) : QMainWindow() {
     fEditMenu=this->menuBar()->addMenu("Edition");
 	
     QAction *newSimul = new QAction("Nouvelle Simulation", this);
-    fFileMenu->addAction(newSimul);
+		newSimul->setShortcut(tr("Ctrl+N"));
+		fFileMenu->addAction(newSimul);
 
     fQuit = new QAction("Quitter", this);
+		fQuit->setShortcut(tr("Ctrl+Q"));
+
     fFileMenu->addAction(fQuit);
     
     scene = new QGraphicsScene();

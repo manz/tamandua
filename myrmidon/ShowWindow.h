@@ -24,7 +24,7 @@ class ShowWindow : public QGraphicsScene {
 class TaskItem : public QGraphicsRectItem {
             
     public:
-        TaskItem (Task *t, int step, QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
+        TaskItem (Task *t, bool isWeighted, int step, QGraphicsItem * parent = 0, QGraphicsScene * scene = 0);
 				void paint (QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget);
         void setColor(QColor c);
 				QColor color();

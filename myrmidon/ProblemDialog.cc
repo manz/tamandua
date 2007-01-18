@@ -172,7 +172,11 @@ void ProblemDialog::_CreateWeight() {
 	QGridLayout *layout=new QGridLayout();
 
 	fSpinWeightMax = new QSpinBox(this);
+	fSpinWeightMax->setMinimum(1);
+	fSpinWeightMax->setValue(42);
+	
 	fSpinWeightMin = new QSpinBox(this);
+	fSpinWeightMin->setMinimum(1);
 
 	fLblWeightMin = new QLabel("Minimum", this);
 	fLblWeightMax = new QLabel("Maximum", this);
@@ -229,14 +233,17 @@ void ProblemDialog::updateSt(int p) {
 	else {
 		fStCombo->setEnabled(true);
 		fChkCompare->setEnabled(true);
-	}
+	}	
 
-	if (pb->isWeighted()) {
-		fWeightBox->setEnabled(true);
-	}
-	else {
-		fWeightBox->setEnabled(false);
-	}
+		if (pb->isWeighted()) {
+			fMachineSpin->setEnabled(false);
+			fWeightBox->setEnabled(true);
+		}
+		else {
+			//fMachineSpin->setEnabled(true);
+			fWeightBox->setEnabled(false);
+		}
+	
 	_CreateLength();
 }
 
