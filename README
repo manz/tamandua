@@ -25,9 +25,9 @@ Dépends de td_base, c'est la lib de calcul des problèmes, elle est multithread
 mais au niveau de l'API ca se sent pas, le seul indice c'est que les appels 
 importants sont asynchrones, ca devrait nettement simplifier les GUI par dessus.
 
-Les problèmes sont stockés dans des .so, cf problems/dispatch.c pour voir le 
-format standard, rien de magique c'est assez explicite, dumoins dans les grandes 
-lignes. Les .so sont chargés dynamiquements avec dlopen, on peut donc en 
+Les problèmes sont stockés dans des .so, cf problems/dispatch/dispatch.c pour 
+voir le format standard, rien de magique c'est assez explicite, dumoins dans les 
+grandes lignes. Les .so sont chargés dynamiquements avec dlopen, on peut donc en 
 rajouter après l'install de td_core ou les mettre coté utilisateur alors que les 
 libs sont installés sur le systeme. Y'a un ptit travail pour la gestion des 
 dossiers à scanner à faire pour améliorer ça cependant. Le dlopen peut embéter 
@@ -66,6 +66,5 @@ Certainess propriétés sont destinées à être crées par l'interface et lues 
 stratégie (la durée d'une tâche par exemple), et d'autre l'inverse (la machine 
 à laquelle une tâche est assignée), certaines pouront êtres lues et écrites par 
 les 2. La lecture du problème déja écrit devrait aider à comprendre ce gros pavé 
-de texte, cf. problems/dispatch.c.
+de texte, cf. problems/dispatch/dispatch.c.
 
-Pour le reste, lisez le code, et regardez la fonction tdc_test(); ....

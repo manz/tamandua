@@ -11,3 +11,20 @@ La compilation du rapport en plus se fait avec :
 L'installation est nécessaire pour le bon fonctionnement des problèmes,
 et de gamandua. Le prefix d'installation est obligatoirement /usr.
 
+Les fichiers installés sont : 
+	/usr/lib/libtd_base.so
+	/usr/lib/libtd_base.so.0
+	/usr/lib/libtd_base.so.0.0.0
+	/usr/lib/libtd_core.so
+	/usr/lib/libtd_core.so.0
+	/usr/lib/libtd_core.so.0.0.0
+	/usr/share/tamandua/problems/libsmith.so
+	/usr/share/tamandua/problems/libflowshop3.so
+	/usr/share/tamandua/problems/libflowshop2.so
+	/usr/share/tamandua/problems/libdispatch.so
+	/usr/bin/gamandua
+	/usr/share/tamandua/gamandua/gamandua_logo.png
+	/usr/share/tamandua/gamandua/gamandua_shaded.png
+	/usr/share/tamandua/gamandua/grad.png
+	/usr/share/tamandua/gamandua/tooltip.png
+	/usr/bin/myrmidon
