@@ -92,9 +92,9 @@ ShowWindow::ShowWindow( Job *j, QWidget *parent) : QGraphicsScene( ){
 
 TaskItem::TaskItem( Task *t, bool isWeighted, int step, QGraphicsItem * parent , QGraphicsScene * scene ) : QGraphicsRectItem( parent, scene) {
     task = t;
-		fToolTip = QString::fromUtf8("id: %1\nDurée: %2\nStartime: %3").arg(task->id()).arg(task->stepLength(step)).arg(task->stepStartTime(step));
+		fToolTip = QString::fromUtf8("Numéro de la tâche: %1\nDurée de la tâche: %2\nDébut d'execution: %3").arg(task->id()).arg(task->stepLength(step)).arg(task->stepStartTime(step));
 		if (isWeighted)
-				 fToolTip=fToolTip+QString("\nPoids: %4").arg(t->weight());
+				 fToolTip=fToolTip+QString("\nPoids de la tâche: %4").arg(t->weight());
 
 }
 

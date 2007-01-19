@@ -13,8 +13,8 @@ MainWindow::MainWindow(Wrap *wrap) : QMainWindow() {
 
     resize( 600, 600);
 	
-    fFileMenu=this->menuBar()->addMenu("Fichier");
-    fEditMenu=this->menuBar()->addMenu("Edition");
+    fFileMenu=this->menuBar()->addMenu("Simulations");
+   // fEditMenu=this->menuBar()->addMenu("Edition");
 	
     QAction *newSimul = new QAction("Nouvelle Simulation", this);
 		newSimul->setShortcut(tr("Ctrl+N"));

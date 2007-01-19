@@ -68,7 +68,10 @@ class ProblemDialog : public QDialog {
 
 		int problemSelected();
 		int strategySelected();
-	
+
+	private slots:
+		void setCheckBoxVisible(int state);
+
 	public slots:
 		void updateSt(int s);
 		void accepted();

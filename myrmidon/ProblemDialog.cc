@@ -21,8 +21,7 @@ ProblemDialog::ProblemDialog(Wrap *wrap, QWidget *parent) : QDialog(parent)
 
 		buttonBox->addButton(QString::fromUtf8("Ok"), QDialogButtonBox::AcceptRole);
 		buttonBox->addButton(QString::fromUtf8("Annuler"), QDialogButtonBox::RejectRole);
-		
-		
+				
 		QPushButton *buttonOk = new QPushButton( QString::fromUtf8( "Ok"));
 		QPushButton *buttonCancel = new QPushButton( QString::fromUtf8( "Annuler"));
 
@@ -56,20 +55,22 @@ ProblemDialog::ProblemDialog(Wrap *wrap, QWidget *parent) : QDialog(parent)
 		fDialogLayout->addWidget(fPbCombo, 0, 1);
 		fDialogLayout->addWidget(lbst, 1, 0);
 		fDialogLayout->addWidget(fStCombo, 1, 1);
-		fDialogLayout->addWidget(fDescBox, 2, 0, 1, 2);
+		
+		fDialogLayout->addWidget(fChkCompare, 2, 0, 1, 2);
+	
+		fDialogLayout->addWidget(fDescBox, 3, 0, 1, 2);
 
-		fDialogLayout->addWidget(fLengthBox, 3, 0, 1, 2);
-		fDialogLayout->addWidget(fWeightBox, 4, 0, 1, 2);
+		fDialogLayout->addWidget(fLengthBox, 4, 0, 1, 2);
+		fDialogLayout->addWidget(fWeightBox, 5, 0, 1, 2);
 
-		fDialogLayout->addWidget(fMachineBox, 5, 0, 1, 2);
+		fDialogLayout->addWidget(fMachineBox, 6, 0, 1, 2);
 
-		fDialogLayout->addWidget(fChkCompare, 6, 0, 1, 2);
 		fDialogLayout->addWidget(buttonBox, 7, 0, 1, 2);
 
 		connect(fPbCombo, SIGNAL(activated(int)), this, SLOT(updateSt(int)));
 		connect(buttonBox, SIGNAL( accepted()), this, SLOT(accepted()));
 		connect(buttonBox, SIGNAL( rejected()), this, SLOT(rejected()));
-		
+		connect(fChkCompare, SIGNAL(stateChanged(int)), this, SLOT(setCheckBoxVisible(int)));
 		this->setLayout(fDialogLayout);
 		fDialogLayout->setSizeConstraint(QLayout::SetFixedSize);
 	}
@@ -230,15 +231,28 @@ void ProblemDialog::updateSt(int p) {
 		fChkCompare->setEnabled(true);
 	}	
 
-		if (pb->isWeighted()) {
-			fMachineSpin->setEnabled(false);
-			fWeightBox->setEnabled(true);
-		}
-		else {
-			fWeightBox->setEnabled(false);
-		}
+	if (pb->isWeighted()) {
+		fMachineSpin->setEnabled(false);
+		fWeightBox->setVisible(true);
+	}
+	else {
+		fWeightBox->setVisible(false);
+	}
 	
 	_CreateLength();
+}
+
+void ProblemDialog::setCheckBoxVisible(int state) {
+	switch (state) {
+		case Qt::Checked:
+			fStCombo->setEnabled(false);
+			break;
+		case Qt::Unchecked:
+			fStCombo->setEnabled(true);
+			break;
+		default:
+			break;
+	}
 }
 
 void ProblemDialog::accepted() {
