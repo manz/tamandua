@@ -163,6 +163,7 @@ void tdb_warn
 void tdb_debug
 (const char* msg, ...)
 {
+#ifdef DEBUG
 	int check;
 	va_list args;
 	va_start(args, msg);
@@ -172,6 +173,7 @@ void tdb_debug
 	tdb_fprintf(td->logger,"\n");
 	va_end(args);
 	pthread_mutex_unlock(&td->logger_lock);
+#endif
 }
 
 void* tdb_malloc
