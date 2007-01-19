@@ -24,16 +24,29 @@ se divise en plusieurs couches superposées:
    quelque chose de lisible.
 \end{itemize}
 \section{Détails d'implémentation}
-Le tout est réalisé en C sauf l'interface graphique en Qt programmée en C++.
-Le noyau implémente un mécanisme simple de parallélisme basé sur les Posix Threads.
+La majorité du projet est réalisé en C, seul l'interface graphique en Qt est programmée en C++. Le noyau implémente un mécanisme simple de parallélisme basé sur les Posix Threads.
 Ce mécanisme est à double usage, il permet d'une part de communiquer de manière
 asynchrone avec les interfaces graphiques afin de ne pas provoquer de bloquage
 inesthétique de l'interface pendant les calculs. D'autre part en associant une
 liste d'attente de tâches et un ensemble de Threads, il profite des architectures
 multi-thread et multi-coeur que l'on trouve de plus en plus même dans le grand
 public.
+
+Lors de certains problèmes nous utilisons le tri de la bibliothèque standard,
+c'est à dire la fonction {\em qsort}. Comme son nom l'indique, il s'agit en
+théorie d'un Quick Sort donc la borne supérieure théorique est $O(n^2)$ ce qui
+est loin de la limite théorique d'un tri. Cependant l'implémentation du {\em
+qsort} sur toutes les plateformes où fonctionne notre programme est un Quick
+Sort modifié pour se terminer en Merge Sort si jamais il dégénère permettant de
+conserver la limite que doit avoir un tri par comparaison, $O(n*log(n))$. Nous
+n'avons donc pas jugé utile de réimplémenter un tri nous même, sachant que cela
+n'enlevait de toute façon rien à la validité des démonstration théoriques
+précédemment exposées et à la faisabilité d'un tel tri.
+
+On note enfin que l'intégralité du noyau répond aux normes C99 et Posix, lui
+garantissant une portabilité sur la grande majorité des systèmes connus.
 \section{Génération de tâches}
-La conception de la génération d'ensemble de tâches à faire traiter par un
+La conception de la génération d'ensembles de tâches à faire traiter par un
 algorithme n'a pas été triviale, plusieux choix s'offraient à nous avec différents
 compromis de flexibilité et d'ergonomie, nous avions par exemple :
 \begin{itemize}
@@ -47,7 +60,7 @@ compromis de flexibilité et d'ergonomie, nous avions par exemple :
 \end{itemize}
 Nous avons finalement opté pour un mélange des deux premières solutions, en
 employant une liste éditable de générateurs aléatoires, chacun pouvant être
-configuré différemment, chaque générateur produit une population de tâches,
+configuré différemment. Chaque générateur produit une population de tâches,
 le tout est réunit pour faire un grand ensemble qui est alors envoyé aux
 stratégies de résolution. On peut pousser l'extrème en employant autant de
 populations que de tâches et en limitant chacune à une seule tâche pour reproduire
@@ -89,6 +102,9 @@ l'interface du noyau en employant les concepts objets.
 \begin{center}
 \includegraphics{myrmidon.png}
 \end{center}
-Un nouveau calcul se lance en cliquant sur Fichier $\rightarrow$ Nouvelle
-Simulation dans le menu.
+Un nouveau calcul se lance en cliquant sur Simulations $\rightarrow$ Nouvelle
+Simulation dans le menu. Après configuration du calcul est validation, celui-ci
+apparaît enfin. On note cependant qu'il n'est pas possible de gérer plus d'une
+population dans la configuration.
+
 Les fenêtres des calculs peuvent être fermées, puis réouvertes en cliquant sur leur résumé dans la fenêtre principale.

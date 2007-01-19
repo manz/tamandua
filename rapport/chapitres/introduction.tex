@@ -1,18 +1,19 @@
 \chapter{Introduction}
-\section{Description}
-L'objectif de ce projet est d'étudier diverses classes de problèmes 
-d'ordonnancement, ainsi que des algorithmes optimaux ou heuristiques permetant
-de les résoudre en un temps polynomial. Ils sont généralement très complexes. 
-Il est donc interessant de pouvoir en avoir une représentation graphique, à la
-fois simple et clair, de leurs résultats. Nous avons donc créé un programme
-permettant cela pour illustrer notre travail.
+\section{Problématique de l'ordonnancement}
+Le sujet ici présenté est l'étude de plusieurs problèmes relatifs à
+l'ordonnancement de tâches, c'est à dire la répartition et la permutation de
+l'ordre d'un ensemble de tâches sur une ou plusieurs machines avec diverses
+contraintes à satisfaire. Certaines contraintes étant strictes (dépendances entre
+certaines tâches, nombre de machines ...), d'autres étant plus flexibles et nous servant d'objectif à
+optimiser (durée total d'exécution principalement).
 
-\section{Réalisation}
-Trois problèmes ont été étudiés :
-\begin{itemize}
-\item les listes de Graham
-\item la rêgle de Smith
-\item l'algorithme de Johnson
-\end{itemize}
-A cela vient donc s'ajouter Tamandua. Une bibliothèque utilisant un système de
-greffons, spécialement conçu pour modéliser les solutions d'oronnancements.
+Parmis les problèmes
+présentés, certains sont solubles en temps polynomiaux, et dans ce cas une
+solution optimale est proposée, et d'autres obligent par contre à employer des heuristiques polynomiales afin de conserver des temps de calcul raisonnables. Ces heuristiques ont cependantes toutes une borne supérieure d'efficacité au moins inférieure au double de la solution optimale.
+
+\section{Objectifs du projet}
+Notre objectif tout d'abord est d'étudier ces problèmes, de leur trouver une
+solution, de démontrer son optimalité ou sa borne maximale d'optimalité et enfin
+la complexité de son implémentation. La seconde étape est l'implémentation
+pratique de ces algorithmes et enfin une interface permettant de les tester et
+de visualiser leur performance.
