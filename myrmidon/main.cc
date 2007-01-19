@@ -31,7 +31,7 @@ extern "C" {
                  pluginpath = QString(argv[1]);
              }
              else {
-                 pluginpath = QString("/usr/local/share/tamandua/problems");
+                 pluginpath = QString("/usr/share/tamandua/problems");
              }
              app.setStyle( new QCleanlooksStyle());
 #endif

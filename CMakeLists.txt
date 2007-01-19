@@ -33,17 +33,18 @@ add_library(smith MODULE problems/smith/smith.c)
 add_library(flowshop2 MODULE problems/flowshop2/flowshop2.c)
 add_library(flowshop3 MODULE problems/flowshop3/flowshop3.c)
 
+set(INSTALL_PREFIX /usr)
 
 if (NOT APPLE)
 	INSTALL(TARGETS td_core td_base
-			LIBRARY DESTINATION /usr/lib
-			LIBRARY DESTINATION /usr/lib
+			LIBRARY DESTINATION ${INSTALL_PREFIX}/lib
+			LIBRARY DESTINATION ${INSTALL_PREFIX}/lib
 			)
 	INSTALL(TARGETS dispatch smith flowshop2 flowshop3 
-			LIBRARY DESTINATION /usr/local/share/tamandua/problems
-			LIBRARY DESTINATION /usr/local/share/tamandua/problems
-			LIBRARY DESTINATION /usr/local/share/tamandua/problems
-			LIBRARY DESTINATION /usr/local/share/tamandua/problems
+			LIBRARY DESTINATION ${INSTALL_PREFIX}/share/tamandua/problems
+			LIBRARY DESTINATION ${INSTALL_PREFIX}/share/tamandua/problems
+			LIBRARY DESTINATION ${INSTALL_PREFIX}/share/tamandua/problems
+			LIBRARY DESTINATION ${INSTALL_PREFIX}/share/tamandua/problems
 			)
 endif (NOT APPLE)
 

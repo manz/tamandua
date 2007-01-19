@@ -36,7 +36,7 @@ main(int argc, char **argv)
     }
   else
     {
-      tdc_setcontext(tdc_init("/usr/local/share/tamandua/problems", 0, 1));
+      tdc_setcontext(tdc_init("/usr/share/tamandua/problems", 0, 1));
     }
 
   /* Gtk Init */
