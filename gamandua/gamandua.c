@@ -610,7 +610,7 @@ init_packing(Gui *gui)
   gtk_table_attach_defaults(GTK_TABLE(table), gui->spin_machine, 2, 3, 0, 1);
   gtk_table_attach(GTK_TABLE(table), init_label("Problème"), 0, 1, 1, 2, 0, 0, 0, 5);
   gtk_table_attach(GTK_TABLE(table), init_label("Stratégie"), 1, 2, 1, 2, 0, 0, 0, 5);
-  gtk_table_attach(GTK_TABLE(table), init_label("Machine(s)"), 2, 3, 1, 2, 0, 0, 0, 5);
+  gtk_table_attach(GTK_TABLE(table), init_label("Machines"), 2, 3, 1, 2, 0, 0, 0, 5);
   gtk_toolbar_append_widget(GTK_TOOLBAR(toolbar), table, NULL, NULL);
 
   gtk_toolbar_append_space(GTK_TOOLBAR(toolbar));
