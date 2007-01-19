@@ -1,5 +1,24 @@
 \chapter{Conclusion}
-L'architecture de tamandua permet un certain degré d'évolutivité sans demander
-de réécriture en profondeur. Toutefois certains problèmes d'ordonnancement ne
-peuvent pas être testés avec le modèle actuel. Notamment les problèmes portant sur
-des tâches préemptives. 
+\section{Réalisation du projet}
+Concernant la réalisation générale du projet, nous pouvons considérer notre
+objectif atteint, le noyau fonctionne bien et n'a jamais posé de problèmes
+dès sa première implémentation, les interfaces sont assez complètes et pratiques
+à utiliser.
+
+Grâce à l'emploi de moyens de communication efficaces tels que
+listes de diffusions et dépot de fichiers versionné, nous avons pu rapidement
+développer nos idées, corriger nos erreurs et améliorer sans cesse le produit
+finit. Cependant nous regrettons quelques lacunes du coté algorithmique où
+nous n'avons pas été capables de trouver une démonstration satisfaisante pour
+certains problèmes.
+\section{Améliorations futures}
+Un grand manque de notre infrastructure pour l'implémentation d'autres problèmes
+se situe dans la flexibilité de définition des tâches, peut-être qu'une
+définition de structure de données récursives et des métadonnées arbitraires
+permettrait cette généralisation. En effet la dichotomie entre tâches et étapes
+est assez artificielle. De plus nous ne supportons pas la préemptibilité des tâches alors que c'est un concept important dans d'autres problèmes d'ordonnancement. 
+
+La possibilité d'ajout de ces fonctionnalités a été évaluée mais un peu tard dans
+le projet, or ce sont des problèmes assez lourd à ajouter, l'un comme l'autre
+impliquant la refonte complète des structures de données d'échange entre le
+noyau, les problèmes et surtout les interfaces graphiques.
