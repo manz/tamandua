@@ -1,14 +1,14 @@
 \chapter{Implémentation et interfaces}
 \section{Présentation}
-Pour achever notre travail sur les algorithmes précédement exposés, nous avons
+Pour achever notre travail sur les algorithmes précédemment exposés, nous avons
 dû concevoir une architecture permettant de les implémenter, de leur fournir des
 données à traiter et enfin de visualiser le résultat et les comparer entre eux.
 \section{Architecture}
 Dans un soucis d'efficacité de programmation et de réutilisabilité, l'ensemble
-des problèmes à été implementé au sein d'une même architecture générique, celle-ci
+des problèmes à été implémenté au sein d'une même architecture générique, celle-ci
 se divise en plusieurs couches superposées:
 \begin{itemize}
-   \item td\_base contient des éléments fondamentaux n'ayant aucune spécifité
+   \item td\_base contient des éléments fondamentaux n'ayant aucune spécificité
    vis-à-vis du projet, tel que la gestion mémoire et des algorithmes génériques.
    \item td\_core est le noyau de calcul, c'est dans cette partie que se trouve
    tout le code spécifique de génération de données, de répartition des calculs
@@ -24,9 +24,9 @@ se divise en plusieurs couches superposées:
    quelque chose de lisible.
 \end{itemize}
 \section{Détails d'implémentation}
-La majorité du projet est réalisé en C, seul l'interface graphique en Qt est programmée en C++. Le noyau implémente un mécanisme simple de parallélisme basé sur les Posix Threads.
+La majorité du projet est réalisé en C, seule l'interface graphique en Qt est programmée en C++. Le noyau implémente un mécanisme simple de parallélisme basé sur les Posix Threads.
 Ce mécanisme est à double usage, il permet d'une part de communiquer de manière
-asynchrone avec les interfaces graphiques afin de ne pas provoquer de bloquage
+asynchrone avec les interfaces graphiques afin de ne pas provoquer de blocage
 inesthétique de l'interface pendant les calculs. D'autre part en associant une
 liste d'attente de tâches et un ensemble de Threads, il profite des architectures
 multi-thread et multi-coeur que l'on trouve de plus en plus même dans le grand
@@ -47,10 +47,10 @@ On note enfin que l'intégralité du noyau répond aux normes C99 et Posix, lui
 garantissant une portabilité sur la grande majorité des systèmes connus.
 \section{Génération de tâches}
 La conception de la génération d'ensembles de tâches à faire traiter par un
-algorithme n'a pas été triviale, plusieux choix s'offraient à nous avec différents
+algorithme n'a pas été triviale, plusieurs choix s'offraient à nous avec différents
 compromis de flexibilité et d'ergonomie, nous avions par exemple :
 \begin{itemize}
-   \item Une liste de tâche entièrement éditable à la main, précise mais extrèmement
+   \item Une liste de tâches entièrement éditable à la main, précise mais extrêmement
    fastidieuse pour de grands ensembles ou pour en produire de nombreuses différentes.
    \item Un générateur aléatoire simple et homogène.
    \item La possibilité pour l'utilisateur de spécifier des contraintes sous forme
@@ -97,7 +97,7 @@ ensuite attribué une fenêtre séparée afin de pouvoir les disposer librement 
 de les afficher simultanément.
 
 Afin de faciliter la liaison entre C++ et C et de réduire le couplage entre
-l'interface et le noyau, une classe wrapper sert d'adapteur et expose
+l'interface et le noyau, une classe wrapper sert d'adaptateur et expose
 l'interface du noyau en employant les concepts objets.
 \begin{center}
 \includegraphics{myrmidon.png}
