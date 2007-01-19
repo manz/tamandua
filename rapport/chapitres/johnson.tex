@@ -38,6 +38,44 @@ dès qu'une tâche a été traité sur {\em m1} elle passe sur {\em m2}.
 \end{algorithmic}
 \end{algorithm}
 
+La première machine a une occupation constante équivalente à la somme des
+$p_{i1}$. Toutefois, à cause de la contrainte de précédence, il est important de
+commencer au plus tôt le travail sur la deuxième machine. Avec $T$ triée par
+ordre croissant, les tâches les plus courtes seront traitées en premières sur
+{\em m1}. Et inversement avec $R$ triée par ordre décroissant, les tâches de
+plus courtes durées sur {\em m2} seront en fin de liste. La dernière tâche
+traitée sera la plus courte de toutes sur {\em m2}. Si on l'inverse avec
+n'importe quelle autre tâche. {\em m1} finira toujours au même instant $t$ mais
+{\em m2} finira lui à un instant $t+p_{i2}$, d'où l'intérêt d'avoir $p_{i2}$ le
+plus petit possible.
+
+\subsection{Exemple}
+Appliquons maintenant cet algorithme sur l'instance :
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+$i$ & $p_{i1}$ & $p_{i2}$ \\
+\hline
+1 & 4 & \textbf{3} \\
+\hline
+2 & \textbf{3} & 3 \\
+\hline
+3 & \textbf{4} & 4 \\
+\hline
+4 & \textbf{1} & 4 \\
+\hline
+5 & \textbf{8} & 8 \\
+\hline
+\end{tabular}
+\end{center}
+
+On commence par remplir $T$ avec tous les $i$ tel que $p_{i1} \le p_{i2}$, et
+$R$ par tous les autres.
+On obtient $T = \{2,3,4,5\}$ et $R = \{1\}$.
+On les trie et fusionne, ce qui donne la liste des tâches 
+suivante $L = \{4,2,3,5\} + \{1\}$.
+
 \subsection{Implémentation}
 Notre implémentation travaille sur un tableau de tâches (selon les spécifications de
 tamandua), l'utilisation de listes est donc simulée.
@@ -81,30 +119,3 @@ Nous avons une compléxité en $O(1)$ pour cet algorithme, tout ce joue dans le
 tri. Un {\em qsort} associé à un {\em mergesort} nous redonne la compléxité
 de Johnon, soit $O(n.log_2(n))$.
 
-
-\subsection{Exemple}
-Appliquons maintenant cet algorithme sur l'instance :
-
-\begin{center}
-\begin{tabular}{|c|c|c|}
-\hline
-$i$ & $p_{i1}$ & $p_{i2}$ \\
-\hline
-1 & 4 & \textbf{3} \\
-\hline
-2 & \textbf{3} & 3 \\
-\hline
-3 & \textbf{4} & 4 \\
-\hline
-4 & \textbf{1} & 4 \\
-\hline
-5 & \textbf{8} & 8 \\
-\hline
-\end{tabular}
-\end{center}
-
-On commence par remplir $T$ avec tous les $i$ tel que $p_{i1} \le p_{i2}$, et
-$R$ par tous les autres.
-On obtient $T = \{2,3,4,5\}$ et $R = \{1\}$.
-On les trie et fusionne, ce qui donne la liste des tâches 
-suivante $L = \{4,2,3,5\} + \{1\}$.
