@@ -1,18 +1,29 @@
-\section{Ordonnancement selon l'algorithme de Johnson}
+\section{Problème de type {\em flow-shop} à deux et trois machines}
 \subsection{Problème}
-L'algorithme de Johnson s'utilise pour les problèmes de type {\em flow-shop}.
-On doit ordonnancer $n$ tâches de manière à ce qu'elles soient traitées par
-toutes les machines $m$.
-Une tâche ne peut être executée que sur une seule machine à la
-fois. En un temps optimal. Encore une fois, on n'a pas d'interdépendance entre
-les tâches. Cet algorithme est une méthode heuristique qui s'applique 
-dans le cas où $m=2$.
+Les problèmes de type {\em flow-shop} comportent un ensemble de tâches se
+séparant en étapes, toutes les tâches ayant le même nombre d'étapes. Chaque
+étape doit être traitée sur une machine différente et dans le même ordre pour
+toutes les tâches. Il y a donc autant de machines que d'étapes. Chaque étape ne
+commence que lorsque la précédente est terminée et lorsque la machine nécessaire
+est libre, l'objectif est de minimiser les moments où une machine ne fait rien
+afin d'optimiser l'occupation totale des machines et de réduire le temps total
+d'exécution.
+
+L'algorithme de Johnson que nous allons présenter est une solution optimale pour
+le cas à deux machines et fournit une heuristique décente et rapide à calculer
+pour le cas à trois machines.
+
+On note enfin que les tâches ne sont pas préemptibles et que le fait que l'ordre
+des tâches soit identique sur les deux ou trois machines est une restriction de
+l'algorithme de Johnson mais pas du problème posé, il se peut donc que pour
+trois machine la solution optimale implique un ordre différent selon la
+machine.
 
 \subsection{Présentation}
-L'algorithme de Johnson consiste à créer deux listes $T$ et $R$. Et d'y placer 
-le numéro des tâches en fonction de leurs durées minimales entre les deux 
-machines. On trie ensuite $T$ par ordre croissant selon $p_{i1}$ et $R$ par
-ordre décroissant selon $p_{i2}$. Et enfin on retourne leurs concaténation.
+L'algorithme de Johnson consiste à créer deux listes $T$ et $R$ et de répartir
+chacune des tâches selon qu'elles soient plus courtes sur la première ou la
+seconde machine. On trie ensuite $T$ par ordre croissant selon $p_{i1}$ et $R$ par
+ordre décroissant selon $p_{i2}$. Et enfin on retourne leur concaténation.
 Ce résultat nous donne $L$ l'ordre des tâches à effectuer sur {\em m1},
 dès qu'une tâche a été traité sur {\em m1} elle passe sur {\em m2}.
 
@@ -21,9 +32,9 @@ dès qu'une tâche a été traité sur {\em m1} elle passe sur {\em m2}.
 \caption{Algorithme de Johnson}
 \begin{algorithmic}
 \STATE $X \leftarrow \{1,...,n\}$
-\STATE $T \leftarrow \O$
-\STATE $R \leftarrow \O$
-\WHILE {$X \neq \O$}
+\STATE $T \leftarrow O$
+\STATE $R \leftarrow O$
+\WHILE {$X \neq O$}
 	\STATE Choisir $i^*$, $j^*$ avec $p_{i^*,j^*} = min\{p_{ij}|i \in X; j = 1,2\}$
 	\IF {$j^* = 1$}
 		\STATE $T \leftarrow T + i^*$
@@ -32,22 +43,11 @@ dès qu'une tâche a été traité sur {\em m1} elle passe sur {\em m2}.
 	\ENDIF
 	\STATE $X \leftarrow X\backslash\{i^*\}$
 \ENDWHILE
-\STATE TRIER(T, ($p_{i1} - p_{j1}$))
-\STATE TRIER(R, ($p_{j2} - p_{i2}$))
+\STATE $Trier(T, (p_{i1} - p_{j1}))$
+\STATE $Trier(R, (p_{j2} - p_{i2}))$
 \STATE retourner $T + R$
 \end{algorithmic}
 \end{algorithm}
-
-La première machine a une occupation constante équivalente à la somme des
-$p_{i1}$. Toutefois, à cause de la contrainte de précédence, il est important de
-commencer au plus tôt le travail sur la deuxième machine. Avec $T$ triée par
-ordre croissant, les tâches les plus courtes seront traitées en premières sur
-{\em m1}. Et inversement avec $R$ triée par ordre décroissant, les tâches de
-plus courtes durées sur {\em m2} seront en fin de liste. La dernière tâche
-traitée sera la plus courte de toutes sur {\em m2}. Si on l'inverse avec
-n'importe quelle autre tâche. {\em m1} finira toujours au même instant $t$ mais
-{\em m2} finira lui à un instant $t+p_{i2}$, d'où l'intérêt d'avoir $p_{i2}$ le
-plus petit possible.
 
 \subsection{Exemple}
 Appliquons maintenant cet algorithme sur l'instance :
@@ -77,45 +77,50 @@ On les trie et fusionne, ce qui donne la liste des tâches
 suivante $L = \{4,2,3,5\} + \{1\}$.
 
 \subsection{Implémentation}
-Notre implémentation travaille sur un tableau de tâches (selon les spécifications de
+Notre implémention travaille sur un tableau de tâches (selon les spécifications de
 tamandua), l'utilisation de listes est donc simulée.
 Nous travaillons directement sur le résultat concatené, ce qui implique une
 minimisation des données nécessaires. On opère un tri des tâches en respectant
-l'algorithme de Johnson, soit que le début du tableau représente la liste T,
-et R la fin. Pour ce faire l'algorithme de tri doit se baser sur cet algorithme
-de comparaison :
+l'algorithme de Johnson, c'est à dire que le début du tableau représente la liste T,
+et R la fin. Pour ce faire l'algorithme de tri utilise le prédicat de
+comparaison suivant :
+
 \begin{algorithm}
 \caption{Fonction de comparaison de Johnson-sort}
 \begin{algorithmic}
 \IF {$p_i\ est\ dans\ T$}
 	\IF {$p_{i+1}\ est\ dans\ T\ et\ (p_{i,1} > p_{i+1,1})$}
-		\STATE // La tâche1 et la tâche2 sont toutes les deux dans T,
-		\STATE // Et la tâche1 est moins rapide que la tâche2 (sur m1).
+		\STATE \COMMENT{ La tâche1 et la tâches2 sont toutes les deux dans T, \\
+		Et la tâche1 est moins courte que la tâche2 (sur m1). }
 		\STATE Placer $p_i$ après $p_{i+1}$
 	\ELSE
-		\STATE // La tâche1 est dans T mais non la tâche2,
-		\STATE // donc la tâche1 est forcément avant ;
-		\STATE // Ou la tâche1 est plus rapide que la tâche2.
+		\STATE \COMMENT{ La tâche1 est dans T mais non la tâche2, \\
+		donc la tâche1 est forcément avant ; \\
+		Ou la tâche1 est plus courte que la tâche2. }
 		\STATE Placer $p_i$ avant $p_{i+1}$
 	\ENDIF
 \ELSE
 	\IF {$p_{i+1}\ est\ dans\ T\ ou\ (p_i{i,2} < p_{i+1,2})$}
-		\STATE // La tâche1 est dans R et non la tâche2,
-		\STATE // donc la tâche1 est forcement après ;
-		\STATE // Ou la tâche1 est plus rapide que la tâche2 (sur m2).
+		\STATE \COMMENT{ La tâche1 est dans R et non la tâche2, \\
+		donc la tâche1 est forcement après ; \\
+		Ou la tâche1 est plus courte que la tâche2 (sur m2). }
 		\STATE Place $p_i$ après $p_{i+1}$
 	\ELSE
-		\STATE // La tâche1 et la tâche2 sont toutes les deux dans R,
-		\STATE // Et la tâche1 est moins rapide que la tâche2.
-		\STATE Placer $p_i$ avant $p_{i+1}$
+		\STATE \COMMENT{ La tâche1 et la tâche2 sont toutes les deux dans R, \\
+		 Et la tâche1 est moins courte que la tâche2. }
+		\STATE Placer $p_i$ avant $p_{i+1}$ 
 	\ENDIF
 \ENDIF
 \end{algorithmic}
 \end{algorithm}
 
-Une tâche répond au prédicat {\em est dans T} si elle s'execute plus rapidement
+Une tâche réponds au prédicat {\em est dans T} si elle s'execute plus rapidement
 sur {\em m1} que sur {\em m2}.
-Nous avons une compléxité en $O(1)$ pour cet algorithme, tout ce joue dans le
-tri. Un {\em qsort} associé à un {\em mergesort} nous redonne la compléxité
-de Johnon, soit $O(n.log_2(n))$.
+Nous avons une compléxité en $O(1)$ pour le calcul de la comparaison, tout se joue
+dans le tri. Un tri ayant optimalement une complexité de $O(n*log(n))$, c'est
+aussi la complexité de l'algorithme de Johnson.
 
+\subsection{Extention à trois machines}
+Pour étendre l'algorithme à plus de deux machines, on compare la somme du temps
+sur les deux premières machines avec la somme du temps sur les deux secondes
+machines.
