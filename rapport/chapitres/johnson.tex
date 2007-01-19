@@ -25,7 +25,7 @@ chacune des tâches selon qu'elles soient plus courtes sur la première ou la
 seconde machine. On trie ensuite $T$ par ordre croissant selon $p_{i1}$ et $R$ par
 ordre décroissant selon $p_{i2}$. Et enfin on retourne leur concaténation.
 Ce résultat nous donne $L$ l'ordre des tâches à effectuer sur {\em m1},
-dès qu'une tâche a été traité sur {\em m1} elle passe sur {\em m2}.
+dès qu'une tâche a été traitée sur {\em m1} elle passe sur {\em m2}.
 
 \subsection{Algorithme}
 \begin{algorithm}
@@ -114,7 +114,7 @@ comparaison suivant :
 \end{algorithmic}
 \end{algorithm}
 
-Une tâche réponds au prédicat {\em est dans T} si elle s'execute plus rapidement
+Une tâche répond au prédicat {\em est dans T} si elle s'execute plus rapidement
 sur {\em m1} que sur {\em m2}.
 Nous avons une compléxité en $O(1)$ pour le calcul de la comparaison, tout se joue
 dans le tri. Un tri ayant optimalement une complexité de $O(n*log(n))$, c'est
