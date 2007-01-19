@@ -3,7 +3,7 @@
 # teste la non existence du Makefile
 if [ ! -e Makefile ];
 then
-	cmake -DCMAKE_BUILD_TYPE=Debug .
+	cmake -DCMAKE_BUILD_TYPE=Release .
 fi;
 
 make
