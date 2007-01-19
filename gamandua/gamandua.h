@@ -17,7 +17,7 @@
 #include <td_base.h>
 #include <td_core.h>
 
-#define PACKAGE_DATA_DIR "/usr/local/share/tamandua/gamandua/"
+#define PACKAGE_DATA_DIR "/usr/share/tamandua/gamandua/"
 
 static const int colors[] = {
   0x729fcf,
