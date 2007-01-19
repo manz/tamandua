@@ -36,8 +36,8 @@ add_library(flowshop3 MODULE problems/flowshop3/flowshop3.c)
 
 if (NOT APPLE)
 	INSTALL(TARGETS td_core td_base
-			LIBRARY DESTINATION /usr/local/lib
-			LIBRARY DESTINATION /usr/local/lib
+			LIBRARY DESTINATION /usr/lib
+			LIBRARY DESTINATION /usr/lib
 			)
 	INSTALL(TARGETS dispatch smith flowshop2 flowshop3 
 			LIBRARY DESTINATION /usr/local/share/tamandua/problems
