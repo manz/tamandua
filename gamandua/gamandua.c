@@ -730,7 +730,7 @@ GdkDrawable* job_to_drawable(GdkDrawable* win, struct tdc_job* job)
   GdkGC *gc;
   GdkDrawable *drawable;
   const struct tdc_problem* problem = job->problem;
-  size_t width = job->timespan+140;
+  size_t width = (job->timespan+140)<300?300:(job->timespan+140);
   size_t height = 50*job->n_machines+70;
   size_t i, j;
   Gui* gui = gamandua->gui;
