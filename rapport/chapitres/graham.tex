@@ -6,7 +6,7 @@ diverses, sans dépendances entre elles sur plusieurs machines identiques,
 l'objectif de l'ordonnancement étant de minimiser le temps total de calcul.
 Nous allons tout d'abord utiliser une répartition de type premier arrivé-premier 
 servi sur l'ensemble des tâches, puis utiliser l'algorithme de coffman-graham en 
-utilisant la durée des taches comme relation d'ordre de priorité avant de les 
+utilisant la durée des tâches comme relation d'ordre de priorité avant de les 
 répartir.
 
 \subsection{Algorithme naïf}
@@ -168,7 +168,7 @@ $j'$ est la dernière traitée et que les tâches sont traitées par durée
 décroissante.
 
 On ne peut enlever une tâche de $M$ pour la mettre sur une autre machine, les 
-autres machines ayant un temps d'exécution déja supérieur à $t_{j'}$ et les 
+autres machines ayant un temps d'exécution déjà supérieur à $t_{j'}$ et les 
 tâches de $M$ ayant toutes une durée supérieure à $p_{j'}$, le temps d'exécution 
 de l'autre machine deviendrait supérieur à $t_{j'}+p_{j'}$ donc supérieur 
 à $C^{LPT}_{max}$ ce qui ne raccourcirait pas l'ordonnancement.
