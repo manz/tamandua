@@ -1,15 +1,13 @@
-Sur une distrib standard avec sudo:
+L'installation nécessite cmake (http://cmake.org/HTML/Download.html)
 
-cd td_base
-make
-sudo make install
-cd ../td_core
-make
-sudo make install
-cd bin
-make
-sudo make install
+A la racine du dossier source : 
+	cmake .
+	make
+	sudo make install
 
+La compilation du rapport en plus se fait avec : 
+	make pdf
 
-pour enjoyer un test:
-./td_core_test
+L'installation est nécessaire pour le bon fonctionnement des problèmes,
+et de gamandua. Le prefix d'installation est obligatoirement /usr.
+
