@@ -13,11 +13,7 @@ et de gamandua. Le prefix d'installation est obligatoirement /usr.
 
 Les fichiers installés sont : 
 	/usr/lib/libtd_base.so
-	/usr/lib/libtd_base.so.0
-	/usr/lib/libtd_base.so.0.0.0
 	/usr/lib/libtd_core.so
-	/usr/lib/libtd_core.so.0
-	/usr/lib/libtd_core.so.0.0.0
 	/usr/share/tamandua/problems/libsmith.so
 	/usr/share/tamandua/problems/libflowshop3.so
 	/usr/share/tamandua/problems/libflowshop2.so
