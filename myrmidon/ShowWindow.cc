@@ -72,7 +72,6 @@ ShowWindow::ShowWindow( Job *j, QWidget *parent) : QGraphicsScene( ){
 							pt.setX(10+2*(taskP->stepLength(j)+taskP->stepStartTime(j)));
 							pt.setY(y);
 							len->setPos(pt);
-							printf("gué ?\n");
 						}
 
 
