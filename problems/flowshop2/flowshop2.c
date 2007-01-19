@@ -19,17 +19,6 @@ int johnson
   /* Algorithme de Jonhson */
   qsort(job->tasks, job->n_tasks, sizeof(*job->tasks), compare);
   /* fin algo */
-
-  for(i=0 ; i<job->n_tasks ; i++)
-    {
-      tdb_debug("Tâche %u :\n"
-                "     * machine %u, longueur %u ;\n"
-                "     * machine %u, longueur %u.",
-                job->tasks[i]->id,
-                job->tasks[i]->steps[0].machine, job->tasks[i]->steps[0].length,
-                job->tasks[i]->steps[1].machine, job->tasks[i]->steps[1].length
-               );
-    }
   return EXIT_SUCCESS;
 }
 

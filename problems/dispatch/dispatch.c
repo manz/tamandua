@@ -47,16 +47,9 @@ size_t increment_first
 	}
 	self[size-1].fill += length;
 	ret = self[size-1].machine;
-	for (i=0; i<size; i++) {
-		tdb_debug("bb- machine %i has %i",self[i].machine, self[i].fill);
-	}
 	/* bubble up old root */
 	for (i=size-1; i>0 && self[(i-1)/2].fill > self[i].fill; i=(i-1)/2) {
 		swap_items(self, i, (i-1)/2);
-	}
-	tdb_debug("assigned machine is: %i",ret);
-	for (i=0; i<size; i++) {
-		tdb_debug("machine %i has %i",self[i].machine, self[i].fill);
 	}
 	return ret;
 }
@@ -90,10 +83,6 @@ int dispatch
 	/* iterate on all tasks */
 	for(i=0; i<job->n_tasks; i++) {
 		tasks[i]->steps[0].machine = increment_first(tasks[i]->steps[0].length, fill_heap, job->n_machines);;
-	}
-	for (i=0; i<job->n_tasks; i++) {
-		tdb_debug("Tâche de longueur %u sur la machine %u",
-		         job->tasks[i]->steps[0].length, job->tasks[i]->steps[0].machine);
 	}
 	delete_heap(fill_heap);
 	return EXIT_SUCCESS;
